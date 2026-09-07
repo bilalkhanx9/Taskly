@@ -6,119 +6,130 @@
 
 @theme inline {
   --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-inset: var(--surface-inset);
+  
   --color-canvas: var(--canvas);
-  --color-canvas-sunken: var(--canvas-sunken);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-line-heavy: var(--line-heavy);
   
   --color-ink: var(--ink);
   --color-ink-body: var(--ink-body);
   --color-ink-muted: var(--ink-muted);
   --color-ink-faint: var(--ink-faint);
-  
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-soft: var(--accent-soft);
+  --color-ink-inverse: var(--ink-inverse);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-border: var(--danger-border);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+
+  /* Shadcn UI compatibility mappings */
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent-700);
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: var(--surface-sunken);
+  --color-secondary-foreground: var(--ink-body);
+  --color-muted: var(--surface-sunken);
+  --color-muted-foreground: var(--ink-muted);
+  --color-border: var(--line);
+  --color-input: var(--line-strong);
+  --color-ring: var(--accent-500);
 
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root {
-  /* TaskFlow Official Clean Paper Theme Tokens */
+  /* TaskFlow v2.0 Warm Stone Neutral Tokens (Section 5.2.2) */
   --surface: #FFFFFF;
-  --canvas: #F6F8F7;
-  --canvas-sunken: #EFF2F1;
-  --line: #E3E8E6;
-  --line-strong: #CBD4D1;
+  --surface-hover: #FAF8F6;
+  --canvas: #FBFAF8;
+  --surface-sunken: #F5F3F0;
+  --surface-inset: #EFEBE7;
+  
+  --line: #E9E4DE;
+  --line-strong: #D8D1C9;
+  --line-heavy: #B8AFA5;
 
-  --ink: #1F2A2E;
-  --ink-body: #3D4A4F;
-  --ink-muted: #6B7A80;
-  --ink-faint: #9AA7AC;
+  /* TaskFlow v2.0 Text Tokens (Section 5.2.3) */
+  --ink: #1C1917;
+  --ink-body: #44403C;
+  --ink-muted: #78716C;
+  --ink-faint: #A8A29E;
+  --ink-inverse: #FFFFFF;
 
-  /* Deep Teal Brand / Action Accent */
-  --accent: #0F766E;
-  --accent-hover: #0C5F58;
-  --accent-soft: #E6F2F0;
+  /* TaskFlow v2.0 Warm Orange Accent Tokens (Section 5.2.1) */
+  --accent-50: #FFF7F0;
+  --accent-100: #FFE9D6;
+  --accent-200: #FFD3B0;
+  --accent-400: #FB923C;
+  --accent-500: #F97316;
+  --accent-600: #EA580C;
+  --accent-700: #C2410C;
+  --accent-800: #9A3412;
 
-  /* Shadcn UI compatibility */
-  --background: #F6F8F7;
-  --foreground: #1F2A2E;
-  --card: #FFFFFF;
-  --card-foreground: #1F2A2E;
-  --popover: #FFFFFF;
-  --popover-foreground: #1F2A2E;
-  --primary: #0F766E;
-  --primary-foreground: #FFFFFF;
-  --secondary: #EFF2F1;
-  --secondary-foreground: #1F2A2E;
-  --muted: #EFF2F1;
-  --muted-foreground: #6B7A80;
-  --border: #E3E8E6;
-  --input: #E3E8E6;
-  --ring: #0F766E;
-  --radius: 0.5rem;
-}
+  /* Feedback Colors (Section 5.2.6) */
+  --danger: #B91C1C;
+  --danger-bg: #FEF1F1;
+  --danger-border: #FCA5A5;
 
-.dark {
-  --surface: #1E282B;
-  --canvas: #141C1E;
-  --canvas-sunken: #182225;
-  --line: #2B383C;
-  --line-strong: #3F5055;
+  --success: #15803D;
+  --success-bg: #EEFAF1;
+  --success-border: #BBE9C9;
 
-  --ink: #F0F4F5;
-  --ink-body: #CFD9DC;
-  --ink-muted: #8E9FA5;
-  --ink-faint: #5E6E73;
-
-  --accent: #14B8A6;
-  --accent-hover: #0D9488;
-  --accent-soft: #163636;
-
-  --background: #141C1E;
-  --foreground: #F0F4F5;
-  --card: #1E282B;
-  --card-foreground: #F0F4F5;
-  --popover: #1E282B;
-  --popover-foreground: #F0F4F5;
-  --primary: #14B8A6;
-  --primary-foreground: #141C1E;
-  --secondary: #182225;
-  --secondary-foreground: #F0F4F5;
-  --muted: #182225;
-  --muted-foreground: #8E9FA5;
-  --border: #2B383C;
-  --input: #2B383C;
-  --ring: #14B8A6;
+  --radius: 0.375rem; /* 6px as per Section 5.4.2 */
 }
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: var(--line);
   }
   body {
     background-color: var(--canvas);
     color: var(--ink);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Sleek modern scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--line-heavy);
   }
 }
