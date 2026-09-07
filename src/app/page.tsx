@@ -1,233 +1,94 @@
-import { Board } from "@/components/kanban/Board";
-import { BoardData } from "@/types/kanban";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Sparkles,
-  Database,
-  Shield,
-  Layers,
-  FileUp,
-  Cpu,
-  Mail,
-  CheckCircle2,
-  Code2,
-} from "lucide-react";
-import Link from "next/link";
+"use client";
 
-// Initial seed data for the interactive board
-const initialKanbanBoard: BoardData = {
-  id: "board-1",
-  title: "🚀 Product Launch & Sprint Board",
-  description: "Manage tasks, team assignments, and releases",
-  workspaceId: "ws-1",
-  columns: [
-    {
-      id: "col-backlog",
-      boardId: "board-1",
-      title: "Backlog",
-      order: 0,
-      colorDot: "#94A3B8",
-      tasks: [
-        {
-          id: "task-1",
-          columnId: "col-backlog",
-          boardId: "board-1",
-          title: "Setup Cloudflare R2 Bucket & Presigned URLs",
-          description: "Configure direct client-to-R2 upload workflow with size limit validation via Zod.",
-          priority: "HIGH",
-          dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-          order: 0,
-          assignee: {
-            id: "user-1",
-            name: "Bilal Khan",
-            email: "bilal@example.com",
-            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-          },
-          attachments: [
-            {
-              id: "att-1",
-              name: "r2-architecture-spec.pdf",
-              url: "#",
-              fileKey: "tasks/spec.pdf",
-              size: 142000,
-              type: "application/pdf",
-            },
-          ],
-          comments: [
-            {
-              id: "com-1",
-              content: "S3 Client configured with region 'auto'.",
-              createdAt: new Date(Date.now() - 3600000),
-              user: { id: "user-1", name: "Bilal", image: null },
-            },
-          ],
-        },
-        {
-          id: "task-2",
-          columnId: "col-backlog",
-          boardId: "board-1",
-          title: "Configure Weekly Workspace Digest Cron",
-          description: "Use Inngest step functions to aggregate active tasks every Monday at 9am.",
-          priority: "MEDIUM",
-          dueDate: new Date(Date.now() + 86400000 * 7).toISOString(),
-          order: 1,
-          assignee: {
-            id: "user-2",
-            name: "Sara Ali",
-            email: "sara@example.com",
-            image: null,
-          },
-          attachments: [],
-          comments: [],
-        },
-      ],
-    },
-    {
-      id: "col-todo",
-      boardId: "board-1",
-      title: "To Do",
-      order: 1,
-      colorDot: "#3B82F6",
-      tasks: [
-        {
-          id: "task-3",
-          columnId: "col-todo",
-          boardId: "board-1",
-          title: "Integrate NextAuth (Auth.js) with Prisma Adapter",
-          description: "Enable JWT session strategy, credentials fallback, and Google/GitHub OAuth.",
-          priority: "URGENT",
-          dueDate: new Date(Date.now() + 86400000 * 1).toISOString(),
-          order: 0,
-          assignee: {
-            id: "user-1",
-            name: "Bilal Khan",
-            email: "bilal@example.com",
-            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-          },
-          attachments: [],
-          comments: [],
-        },
-      ],
-    },
-    {
-      id: "col-in-progress",
-      boardId: "board-1",
-      title: "In Progress",
-      order: 2,
-      colorDot: "#F59E0B",
-      tasks: [
-        {
-          id: "task-4",
-          columnId: "col-in-progress",
-          boardId: "board-1",
-          title: "Build dnd-kit Drag and Drop Kanban Canvas",
-          description: "Implement SortableContext with vertical list sorting strategy and optimistic Server Actions.",
-          priority: "HIGH",
-          dueDate: new Date(Date.now() + 86400000 * 2).toISOString(),
-          order: 0,
-          assignee: {
-            id: "user-1",
-            name: "Bilal Khan",
-            email: "bilal@example.com",
-            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-          },
-          attachments: [],
-          comments: [
-            {
-              id: "com-2",
-              content: "PointerSensors adjusted with 5px distance constraint.",
-              createdAt: new Date(),
-              user: { id: "user-1", name: "Bilal", image: null },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "col-done",
-      boardId: "board-1",
-      title: "Done",
-      order: 3,
-      colorDot: "#10B981",
-      tasks: [
-        {
-          id: "task-5",
-          columnId: "col-done",
-          boardId: "board-1",
-          title: "Initialize Next.js 16 + Tailwind CSS v4 + shadcn/ui",
-          description: "Created project scaffolding, theme tokens, and Base UI components.",
-          priority: "LOW",
-          dueDate: new Date(Date.now() - 86400000).toISOString(),
-          order: 0,
-          assignee: {
-            id: "user-1",
-            name: "Bilal Khan",
-            email: "bilal@example.com",
-            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-          },
-          attachments: [],
-          comments: [],
-        },
-      ],
-    },
-  ],
-};
+import React, { useState } from "react";
+import { Sidebar } from "@/components/dashboard/Sidebar";
+import { Navbar } from "@/components/dashboard/Navbar";
+import { StatCards } from "@/components/dashboard/StatCards";
+import { ChartsSection } from "@/components/dashboard/ChartsSection";
+import { MyTasksSection } from "@/components/dashboard/MyTasksSection";
+import { ProjectsSection } from "@/components/dashboard/ProjectsSection";
+import { TeamMembersSection } from "@/components/dashboard/TeamMembersSection";
+import { QuickStatsSection } from "@/components/dashboard/QuickStatsSection";
+import { RightSidebar } from "@/components/dashboard/RightSidebar";
+import { Calendar, Plus } from "lucide-react";
 
-export default function Home() {
+export default function DashboardPage() {
+  const [activeTab, setActiveTab] = useState("Home");
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/85 backdrop-blur-md">
-        <div className="max-w-[1600px] mx-auto flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md">
-              <Sparkles className="h-5 w-5" />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex font-sans antialiased selection:bg-[#F95738]/20 selection:text-[#F95738]">
+      {/* 1. Left Sidebar */}
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* 2. Main Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Navbar */}
+        <Navbar onSearchChange={setSearchQuery} />
+
+        {/* Dashboard Main Workspace */}
+        <div className="flex-1 p-6 lg:p-8 max-w-[1750px] w-full mx-auto space-y-6">
+          {/* Header Greeting & Action Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+                Good Morning, Bilal <span className="text-2xl">👋</span>
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-medium">
+                Here&apos;s what&apos;s happening with your team today.
+              </p>
             </div>
-            <span className="font-bold text-xl tracking-tight">
-              Kanban<span className="text-primary font-black">Pro</span>
-            </span>
-            <Badge variant="secondary" className="ml-2 font-mono text-xs">
-              Full-Stack Architecture
-            </Badge>
+
+            <div className="flex items-center gap-3">
+              {/* Date Pill */}
+              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-xs">
+                <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                <span>Sep 7, 2025</span>
+              </div>
+
+              {/* Create Task Button */}
+              <button
+                type="button"
+                className="flex items-center gap-1.5 bg-[#F95738] hover:bg-[#e44a2c] text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all hover:shadow-md active:scale-95"
+              >
+                <Plus className="h-4 w-4 stroke-[2.5]" /> Create Task
+              </button>
+            </div>
           </div>
 
-          {/* Technology Badges */}
-          <div className="hidden lg:flex items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium">
-              <Database className="h-3 w-3 text-emerald-500" /> PostgreSQL + Prisma
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium">
-              <Shield className="h-3 w-3 text-blue-500" /> Auth.js
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium">
-              <Cpu className="h-3 w-3 text-purple-500" /> Inngest
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium">
-              <Mail className="h-3 w-3 text-amber-500" /> Resend
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium">
-              <FileUp className="h-3 w-3 text-orange-500" /> Cloudflare R2
-            </span>
-          </div>
+          {/* Core Grid Layout (Center Content + Right Sidebar) */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+            {/* Center Area (8 or 9 cols on XL) */}
+            <div className="xl:col-span-8 space-y-6">
+              {/* Row 1: 4 Stat Cards */}
+              <StatCards />
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="https://github.com/bilalkhanx9/LMS"
-              target="_blank"
-              rel="noreferrer"
-              className={buttonVariants({ size: "sm", className: "gap-2 shadow-xs" })}
-            >
-              <Code2 className="h-4 w-4" /> GitHub
-            </Link>
+              {/* Row 2: Charts (Task Overview + Task Status) */}
+              <ChartsSection />
+
+              {/* Row 3: Two Column Split for Tasks & Projects */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column: My Tasks + Quick Stats */}
+                <div className="space-y-6">
+                  <MyTasksSection />
+                  <QuickStatsSection />
+                </div>
+
+                {/* Right Column: Projects + Team Members */}
+                <div className="space-y-6">
+                  <ProjectsSection />
+                  <TeamMembersSection />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Sidebar (4 cols on XL) */}
+            <div className="xl:col-span-4">
+              <RightSidebar />
+            </div>
           </div>
         </div>
-      </header>
-
-      {/* Main Board Container */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto px-6 py-6 flex flex-col">
-        <Board initialBoard={initialKanbanBoard} />
-      </main>
+      </div>
     </div>
   );
 }
