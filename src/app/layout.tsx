@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Taskly — Modern Work & Project Management",
-  description: "Plan projects, assign work, and track deadlines with Taskly. Fast, structured work management for teams.",
+  title: "Orbitask — Modern Workspace & Project Management",
+  description: "A modern workspace to help you explore tasks, boards, and team collaboration.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

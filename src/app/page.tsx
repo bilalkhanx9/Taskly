@@ -1,792 +1,671 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { 
-  User, 
-  UserRole, 
-  Workspace, 
-  Project, 
-  Task, 
-  TaskStatus, 
-  TaskPriority,
-  AuditLog,
-  Notification 
-} from "@/types/taskflow-v2";
-import { 
-  mockUsers, 
-  mockWorkspaces, 
-  mockProjects, 
-  mockTasks, 
-  mockAuditLogs, 
-  mockNotifications 
-} from "@/lib/taskflow-v2-data";
-
-// Shells
-import { WorkspaceShell } from "@/components/taskflow-v2/shell/WorkspaceShell";
-import { AdminShell } from "@/components/taskflow-v2/shell/AdminShell";
-
-// Screens
-import { LandingPageView } from "@/components/taskflow-v2/screens/LandingPageView";
-import { AuthViews } from "@/components/taskflow-v2/screens/AuthViews";
-import { OnboardingViews } from "@/components/taskflow-v2/screens/OnboardingViews";
-import { WorkspaceHomeView } from "@/components/taskflow-v2/screens/WorkspaceHomeView";
-import { ProjectsListView } from "@/components/taskflow-v2/screens/ProjectsListView";
-import { ProjectDashboardView } from "@/components/taskflow-v2/screens/ProjectDashboardView";
-import { CalendarView } from "@/components/taskflow-v2/screens/CalendarView";
-import { MyTasksView } from "@/components/taskflow-v2/screens/MyTasksView";
-import { TeamDirectoryView } from "@/components/taskflow-v2/screens/TeamDirectoryView";
-import { ReportsView } from "@/components/taskflow-v2/screens/ReportsView";
-import { NotificationsView } from "@/components/taskflow-v2/screens/NotificationsView";
-import { SettingsView } from "@/components/taskflow-v2/screens/SettingsView";
-
-// Modals
-import { CommandPalette } from "@/components/taskflow-v2/modals/CommandPalette";
-import { TaskDetailModal } from "@/components/taskflow-v2/modals/TaskDetailModal";
-import { QuickAddModal } from "@/components/taskflow-v2/modals/QuickAddModal";
-import { NewProjectModal } from "@/components/taskflow-v2/modals/NewProjectModal";
-import { InviteMemberModal } from "@/components/taskflow-v2/modals/InviteMemberModal";
-
-// Server Actions (Full-Stack Backend Integration)
-import { 
-  createTaskAction, 
-  updateTaskStatusAction, 
-  updateTaskPriorityAction, 
-  updateTaskDetailsAction,
-  deleteTaskAction 
-} from "@/actions/task-actions";
-import { 
-  createProjectAction, 
-  deleteProjectAction 
-} from "@/actions/project-actions";
-import { 
-  inviteWorkspaceMemberAction, 
-  updateWorkspaceSettingsAction 
-} from "@/actions/workspace-actions";
-import { getInitialBootstrapData } from "@/actions/auth-actions";
-
-// Icons for Navigator
-import { 
-  Compass, 
-  ChevronDown, 
-  ChevronUp, 
-  ShieldCheck, 
-  UserCheck, 
-  Layout, 
+import React, { useState } from "react";
+import {
+  Search,
+  Plus,
+  Home,
+  Settings,
+  Star,
+  MoreVertical,
+  Activity,
+  Share2,
+  Trash2,
+  Copy,
+  Edit2,
+  X,
+  Check,
+  Building2,
+  FolderPlus,
   Sparkles,
-  Kanban,
-  CheckCircle2
+  ArrowRight
 } from "lucide-react";
 
-export default function Home() {
-  // Global State
-  const [currentUser, setCurrentUser] = useState<User>(mockUsers[0]);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(mockWorkspaces[0]);
-  const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
-  
-  // Navigation & Screen routing (Default: Public Landing Page)
-  const [currentScreen, setCurrentScreen] = useState<string>("landing");
-  const [selectedProjectId, setSelectedProjectId] = useState<string>(mockProjects[0]?.id || "proj-core-platform");
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+interface ProjectItem {
+  id: string;
+  name: string;
+  description: string;
+  bannerColor: string;
+  isFavorite: boolean;
+  createdAt: string;
+}
+
+export default function OrbitaskHome() {
+  // Search query
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Active workspace & tabs
+  const [workspaceName, setWorkspaceName] = useState("Sample Workspace");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings">("overview");
+
+  // Projects list
+  const [projects, setProjects] = useState<ProjectItem[]>([
+    {
+      id: "proj-sample",
+      name: "Sample Project",
+      description:
+        "A sample project to help you explore tasks, boards, and team collaboration.",
+      bannerColor: "#2563EB",
+      isFavorite: false,
+      createdAt: "2026-09-08",
+    },
+  ]);
 
   // Modals state
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
-  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
-  const [isInviteMemberOpen, setIsInviteMemberOpen] = useState(false);
-  const [quickAddDefaultStatus, setQuickAddDefaultStatus] = useState<TaskStatus>("todo");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreateWorkspaceOpen, setIsCreateWorkspaceOpen] = useState(false);
+  const [activeMenuProjectId, setActiveMenuProjectId] = useState<string | null>(null);
 
-  // Global Keyboard Shortcuts (Section 7.20)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input or textarea
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
-        return;
-      }
+  // Form states
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectDesc, setNewProjectDesc] = useState("");
+  const [newProjectColor, setNewProjectColor] = useState("#2563EB");
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
 
-      // Cmd+K or Ctrl+K -> Command Palette
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setIsCommandPaletteOpen(prev => !prev);
-      }
+  // Handlers
+  const handleToggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setProjects((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, isFavorite: !p.isFavorite } : p))
+    );
+  };
 
-      // N -> Quick Add Task Modal
-      if (e.key.toLowerCase() === "n" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        e.preventDefault();
-        if (currentUser.role !== "VIEWER") {
-          setIsQuickAddOpen(true);
-        }
-      }
+  const handleDeleteProject = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    setActiveMenuProjectId(null);
+  };
+
+  const handleDuplicateProject = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const original = projects.find((p) => p.id === id);
+    if (!original) return;
+    const duplicated: ProjectItem = {
+      ...original,
+      id: `proj-${Date.now()}`,
+      name: `${original.name} (Copy)`,
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentUser]);
-
-  // Bootstrap full database state from SQLite on mount
-  useEffect(() => {
-    async function loadBackendData() {
-      try {
-        const res = await getInitialBootstrapData();
-        if (res.success && res.tasks && res.tasks.length > 0) {
-          const mappedTasks: Task[] = res.tasks.map((t: any) => ({
-            id: t.id,
-            projectId: t.projectId,
-            title: t.title,
-            description: t.description || "",
-            status: (t.status as TaskStatus) || "todo",
-            priority: (t.priority as TaskPriority) || "medium",
-            dueDate: t.dueDate || "2026-09-30",
-            startDate: "2026-09-07",
-            position: t.order || 0,
-            assignee: t.assignee
-              ? {
-                  id: t.assignee.id,
-                  name: t.assignee.name || "User",
-                  email: t.assignee.email || "",
-                  avatarUrl: t.assignee.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
-                  role: (t.assignee.role as UserRole) || "MEMBER",
-                  timezone: "UTC+5",
-                }
-              : mockUsers[0],
-            labels: ["Taskly"],
-            subtasks: (t.subtasks || []).map((st: any) => ({
-              id: st.id,
-              title: st.title,
-              completed: st.completed,
-            })),
-            comments: (t.comments || []).map((c: any) => ({
-              id: c.id,
-              taskId: t.id,
-              userId: c.userId,
-              user: {
-                id: c.user?.id || c.userId,
-                name: c.user?.name || "User",
-                email: c.user?.email || "",
-                avatarUrl: c.user?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
-                role: (c.user?.role as UserRole) || "MEMBER",
-              },
-              userName: c.user?.name || "User",
-              userAvatar: c.user?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
-              content: c.content,
-              body: c.content,
-              createdAt: c.createdAt ? new Date(c.createdAt).toISOString() : new Date().toISOString(),
-              timestamp: new Date(c.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            })),
-            attachments: [],
-            createdAt: t.createdAt ? new Date(t.createdAt).toISOString() : new Date().toISOString(),
-            updatedAt: t.updatedAt ? new Date(t.updatedAt).toISOString() : new Date().toISOString(),
-          }));
-
-          setTasks(mappedTasks);
-        }
-
-        if (res.success && res.projects && res.projects.length > 0) {
-          const mappedProjects: Project[] = res.projects.map((p: any) => ({
-            id: p.id,
-            workspaceId: p.workspaceId,
-            name: p.name,
-            slug: p.slug || p.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-            description: p.description || "",
-            color: p.color || "#EA580C",
-            deadline: p.deadline || "2026-09-30",
-            taskCount: p.tasks?.length || 0,
-            completedTaskCount: p.tasks?.filter((t: any) => t.status === "done").length || 0,
-            members: mockUsers.slice(0, 3),
-            defaultView: "board",
-            status: (p.status as any) || "active",
-          }));
-          setProjects(mappedProjects);
-        }
-
-        if (res.success && res.users && res.users.length > 0) {
-          const dbAdmin = res.users.find((u: any) => u.email === "bilalrauf.ds@gmail.com") || res.users[0];
-          if (dbAdmin) {
-            setCurrentUser({
-              id: dbAdmin.id,
-              name: dbAdmin.name || "Bilal Rauf",
-              email: dbAdmin.email || "bilalrauf.ds@gmail.com",
-              role: (dbAdmin.role as UserRole) || "PLATFORM_ADMIN",
-              avatarUrl: dbAdmin.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
-              designation: dbAdmin.role === "PLATFORM_ADMIN" ? "Platform Administrator" : "Workspace Owner",
-              isEmailVerified: true,
-            });
-          }
-        }
-      } catch (err) {
-        console.error("Error loading bootstrap data:", err);
-      }
-    }
-    loadBackendData();
-  }, []);
-
-  // Role Switcher Handler (Landing route per role according to Section 3.2)
-  const handleSwitchRole = (role: UserRole) => {
-    setCurrentUser(prev => ({
-      ...prev,
-      role,
-      designation: role === "PLATFORM_ADMIN" ? "Platform Administrator" : role.replace("_", " "),
-    }));
-
-    if (role === "PLATFORM_ADMIN") {
-      setCurrentScreen("admin");
-    } else if (role === "WORKSPACE_OWNER" || role === "MANAGER") {
-      setCurrentScreen("home");
-    } else if (role === "MEMBER") {
-      setCurrentScreen("my-tasks");
-    } else if (role === "VIEWER") {
-      setCurrentScreen("projects-list");
-    }
+    setProjects((prev) => [...prev, duplicated]);
+    setActiveMenuProjectId(null);
   };
 
-  // Task Mutations (Optimistic UI + Live Server Action Persistence)
-  const handleUpdateTask = async (updatedTask: Task) => {
-    setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
-    const newLog: AuditLog = {
-      id: `log-${Date.now()}`,
-      action: "task_updated",
-      actorId: currentUser.id,
-      actorName: currentUser.name,
-      targetType: "task",
-      targetId: updatedTask.id,
-      targetName: updatedTask.title,
-      timestamp: new Date().toISOString()
-    };
-    setAuditLogs(prev => [newLog, ...prev]);
-
-    if (!updatedTask.id.startsWith("task-")) {
-      try {
-        await updateTaskDetailsAction(updatedTask.id, {
-          title: updatedTask.title,
-          description: updatedTask.description,
-          status: updatedTask.status,
-          priority: updatedTask.priority,
-          dueDate: updatedTask.dueDate,
-          assigneeId: updatedTask.assignee?.id,
-        });
-      } catch (err) {
-        console.error("Error updating task in DB:", err);
-      }
-    }
-  };
-
-  const handleUpdateTaskStatus = async (taskId: string, newStatus: TaskStatus) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
-    const updated = { ...task, status: newStatus };
-    handleUpdateTask(updated);
-
-    try {
-      await updateTaskStatusAction(taskId, newStatus, currentUser.id);
-    } catch (err) {
-      console.error("Error updating task status in DB:", err);
-    }
-  };
-
-  const handleUpdateTaskPriority = async (taskId: string, newPriority: TaskPriority) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
-    const updated = { ...task, priority: newPriority };
-    handleUpdateTask(updated);
-
-    try {
-      await updateTaskPriorityAction(taskId, newPriority);
-    } catch (err) {
-      console.error("Error updating task priority in DB:", err);
-    }
-  };
-
-  const handleDeleteTask = async (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    setTasks(prev => prev.filter(t => t.id !== taskId));
-    if (selectedTaskId === taskId) {
-      setSelectedTaskId(null);
-    }
-    if (task) {
-      const newLog: AuditLog = {
-        id: `log-${Date.now()}`,
-        action: "task_deleted",
-        actorId: currentUser.id,
-        actorName: currentUser.name,
-        targetType: "task",
-        targetId: taskId,
-        targetName: task.title,
-        timestamp: new Date().toISOString()
-      };
-      setAuditLogs(prev => [newLog, ...prev]);
-    }
-
-    try {
-      await deleteTaskAction(taskId);
-    } catch (err) {
-      console.error("Error deleting task in DB:", err);
-    }
-  };
-
-  const handleCreateTask = async (newTaskData: Partial<Task>) => {
-    const tempId = `task-${Date.now()}`;
-    const newTask: Task = {
-      id: tempId,
-      projectId: newTaskData.projectId || selectedProjectId,
-      title: newTaskData.title || "Untitled Task",
-      description: newTaskData.description || "",
-      status: newTaskData.status || "todo",
-      priority: newTaskData.priority || "medium",
-      assignee: newTaskData.assignee || currentUser,
-      position: tasks.length + 1,
-      labels: newTaskData.labels || ["New"],
-      subtasks: newTaskData.subtasks || [],
-      attachments: [],
-      comments: [],
-      dueDate: newTaskData.dueDate || "2026-09-30",
-      startDate: "2026-09-07",
+  const handleCreateProjectSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProjectName.trim()) return;
+    const newProj: ProjectItem = {
+      id: `proj-${Date.now()}`,
+      name: newProjectName.trim(),
+      description:
+        newProjectDesc.trim() ||
+        "A new project created to organize tasks and team workflows.",
+      bannerColor: newProjectColor,
+      isFavorite: false,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
     };
-
-    setTasks(prev => [newTask, ...prev]);
-    // update project task count
-    setProjects(prev => prev.map(p => 
-      p.id === newTask.projectId ? { ...p, taskCount: (p.taskCount ?? 0) + 1 } : p
-    ));
-
-    const newLog: AuditLog = {
-      id: `log-${Date.now()}`,
-      action: "task_created",
-      actorId: currentUser.id,
-      actorName: currentUser.name,
-      targetType: "task",
-      targetId: newTask.id,
-      targetName: newTask.title,
-      timestamp: new Date().toISOString()
-    };
-    setAuditLogs(prev => [newLog, ...prev]);
-
-    // Asynchronously persist to SQLite via Server Action
-    try {
-      const res = await createTaskAction({
-        title: newTask.title,
-        projectId: newTask.projectId,
-        description: newTask.description,
-        status: newTask.status,
-        priority: newTask.priority,
-        dueDate: newTask.dueDate,
-        assigneeId: newTask.assignee?.id,
-        creatorId: currentUser.id,
-        subtasks: newTask.subtasks?.map(s => s.title) || [],
-      });
-      if (res.success && res.task) {
-        setTasks(prev => prev.map(t => t.id === tempId ? { ...t, id: res.task.id } : t));
-      }
-    } catch (err) {
-      console.error("Error creating task in DB:", err);
-    }
+    setProjects((prev) => [...prev, newProj]);
+    setNewProjectName("");
+    setNewProjectDesc("");
+    setIsCreateProjectOpen(false);
   };
 
-  const handleToggleTaskComplete = (taskId: string, currentStatus: TaskStatus) => {
-    const newStatus: TaskStatus = currentStatus === "done" ? "todo" : "done";
-    handleUpdateTaskStatus(taskId, newStatus);
+  const handleCreateWorkspaceSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWorkspaceName.trim()) return;
+    setWorkspaceName(newWorkspaceName.trim());
+    setNewWorkspaceName("");
+    setIsCreateWorkspaceOpen(false);
   };
 
-  // Project Mutations
-  const handleAddProject = async (newProject: Project) => {
-    setProjects(prev => [newProject, ...prev]);
-    setSelectedProjectId(newProject.id);
-    setCurrentScreen("project-dashboard");
-
-    const newLog: AuditLog = {
-      id: `log-${Date.now()}`,
-      action: "project_created",
-      actorId: currentUser.id,
-      actorName: currentUser.name,
-      targetType: "project",
-      targetId: newProject.id,
-      targetName: newProject.name,
-      timestamp: new Date().toISOString()
-    };
-    setAuditLogs(prev => [newLog, ...prev]);
-
-    try {
-      await createProjectAction({
-        workspaceId: currentWorkspace.id,
-        name: newProject.name,
-        description: newProject.description,
-        color: newProject.color,
-        deadline: newProject.deadline,
-      });
-    } catch (err) {
-      console.error("Error creating project in DB:", err);
-    }
-  };
-
-  const handleDeleteProject = async (projectId: string) => {
-    const proj = projects.find(p => p.id === projectId);
-    setProjects(prev => prev.filter(p => p.id !== projectId));
-    setTasks(prev => prev.filter(t => t.projectId !== projectId));
-    if (selectedProjectId === projectId) {
-      setSelectedProjectId(projects[0]?.id || "");
-    }
-    if (proj) {
-      const newLog: AuditLog = {
-        id: `log-${Date.now()}`,
-        action: "project_deleted",
-        actorId: currentUser.id,
-        actorName: currentUser.name,
-        targetType: "project",
-        targetId: projectId,
-        targetName: proj.name,
-        timestamp: new Date().toISOString()
-      };
-      setAuditLogs(prev => [newLog, ...prev]);
-    }
-
-    try {
-      await deleteProjectAction(projectId);
-    } catch (err) {
-      console.error("Error deleting project in DB:", err);
-    }
-  };
-
-  // Member Invitation
-  const handleInviteMember = async (email: string, role: UserRole) => {
-    alert(`Invitation sent to ${email} as ${role}. Direct link ready.`);
-    const newLog: AuditLog = {
-      id: `log-${Date.now()}`,
-      action: "member_invited",
-      actorId: currentUser.id,
-      actorName: currentUser.name,
-      targetType: "workspace",
-      targetId: currentWorkspace.id,
-      targetName: email,
-      timestamp: new Date().toISOString()
-    };
-    setAuditLogs(prev => [newLog, ...prev]);
-
-    try {
-      await inviteWorkspaceMemberAction(currentWorkspace.id, email, role, currentUser.name);
-    } catch (err) {
-      console.error("Error inviting member in DB:", err);
-    }
-  };
-
-  const selectedProject = projects.find(p => p.id === selectedProjectId) || projects[0];
-  const selectedTask = tasks.find(t => t.id === selectedTaskId);
-
-  // RENDER SCREEN DISPATCHER
-  const isAuthOrLanding = [
-    "landing", 
-    "login", 
-    "register", 
-    "verify-email", 
-    "forgot-password", 
-    "reset-password",
-    "onboarding-workspace"
-  ].includes(currentScreen);
+  // Filtered projects
+  const filteredProjects = projects.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)] font-sans antialiased selection:bg-orange-100 selection:text-orange-900">
-      
-      {/* 1. PUBLIC MARKETING LANDING (Section 7.1) */}
-      {currentScreen === "landing" && (
-        <LandingPageView
-          onGetStarted={() => setCurrentScreen("register")}
-          onSignIn={() => setCurrentScreen("login")}
-          onLogIn={() => setCurrentScreen("login")}
-          onExploreDemo={() => setCurrentScreen("login")}
-        />
-      )}
-
-      {/* 2. AUTHENTICATION SCREENS (Sections 7.2 - 7.6) */}
-      {[
-        "login", 
-        "register", 
-        "verify-email", 
-        "forgot-password", 
-        "reset-password"
-      ].includes(currentScreen) && (
-        <AuthViews
-          initialScreen={
-            currentScreen === "register" ? "register" :
-            currentScreen === "verify-email" ? "verify" :
-            currentScreen === "forgot-password" ? "forgot" :
-            currentScreen === "reset-password" ? "reset" : "login"
-          }
-          onLoginSuccess={(user, newWs, newProj) => {
-            setCurrentUser(user);
-            if (newWs) {
-              setWorkspaces(prev => [newWs, ...prev.filter(w => w.id !== newWs.id)]);
-              setCurrentWorkspace(newWs);
-            }
-            if (newProj) {
-              setProjects(prev => [newProj, ...prev.filter(p => p.id !== newProj.id)]);
-              setSelectedProjectId(newProj.id);
-            }
-            if (user.role === "PLATFORM_ADMIN") {
-              setCurrentScreen("admin");
-            } else if (user.role === "MEMBER") {
-              setCurrentScreen("my-tasks");
-            } else if (user.role === "VIEWER") {
-              setCurrentScreen("project-dashboard");
-            } else {
-              setCurrentScreen("home");
-            }
-          }}
-          onNavigate={(s) => setCurrentScreen(s)}
-        />
-      )}
-
-      {/* 3. ONBOARDING FLOW (Sections 7.7 - 7.9) */}
-      {currentScreen === "onboarding-workspace" && (
-        <OnboardingViews
-          currentUser={currentUser}
-          onComplete={(newWs, newProj) => {
-            setWorkspaces(prev => [newWs, ...prev]);
-            setCurrentWorkspace(newWs);
-            setProjects(prev => [newProj, ...prev]);
-            setSelectedProjectId(newProj.id);
-            setCurrentScreen("home");
-          }}
-          onNavigate={(s) => setCurrentScreen(s)}
-        />
-      )}
-
-      {/* 4. PLATFORM ADMIN CONSOLE - SHELL B (Section 4.2 & Section 7.22) */}
-      {!isAuthOrLanding && currentScreen === "admin" && (
-        <AdminShell
-          currentUser={currentUser}
-          organisations={[
-            {
-              id: "org-taskly",
-              name: "Taskly Global Inc.",
-              domain: "taskly.io",
-              status: "active",
-              workspaceCount: workspaces.length,
-              userCount: 1,
-              plan: "Enterprise",
-              createdAt: "2026-01-15"
-            }
-          ]}
-          users={[currentUser]}
-          onExitAdmin={() => setCurrentScreen("home")}
-          onSignOut={() => setCurrentScreen("landing")}
-        />
-      )}
-
-      {/* 5. WORKSPACE WORK MANAGEMENT - SHELL A (Sections 4.2 - 4.5 & 7.10 - 7.21) */}
-      {!isAuthOrLanding && currentScreen !== "admin" && (
-        <WorkspaceShell
-          currentUser={currentUser}
-          workspace={currentWorkspace}
-          workspaces={workspaces}
-          projects={projects}
-          activeScreen={currentScreen}
-          onNavigate={(s: string) => setCurrentScreen(s)}
-          onSelectProject={(projOrId: Project | string) => {
-            const id = typeof projOrId === "string" ? projOrId : projOrId.id;
-            setSelectedProjectId(id);
-            setCurrentScreen("project-dashboard");
-          }}
-          onSwitchWorkspace={(wsId: string) => {
-            const found = workspaces.find(w => w.id === wsId);
-            if (found) setCurrentWorkspace(found);
-          }}
-          onCreateWorkspace={() => setCurrentScreen("onboarding-workspace")}
-          onNewTask={() => {
-            if (currentUser.role !== "VIEWER") {
-              setQuickAddDefaultStatus("todo");
-              setIsQuickAddOpen(true);
-            }
-          }}
-          onOpenSearch={() => setIsCommandPaletteOpen(true)}
-          onSignOut={() => setCurrentScreen("landing")}
-          unreadNotificationCount={notifications.filter(n => !n.read).length}
-        >
-          {/* Main Content Area Routing inside Shell A */}
-          {currentScreen === "home" && (
-            <WorkspaceHomeView
-              currentUser={currentUser}
-              workspace={currentWorkspace}
-              projects={projects}
-              tasks={tasks}
-              auditLogs={auditLogs}
-              onSelectProject={(id) => {
-                setSelectedProjectId(id);
-                setCurrentScreen("project-dashboard");
-              }}
-              onOpenTask={(id) => setSelectedTaskId(id)}
-              onNewTask={() => {
-                setQuickAddDefaultStatus("todo");
-                setIsQuickAddOpen(true);
-              }}
-              onNewProject={() => setIsNewProjectOpen(true)}
-              onNavigate={(s) => setCurrentScreen(s)}
-            />
-          )}
-
-          {currentScreen === "projects-list" && (
-            <ProjectsListView
-              currentUser={currentUser}
-              projects={projects}
-              onSelectProject={(id) => {
-                setSelectedProjectId(id);
-                setCurrentScreen("project-dashboard");
-              }}
-              onNewProject={() => setIsNewProjectOpen(true)}
-              onDeleteProject={handleDeleteProject}
-            />
-          )}
-
-          {currentScreen === "project-dashboard" && (
-            <ProjectDashboardView
-              currentUser={currentUser}
-              project={selectedProject}
-              tasks={tasks}
-              onBackToProjects={() => setCurrentScreen("projects-list")}
-              onOpenTask={(id) => setSelectedTaskId(id)}
-              onUpdateTaskStatus={handleUpdateTaskStatus}
-              onUpdateTaskPriority={handleUpdateTaskPriority}
-              onDeleteTask={handleDeleteTask}
-              onNewTask={() => {
-                setQuickAddDefaultStatus("todo");
-                setIsQuickAddOpen(true);
-              }}
-              onQuickAddStatus={(st) => {
-                setQuickAddDefaultStatus(st);
-                setIsQuickAddOpen(true);
-              }}
-            />
-          )}
-
-          {currentScreen === "calendar" && (
-            <div className="w-full">
-              <CalendarView
-                currentUser={currentUser}
-                tasks={tasks}
-                onOpenTask={(id) => setSelectedTaskId(id)}
-                onQuickAddDate={(dateStr) => {
-                  handleCreateTask({ dueDate: dateStr, title: "New scheduled task" });
-                }}
+    <div className="min-h-screen bg-white text-[#0F172A] font-sans antialiased flex flex-col selection:bg-blue-100 selection:text-blue-900">
+      {/* ================= 1. TOP NAVBAR ================= */}
+      <header className="w-full px-8 py-4 flex items-center justify-between border-b border-[#F1F5F9] bg-white sticky top-0 z-30">
+        {/* Left: Brand Logo (Orbitask) */}
+        <div className="flex items-center gap-1.5 select-none">
+          <div className="relative flex items-center justify-center">
+            {/* Custom SVG Orbit Logo Icon */}
+            <svg
+              className="w-9 h-9 text-[#0284C7]"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Planetary Center Disc */}
+              <circle cx="18" cy="18" r="6" fill="#0284C7" />
+              {/* Elliptical Ring angled at -38 deg */}
+              <ellipse
+                cx="18"
+                cy="18"
+                rx="14"
+                ry="5.5"
+                stroke="#0284C7"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                transform="rotate(-38 18 18)"
               />
+              {/* Orbit Accent Ring Highlight */}
+              <ellipse
+                cx="18"
+                cy="18"
+                rx="14"
+                ry="5.5"
+                stroke="#38BDF8"
+                strokeWidth="2.4"
+                strokeDasharray="20 40"
+                strokeLinecap="round"
+                transform="rotate(-38 18 18)"
+              />
+            </svg>
+          </div>
+          <span className="text-[22px] font-bold tracking-tight text-[#0F172A] -ml-0.5">
+            rbitask
+          </span>
+        </div>
+
+        {/* Center: Search Field */}
+        <div className="flex-1 max-w-[440px] mx-8">
+          <div className="relative">
+            <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 stroke-[1.75]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full h-10 pl-10 pr-4 bg-white border border-[#E2E8F0] rounded-xl text-xs text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Right: User Profile & Utility Buttons */}
+        <div className="flex items-center gap-4">
+          {/* User Profile */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                alt="Moni Roy"
+                className="w-9 h-9 rounded-lg object-cover"
+              />
+              {/* Online Status Dot */}
+              <span className="w-2.5 h-2.5 bg-[#3B82F6] rounded-full border-2 border-white absolute -top-1 -right-1 shadow-2xs" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold text-[#0F172A] leading-tight">
+                Moni Roy
+              </span>
+              <span className="text-[11px] font-normal text-[#94A3B8] leading-tight mt-0.5">
+                Admin
+              </span>
+            </div>
+          </div>
+
+          {/* Action Icon Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="w-9 h-9 rounded-lg border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
+              title="Activity & Notifications"
+            >
+              <Activity className="w-4 h-4 stroke-[1.75]" />
+            </button>
+            <button
+              type="button"
+              className="w-9 h-9 rounded-lg border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
+              title="Workspace Sync"
+            >
+              <Share2 className="w-4 h-4 stroke-[1.75]" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ================= 2. WORKSPACE HEADER & TABS ================= */}
+      <main className="flex-1 w-full px-12 pt-8 pb-16">
+        <div className="space-y-6">
+          {/* Workspace Title & Inline Actions (Exact match to screenshot) */}
+          <div className="flex items-center gap-8 flex-wrap">
+            {/* Workspace Badge & Title */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-50/70 border border-blue-100 flex items-center justify-center text-[#0284C7] shadow-2xs">
+                <svg
+                  className="w-5 h-5 text-[#0284C7]"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                >
+                  <circle cx="16" cy="16" r="5" fill="#0284C7" />
+                  <ellipse
+                    cx="16"
+                    cy="16"
+                    rx="12"
+                    ry="4.8"
+                    stroke="#0284C7"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    transform="rotate(-38 16 16)"
+                  />
+                </svg>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
+                {workspaceName}
+              </h1>
+            </div>
+
+            {/* Inline Navigation Tabs */}
+            <div className="flex items-center gap-6 text-xs font-medium text-[#64748B]">
+              <button
+                type="button"
+                onClick={() => setActiveTab("overview")}
+                className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  activeTab === "overview"
+                    ? "text-[#0F172A] font-semibold"
+                    : "text-[#64748B] hover:text-[#0F172A]"
+                }`}
+              >
+                <Home className="w-4 h-4 stroke-[1.75]" />
+                <span>Overview</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("settings")}
+                className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  activeTab === "settings"
+                    ? "text-[#0F172A] font-semibold"
+                    : "text-[#64748B] hover:text-[#0F172A]"
+                }`}
+              >
+                <Settings className="w-4 h-4 stroke-[1.75]" />
+                <span>Settings</span>
+              </button>
+            </div>
+
+            {/* + Create Project Button (Inline directly after Settings, matching screenshot) */}
+            <div className="pl-2">
+              <button
+                type="button"
+                onClick={() => setIsCreateProjectOpen(true)}
+                className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Create Project</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ================= 3. OVERVIEW / PROJECT CARDS VIEW ================= */}
+          {activeTab === "overview" && (
+            <div className="pt-2">
+              {/* Project Cards Row */}
+              <div className="flex items-start gap-6 flex-wrap">
+                {/* 1. Existing Project Cards */}
+                {filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="w-[320px] rounded-2xl bg-white border border-[#E2E8F0] shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden group relative flex flex-col"
+                  >
+                    {/* Topographic Wave Graphic Banner */}
+                    <div
+                      className="h-[76px] relative overflow-hidden flex items-start justify-end p-2.5 gap-1"
+                      style={{ backgroundColor: project.bannerColor }}
+                    >
+                      {/* Topographic organic contour pattern (exact wavy topography) */}
+                      <svg
+                        className="absolute inset-0 w-full h-full opacity-40 pointer-events-none"
+                        viewBox="0 0 320 76"
+                        fill="none"
+                        preserveAspectRatio="none"
+                      >
+                        <path
+                          d="M-20 15 C50 0 110 35 180 10 C240 -8 290 25 350 12"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <path
+                          d="M-20 30 C40 18 130 50 200 25 C260 8 300 38 350 30"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <path
+                          d="M-20 48 C30 38 120 68 190 42 C270 20 300 55 350 48"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <path
+                          d="M-20 65 C60 52 140 82 220 60 C280 38 320 72 350 65"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <ellipse
+                          cx="260"
+                          cy="30"
+                          rx="35"
+                          ry="15"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <ellipse
+                          cx="260"
+                          cy="30"
+                          rx="20"
+                          ry="8"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <ellipse
+                          cx="85"
+                          cy="42"
+                          rx="40"
+                          ry="18"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                        <ellipse
+                          cx="85"
+                          cy="42"
+                          rx="22"
+                          ry="10"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          fill="none"
+                        />
+                      </svg>
+
+                      {/* Header action icons */}
+                      <button
+                        type="button"
+                        onClick={(e) => handleToggleFavorite(project.id, e)}
+                        className="relative z-10 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded"
+                        title="Star project"
+                      >
+                        <Star
+                          className={`w-3.5 h-3.5 stroke-[1.75] ${
+                            project.isFavorite ? "fill-amber-300 text-amber-300" : ""
+                          }`}
+                        />
+                      </button>
+
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuProjectId(
+                              activeMenuProjectId === project.id ? null : project.id
+                            );
+                          }}
+                          className="relative z-10 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded"
+                          title="Project options"
+                        >
+                          <MoreVertical className="w-3.5 h-3.5 stroke-[1.75]" />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {activeMenuProjectId === project.id && (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute right-0 top-7 w-44 bg-white rounded-xl border border-[#E2E8F0] shadow-xl z-20 py-1 text-xs text-[#334155] animate-in fade-in zoom-in-95"
+                          >
+                            <button
+                              type="button"
+                              onClick={(e) => handleDuplicateProject(project.id, e)}
+                              className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2"
+                            >
+                              <Copy className="w-3.5 h-3.5 text-[#64748B]" />
+                              <span>Duplicate Project</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteProject(project.id, e)}
+                              className="w-full px-3 py-2 text-left hover:bg-red-50 text-red-600 flex items-center gap-2 border-t border-[#F1F5F9] mt-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Delete Project</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-4 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-[15px] font-bold text-[#0F172A] leading-snug">
+                          {project.name}
+                        </h3>
+                        <p className="text-[11px] text-[#64748B] leading-relaxed mt-2 line-clamp-3">
+                          {project.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* 2. Add New Projects Empty State Dotted Card (Exact match to screenshot) */}
+                <button
+                  type="button"
+                  onClick={() => setIsCreateProjectOpen(true)}
+                  className="w-[320px] h-[178px] rounded-2xl border-2 border-dashed border-[#CBD5E1] hover:border-[#2563EB] hover:bg-blue-50/20 flex flex-col items-center justify-center gap-2.5 transition-all duration-200 group cursor-pointer text-center bg-transparent"
+                >
+                  <Plus className="w-5 h-5 text-[#64748B] group-hover:text-[#2563EB] group-hover:scale-110 transition-all stroke-[2]" />
+                  <span className="text-xs font-medium text-[#475569] group-hover:text-[#2563EB] transition-colors">
+                    Add New Projects
+                  </span>
+                </button>
+              </div>
+
+              {/* ================= 4. CREATE WORKSPACE BUTTON (Directly below cards) ================= */}
+              <div className="pt-8">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateWorkspaceOpen(true)}
+                  className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Create Workspace</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {currentScreen === "my-tasks" && (
-            <MyTasksView
-              currentUser={currentUser}
-              tasks={tasks}
-              projects={projects}
-              onOpenTask={(id) => setSelectedTaskId(id)}
-              onToggleTaskComplete={handleToggleTaskComplete}
-              onInlineAddTask={(title, dueDate) => {
-                handleCreateTask({ title, dueDate, projectId: selectedProjectId, assignee: currentUser });
-              }}
-            />
-          )}
+          {/* ================= SETTINGS TAB VIEW ================= */}
+          {activeTab === "settings" && (
+            <div className="max-w-2xl bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-xs space-y-6">
+              <div>
+                <h2 className="text-base font-bold text-[#0F172A]">Workspace Settings</h2>
+                <p className="text-xs text-[#64748B] mt-1">
+                  Manage your workspace identity, name, and preferences.
+                </p>
+              </div>
 
-          {currentScreen === "team-directory" && (
-            <TeamDirectoryView
-              currentUser={currentUser}
-              workspace={currentWorkspace}
-              members={mockUsers.filter(u => u.role !== "PLATFORM_ADMIN")}
-              onInviteMember={() => setIsInviteMemberOpen(true)}
-            />
-          )}
+              <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
+                <div>
+                  <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                    Workspace Name
+                  </label>
+                  <input
+                    type="text"
+                    value={workspaceName}
+                    onChange={(e) => setWorkspaceName(e.target.value)}
+                    className="w-full h-10 px-3.5 bg-white border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                  />
+                </div>
 
-          {currentScreen === "reports" && (
-            <ReportsView
-              tasks={tasks}
-              projects={projects}
-              members={mockUsers.filter(u => u.role !== "PLATFORM_ADMIN")}
-            />
+                <div className="flex items-center justify-between pt-3">
+                  <span className="text-xs text-[#64748B]">Changes are saved automatically.</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("overview")}
+                    className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
+        </div>
 
-          {currentScreen === "notifications" && (
-            <NotificationsView
-              currentUser={currentUser}
-              notifications={notifications}
-              onOpenTask={(id) => setSelectedTaskId(id)}
-              onMarkAllRead={() => {
-                setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-              }}
-            />
-          )}
+      </main>
 
-          {currentScreen === "settings" && (
-            <SettingsView
-              currentUser={currentUser}
-              workspace={currentWorkspace}
-              auditLogs={auditLogs}
-              onUpdateWorkspaceName={(newName) => {
-                setCurrentWorkspace(prev => ({ ...prev, name: newName }));
-              }}
-            />
-          )}
-        </WorkspaceShell>
+      {/* ================= CREATE PROJECT MODAL ================= */}
+      {isCreateProjectOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FolderPlus className="w-4 h-4 text-[#2563EB]" />
+                <h3 className="text-sm font-bold text-[#0F172A]">Create New Project</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCreateProjectOpen(false)}
+                className="p-1 rounded-md text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateProjectSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Website Redesign, Mobile App"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Briefly describe what this project covers..."
+                  value={newProjectDesc}
+                  onChange={(e) => setNewProjectDesc(e.target.value)}
+                  className="w-full p-3 border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#334155] mb-2">
+                  Banner Color
+                </label>
+                <div className="flex items-center gap-3">
+                  {[
+                    "#2563EB", // Royal Blue (Default)
+                    "#0284C7", // Cyan Blue
+                    "#4F46E5", // Indigo
+                    "#7C3AED", // Purple
+                    "#059669", // Emerald
+                    "#EA580C", // Orange
+                  ].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setNewProjectColor(c)}
+                      className={`w-7 h-7 rounded-full transition-transform flex items-center justify-center ${
+                        newProjectColor === c ? "scale-115 ring-2 ring-offset-2 ring-[#2563EB]" : "hover:scale-105"
+                      }`}
+                      style={{ backgroundColor: c }}
+                    >
+                      {newProjectColor === c && <Check className="w-3.5 h-3.5 text-white" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#F1F5F9]">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateProjectOpen(false)}
+                  className="h-9 px-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs"
+                >
+                  Create Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
-      {/* ================= MODALS & OVERLAYS ================= */}
+      {/* ================= CREATE WORKSPACE MODAL ================= */}
+      {isCreateWorkspaceOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[#2563EB]" />
+                <h3 className="text-sm font-bold text-[#0F172A]">New Workspace</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCreateWorkspaceOpen(false)}
+                className="p-1 rounded-md text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-      {/* 1. Command Palette (Ctrl+K) */}
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-        projects={projects}
-        tasks={tasks}
-        members={mockUsers}
-        onSelectTask={(item: Task | string) => {
-          const id = typeof item === "string" ? item : item.id;
-          setSelectedTaskId(id);
-        }}
-        onSelectProject={(id: string) => {
-          setSelectedProjectId(id);
-          setCurrentScreen("project-dashboard");
-        }}
-        onNavigate={(s: string) => setCurrentScreen(s)}
-      />
+            <form onSubmit={handleCreateWorkspaceSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                  Workspace Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Design Studio, Marketing HQ"
+                  value={newWorkspaceName}
+                  onChange={(e) => setNewWorkspaceName(e.target.value)}
+                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                />
+              </div>
 
-      {/* 2. Task Detail Modal (Section 7.16) */}
-      {selectedTask && (
-        <TaskDetailModal
-          task={selectedTask}
-          project={projects.find(p => p.id === selectedTask.projectId)}
-          members={mockUsers.filter(u => u.role !== "PLATFORM_ADMIN")}
-          currentUser={currentUser}
-          onClose={() => setSelectedTaskId(null)}
-          onUpdateTask={handleUpdateTask}
-          onDeleteTask={handleDeleteTask}
-        />
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#F1F5F9]">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateWorkspaceOpen(false)}
+                  className="h-9 px-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
-
-      {/* 3. Quick Add Task Modal ('N' shortcut) */}
-      <QuickAddModal
-        isOpen={isQuickAddOpen}
-        onClose={() => setIsQuickAddOpen(false)}
-        projects={projects}
-        members={mockUsers.filter(u => u.role !== "PLATFORM_ADMIN")}
-        defaultStatus={quickAddDefaultStatus}
-        defaultProjectId={selectedProjectId}
-        onAddTask={handleCreateTask}
-      />
-
-      {/* 4. New Project Modal */}
-      <NewProjectModal
-        isOpen={isNewProjectOpen}
-        onClose={() => setIsNewProjectOpen(false)}
-        currentUser={currentUser}
-        onAddProject={handleAddProject}
-      />
-
-      {/* 5. Invite Member Modal */}
-      <InviteMemberModal
-        isOpen={isInviteMemberOpen}
-        onClose={() => setIsInviteMemberOpen(false)}
-        onInvite={handleInviteMember}
-      />
-
     </div>
   );
 }
