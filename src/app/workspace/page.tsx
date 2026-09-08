@@ -155,10 +155,10 @@ export default function OrbitaskWorkspacePage() {
   const [activeProjectId, setActiveProjectId] = useState<string>("proj-amz-1");
   const [sidebarActiveTab, setSidebarActiveTab] = useState<string>("overview"); // Defaults to Overview matching screenshot!
 
-  // Sidebar accordions & dropdowns
-  const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+  // Sidebar accordions & dropdowns (closed/hidden by default on refresh)
+  const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
   const [isProjectViewExpanded, setIsProjectViewExpanded] = useState(true);
-  const [isProjectMgmtExpanded, setIsProjectMgmtExpanded] = useState(true);
+  const [isProjectMgmtExpanded, setIsProjectMgmtExpanded] = useState(false);
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -704,7 +704,7 @@ export default function OrbitaskWorkspacePage() {
                   <ellipse cx="18" cy="18" rx="14" ry="5.5" stroke="#38BDF8" strokeWidth="2.4" strokeDasharray="20 40" strokeLinecap="round" transform="rotate(-38 18 18)" />
                 </svg>
               </div>
-              <span className="text-[20px] font-bold tracking-tight text-[#0F172A] font-poppins lowercase">
+              <span className="text-[19px] font-bold tracking-tight text-[#0F172A] font-poppins lowercase">
                 orbitask
               </span>
             </div>
@@ -733,7 +733,7 @@ export default function OrbitaskWorkspacePage() {
                   <span className="text-xs font-semibold font-inter text-[#0F172A] leading-tight">
                     Moni Roy
                   </span>
-                  <span className="text-[10px] font-medium font-inter text-[#94A3B8] leading-tight mt-0.5">
+                  <span className="text-[9.5px] font-medium font-inter text-[#94A3B8] leading-tight mt-0.5">
                     Admin
                   </span>
                 </div>
@@ -891,7 +891,7 @@ export default function OrbitaskWorkspacePage() {
                                           </button>
 
                                           {activeMenuProjectId === project.id && (
-                                            <div onClick={(e) => e.stopPropagation()} className="absolute right-0 top-8 w-48 bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl z-50 py-2 px-1 text-[13px] font-inter animate-in fade-in zoom-in-95">
+                                            <div onClick={(e) => e.stopPropagation()} className="absolute right-0 top-8 w-48 bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl z-50 py-2 px-1 text-[12.5px] font-inter animate-in fade-in zoom-in-95">
                                               <button
                                                 type="button"
                                                 onClick={() => {
@@ -965,7 +965,7 @@ export default function OrbitaskWorkspacePage() {
                                                         key={c.color}
                                                         type="button"
                                                         onClick={(e) => handleChangeColor(ws.id, project.id, c.color, e)}
-                                                        className="w-full px-2.5 py-1.5 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[4px] cursor-pointer transition-colors text-[13px] font-normal text-[#334155]"
+                                                        className="w-full px-2.5 py-1.5 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[4px] cursor-pointer transition-colors text-[12.5px] font-normal text-[#334155]"
                                                       >
                                                         <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs" style={{ backgroundColor: c.color }} />
                                                         <span>{c.label}</span>
@@ -991,10 +991,10 @@ export default function OrbitaskWorkspacePage() {
                                       <div className="p-4 pb-2">
                                         <div className="flex items-start justify-between gap-2">
                                           <div className="flex-1 min-w-0">
-                                            <h3 className="text-[16px] font-bold text-[#0F172A] leading-snug font-poppins truncate group-hover:text-[#2563EB] transition-colors">
+                                            <h3 className="text-[15px] font-bold text-[#0F172A] leading-snug font-poppins truncate group-hover:text-[#2563EB] transition-colors">
                                               {project.name}
                                             </h3>
-                                            <p className="text-[11px] font-medium font-inter text-[#64748B] leading-relaxed mt-1 line-clamp-2">
+                                            <p className="text-[10.5px] font-medium font-inter text-[#64748B] leading-relaxed mt-1 line-clamp-2">
                                               {project.description}
                                             </p>
                                           </div>
@@ -1003,12 +1003,12 @@ export default function OrbitaskWorkspacePage() {
                                             {project.members.map((m, idx) => (
                                               <div
                                                 key={idx}
-                                                className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-2xs ${m.bg || "bg-slate-100"}`}
+                                                className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[9.5px] font-bold overflow-hidden shadow-2xs ${m.bg || "bg-slate-100"}`}
                                               >
                                                 {m.img ? <img src={m.img} alt="Member" className="w-full h-full object-cover" /> : m.initials}
                                               </div>
                                             ))}
-                                            <span className="text-[11px] font-medium font-inter text-[#64748B] pl-2.5">12+</span>
+                                            <span className="text-[10.5px] font-medium font-inter text-[#64748B] pl-2.5">12+</span>
                                           </div>
                                         </div>
 
@@ -1031,7 +1031,7 @@ export default function OrbitaskWorkspacePage() {
 
                                       {activeSubtask ? (
                                         <div className="flex items-center gap-3 text-xs font-medium font-inter text-[#64748B] flex-1 justify-center truncate">
-                                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${activeSubtask.priorityColor}`}>
+                                          <span className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold shrink-0 ${activeSubtask.priorityColor}`}>
                                             {activeSubtask.priority}
                                           </span>
                                           <span className="font-bold text-[#0F172A] truncate">{activeSubtask.title}</span>
@@ -1097,7 +1097,7 @@ export default function OrbitaskWorkspacePage() {
 
                         <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
                           <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                            <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                            <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                               Workspace Name
                             </label>
                             <input
@@ -1160,10 +1160,10 @@ export default function OrbitaskWorkspacePage() {
           {/* ================= LEFT SIDEBAR (EXACT MATCH TO SCREENSHOT) ================= */}
           <aside
             className={`${
-              isSidebarCollapsed ? "w-18" : "w-[245px]"
-            } bg-white border-r border-[#F1F5F9] flex flex-col justify-between transition-all duration-300 shrink-0 select-none z-30`}
+              isSidebarCollapsed ? "w-18" : "w-[240px]"
+            } bg-white border-r border-[#F1F5F9] flex flex-col h-full transition-all duration-300 shrink-0 select-none z-30`}
           >
-            <div className="p-4 flex flex-col gap-4 overflow-y-auto max-h-screen">
+            <div className="p-4 flex flex-col gap-4 overflow-y-auto overflow-x-hidden h-full">
               {/* 1. Brand Header */}
               <div className="flex items-center justify-between">
                 <div
@@ -1179,7 +1179,7 @@ export default function OrbitaskWorkspacePage() {
                     </svg>
                   </div>
                   {!isSidebarCollapsed && (
-                    <span className="text-[20px] font-bold tracking-tight text-[#0F172A] font-poppins lowercase">
+                    <span className="text-[19px] font-bold tracking-tight text-[#0F172A] font-poppins lowercase">
                       orbitask
                     </span>
                   )}
@@ -1229,7 +1229,7 @@ export default function OrbitaskWorkspacePage() {
                       onClick={(e) => e.stopPropagation()}
                       className="absolute top-12 left-0 right-0 bg-white rounded-[8px] border border-[#E2E8F0] shadow-xl py-1 z-50 text-xs font-inter animate-in fade-in zoom-in-95"
                     >
-                      <div className="px-3 py-1.5 text-[10px] font-semibold text-[#94A3B8] uppercase tracking-wider">
+                      <div className="px-3 py-1.5 text-[9.5px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                         Switch Workspace
                       </div>
                       {workspaces.map((ws) => (
@@ -1314,7 +1314,7 @@ export default function OrbitaskWorkspacePage() {
                       {!isSidebarCollapsed && <span className="text-sm font-medium font-inter text-[#0F172A]">Projects</span>}
                     </div>
                     {!isSidebarCollapsed && (
-                      <ChevronUp className={`w-4 h-4 text-[#94A3B8] transition-transform ${isProjectsExpanded ? "" : "rotate-180"}`} />
+                      <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${isProjectsExpanded ? "rotate-180" : ""}`} />
                     )}
                   </div>
 
@@ -1364,7 +1364,7 @@ export default function OrbitaskWorkspacePage() {
                     className="flex items-center justify-between text-xs font-medium text-[#94A3B8] font-inter px-2 pb-1 cursor-pointer"
                   >
                     <span>Project view</span>
-                    <ChevronUp className={`w-3.5 h-3.5 transition-transform ${isProjectViewExpanded ? "" : "rotate-180"}`} />
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isProjectViewExpanded ? "rotate-180" : ""}`} />
                   </div>
                 )}
 
@@ -1438,10 +1438,17 @@ export default function OrbitaskWorkspacePage() {
                           </div>
                           {!isSidebarCollapsed && (
                             <span className="text-sm font-medium font-inter text-[#0F172A]">
-                              Project Mangement
+                              Project Management
                             </span>
                           )}
                         </div>
+                        {!isSidebarCollapsed && (
+                          <ChevronDown
+                            className={`w-4 h-4 text-[#94A3B8] transition-transform ${
+                              isProjectMgmtExpanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        )}
                       </div>
 
                       {!isSidebarCollapsed && isProjectMgmtExpanded && (
@@ -1464,22 +1471,23 @@ export default function OrbitaskWorkspacePage() {
                   </div>
                 )}
               </div>
-            </div>
 
-            <div className="p-4 border-t border-[#F1F5F9]">
-              <button
-                type="button"
-                onClick={() => setSidebarActiveTab("help")}
-                className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                  sidebarActiveTab === "help" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
-                }`}
-                title="Help & Support"
-              >
-                <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
-                  <HelpCircle className="w-4 h-4 stroke-[1.75]" />
-                </div>
-                {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Help & Support</span>}
-              </button>
+              {/* 5. Help & Support - Scrollable with sidebar */}
+              <div className="pt-2 border-t border-[#F1F5F9]">
+                <button
+                  type="button"
+                  onClick={() => setSidebarActiveTab("help")}
+                  className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                    sidebarActiveTab === "help" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                  }`}
+                  title="Help & Support"
+                >
+                  <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                    <HelpCircle className="w-4 h-4 stroke-[1.75]" />
+                  </div>
+                  {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Help & Support</span>}
+                </button>
+              </div>
             </div>
           </aside>
 
@@ -1489,7 +1497,7 @@ export default function OrbitaskWorkspacePage() {
             <header className="h-16 px-8 border-b border-[#E2E8F0] bg-white flex items-center justify-between shrink-0">
               <div>
                 <h1 className="text-xl font-bold text-[#0F172A] font-poppins">Overview</h1>
-                <div className="flex items-center gap-1.5 text-[11px] font-medium font-inter text-[#64748B]">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-medium font-inter text-[#64748B]">
                   <span>{activeWorkspace?.name || "Amazon"}</span>
                   <ChevronRight className="w-3 h-3 text-[#94A3B8]" />
                   <span className="text-[#0F172A]">Overview</span>
@@ -1514,7 +1522,7 @@ export default function OrbitaskWorkspacePage() {
                   />
                   <div className="hidden lg:flex flex-col text-left">
                     <span className="text-xs font-semibold font-inter text-[#0F172A] leading-tight">Moni Roy</span>
-                    <span className="text-[10px] font-medium font-inter text-[#94A3B8] leading-tight">Admin</span>
+                    <span className="text-[9.5px] font-medium font-inter text-[#94A3B8] leading-tight">Admin</span>
                   </div>
                 </div>
 
@@ -1549,13 +1557,13 @@ export default function OrbitaskWorkspacePage() {
                   <div className="w-7 h-7 rounded-full border-2 border-white overflow-hidden shadow-2xs">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="Alex" className="w-full h-full object-cover" />
                   </div>
-                  <div className="w-7 h-7 rounded-full border-2 border-white bg-blue-100 text-blue-700 font-bold text-[10px] flex items-center justify-center shadow-2xs">
+                  <div className="w-7 h-7 rounded-full border-2 border-white bg-blue-100 text-blue-700 font-bold text-[9.5px] flex items-center justify-center shadow-2xs">
                     P
                   </div>
-                  <div className="w-7 h-7 rounded-full border-2 border-white bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center shadow-2xs">
+                  <div className="w-7 h-7 rounded-full border-2 border-white bg-emerald-100 text-emerald-700 font-bold text-[9.5px] flex items-center justify-center shadow-2xs">
                     H
                   </div>
-                  <span className="text-[11px] font-medium font-inter text-[#64748B] pl-2.5">+12</span>
+                  <span className="text-[10.5px] font-medium font-inter text-[#64748B] pl-2.5">+12</span>
                 </div>
 
                 <button
@@ -1598,7 +1606,7 @@ export default function OrbitaskWorkspacePage() {
                         <span className="text-xs font-medium text-[#6B7280]">/35</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 font-inter">
+                    <div className="flex items-center gap-1 text-[10.5px] font-medium text-emerald-600 font-inter">
                       <TrendingUp className="w-3.5 h-3.5" />
                       <span>12% increase from last month</span>
                     </div>
@@ -1616,7 +1624,7 @@ export default function OrbitaskWorkspacePage() {
                         <span className="text-xs font-medium text-[#6B7280]">/35</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-600 font-inter">
+                    <div className="flex items-center gap-1 text-[10.5px] font-medium text-indigo-600 font-inter">
                       <TrendingUp className="w-3.5 h-3.5" />
                       <span>12% increase from last month</span>
                     </div>
@@ -1634,7 +1642,7 @@ export default function OrbitaskWorkspacePage() {
                         <span className="text-xs font-medium text-[#6B7280]">/35</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] font-medium text-amber-600 font-inter">
+                    <div className="flex items-center gap-1 text-[10.5px] font-medium text-amber-600 font-inter">
                       <TrendingUp className="w-3.5 h-3.5" />
                       <span>2% increase from last month</span>
                     </div>
@@ -1652,7 +1660,7 @@ export default function OrbitaskWorkspacePage() {
                         <span className="text-xs font-medium text-[#6B7280]">/35</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 font-inter">
+                    <div className="flex items-center gap-1 text-[10.5px] font-medium text-rose-600 font-inter">
                       <TrendingUp className="w-3.5 h-3.5" />
                       <span>2% increase from last month</span>
                     </div>
@@ -1666,7 +1674,7 @@ export default function OrbitaskWorkspacePage() {
                 <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
                   <div>
                     <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Weekly Task Load</h3>
-                    <p className="text-[11px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
+                    <p className="text-[10.5px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
                   </div>
 
                   {/* SVG Spline Chart */}
@@ -1712,7 +1720,7 @@ export default function OrbitaskWorkspacePage() {
                     </svg>
 
                     {/* X-axis labels */}
-                    <div className="flex justify-between pl-9 pr-3 text-[10px] text-[#94A3B8] font-inter mt-1">
+                    <div className="flex justify-between pl-9 pr-3 text-[9.5px] text-[#94A3B8] font-inter mt-1">
                       <span>Mon</span>
                       <span>Tue</span>
                       <span>Wed</span>
@@ -1741,7 +1749,7 @@ export default function OrbitaskWorkspacePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Project Progress</h3>
-                      <p className="text-[11px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
+                      <p className="text-[10.5px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
                     </div>
                     <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1.5 bg-white cursor-pointer">
                       <span>Monthly</span>
@@ -1797,7 +1805,7 @@ export default function OrbitaskWorkspacePage() {
                       </g>
                     </svg>
 
-                    <div className="flex justify-between pl-8 pr-2 text-[10px] text-[#94A3B8] font-inter mt-1">
+                    <div className="flex justify-between pl-8 pr-2 text-[9.5px] text-[#94A3B8] font-inter mt-1">
                       <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span>
                     </div>
                   </div>
@@ -1874,7 +1882,7 @@ export default function OrbitaskWorkspacePage() {
                       </g>
                     </svg>
 
-                    <div className="flex justify-between pl-11 pr-4 text-[10px] text-[#94A3B8] font-inter">
+                    <div className="flex justify-between pl-11 pr-4 text-[9.5px] text-[#94A3B8] font-inter">
                       <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
                     </div>
                   </div>
@@ -1937,7 +1945,7 @@ export default function OrbitaskWorkspacePage() {
                       </svg>
                       <div className="absolute bottom-1 text-center">
                         <span className="text-2xl font-bold text-[#00A3A6] font-poppins">72%</span>
-                        <p className="text-[10px] font-medium text-[#64748B]">Completed</p>
+                        <p className="text-[9.5px] font-medium text-[#64748B]">Completed</p>
                       </div>
                     </div>
 
@@ -1945,19 +1953,19 @@ export default function OrbitaskWorkspacePage() {
                     <div className="grid grid-cols-4 gap-2 w-full pt-4 border-t border-[#F1F5F9] text-center">
                       <div>
                         <span className="text-base font-bold text-[#0F172A]">62</span>
-                        <p className="text-[10px] text-[#94A3B8] font-inter">Total Task</p>
+                        <p className="text-[9.5px] text-[#94A3B8] font-inter">Total Task</p>
                       </div>
                       <div>
                         <span className="text-base font-bold text-[#00A3A6]">15</span>
-                        <p className="text-[10px] text-[#94A3B8] font-inter">Completed</p>
+                        <p className="text-[9.5px] text-[#94A3B8] font-inter">Completed</p>
                       </div>
                       <div>
                         <span className="text-base font-bold text-[#F59E0B]">35</span>
-                        <p className="text-[10px] text-[#94A3B8] font-inter">Pending</p>
+                        <p className="text-[9.5px] text-[#94A3B8] font-inter">Pending</p>
                       </div>
                       <div>
                         <span className="text-base font-bold text-[#EF4444]">12</span>
-                        <p className="text-[10px] text-[#94A3B8] font-inter">Upcoming</p>
+                        <p className="text-[9.5px] text-[#94A3B8] font-inter">Upcoming</p>
                       </div>
                     </div>
                   </div>
@@ -2012,7 +2020,7 @@ export default function OrbitaskWorkspacePage() {
                             </td>
                             <td className="py-3 text-[#64748B]">{row.deadline}</td>
                             <td className="py-3">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${row.statusColor}`}>
+                              <span className={`px-2 py-0.5 rounded text-[9.5px] font-semibold border ${row.statusColor}`}>
                                 {row.status}
                               </span>
                             </td>
@@ -2021,7 +2029,7 @@ export default function OrbitaskWorkspacePage() {
                                 <div className="w-24 h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
                                   <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${row.pct}%` }} />
                                 </div>
-                                <span className="text-[10px] font-semibold text-[#64748B]">{row.pct}%</span>
+                                <span className="text-[9.5px] font-semibold text-[#64748B]">{row.pct}%</span>
                               </div>
                             </td>
                           </tr>
@@ -2036,7 +2044,7 @@ export default function OrbitaskWorkspacePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Projects Allocation</h3>
-                      <p className="text-[11px] text-[#64748B]">3 Projects &bull; 32 Tasks</p>
+                      <p className="text-[10.5px] text-[#64748B]">3 Projects &bull; 32 Tasks</p>
                     </div>
                     <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1 bg-white cursor-pointer">
                       <span>Monthly</span>
@@ -2082,7 +2090,7 @@ export default function OrbitaskWorkspacePage() {
                     <h3 className="text-sm font-bold text-[#0F172A] font-poppins">My Tasks</h3>
                     <MoreHorizontal className="w-4 h-4 text-[#94A3B8] cursor-pointer" />
                   </div>
-                  <span className="text-[11px] font-semibold text-[#64748B]">September 2026</span>
+                  <span className="text-[10.5px] font-semibold text-[#64748B]">September 2026</span>
 
                   <div className="space-y-3">
                     {myReminders.map((rem) => (
@@ -2105,13 +2113,13 @@ export default function OrbitaskWorkspacePage() {
                             <p className={`truncate font-medium ${rem.checked ? "text-[#94A3B8] line-through" : "text-[#0F172A]"}`}>
                               {rem.text}
                             </p>
-                            <span className="text-[10px] text-[#94A3B8] truncate block">{rem.url}</span>
+                            <span className="text-[9.5px] text-[#94A3B8] truncate block">{rem.url}</span>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => setMyReminders((prev) => prev.filter((r) => r.id !== rem.id))}
-                          className="text-[11px] text-[#94A3B8] hover:text-red-600 shrink-0 cursor-pointer"
+                          className="text-[10.5px] text-[#94A3B8] hover:text-red-600 shrink-0 cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -2159,7 +2167,7 @@ export default function OrbitaskWorkspacePage() {
                         <circle cx="50" cy="50" r="24" stroke="#F59E0B" strokeWidth="6" strokeDasharray="95 150" strokeLinecap="round" fill="none" />
                       </svg>
                       <div className="absolute text-center px-1">
-                        <span className="text-[10px] font-bold text-[#0F172A] block leading-tight">All Tasks Progress</span>
+                        <span className="text-[9.5px] font-bold text-[#0F172A] block leading-tight">All Tasks Progress</span>
                         <span className="text-[9px] text-[#94A3B8]">52 Total Task</span>
                       </div>
                     </div>
@@ -2217,19 +2225,19 @@ export default function OrbitaskWorkspacePage() {
                           <img src={msg.img} alt={msg.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
                           <div className="min-w-0">
                             <span className="font-bold text-[#0F172A] block leading-tight">{msg.name}</span>
-                            <span className="text-[11px] text-[#64748B] truncate block">{msg.text}</span>
+                            <span className="text-[10.5px] text-[#64748B] truncate block">{msg.text}</span>
                           </div>
                         </div>
 
                         <div className="flex flex-col items-end gap-1 shrink-0">
                           {msg.unread > 0 ? (
-                            <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                            <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9.5px] font-bold flex items-center justify-center">
                               {msg.unread}
                             </span>
                           ) : (
                             <Check className="w-3.5 h-3.5 text-emerald-500" />
                           )}
-                          <span className="text-[10px] text-[#94A3B8]">{msg.time}</span>
+                          <span className="text-[9.5px] text-[#94A3B8]">{msg.time}</span>
                         </div>
                       </div>
                     ))}
@@ -2278,14 +2286,14 @@ export default function OrbitaskWorkspacePage() {
                               )}
                               <div>
                                 <span className="font-semibold text-[#0F172A] block leading-snug">{mem.name}</span>
-                                <span className="text-[11px] text-[#64748B]">{mem.email}</span>
+                                <span className="text-[10.5px] text-[#64748B]">{mem.email}</span>
                               </div>
                             </div>
                           </td>
                           <td className="py-3.5 text-[#334155] font-medium">{mem.project}</td>
                           <td className="py-3.5 text-[#64748B]">{mem.role}</td>
                           <td className="py-3.5">
-                            <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold border ${mem.statusColor}`}>
+                            <span className={`px-2.5 py-0.5 rounded text-[10.5px] font-semibold border ${mem.statusColor}`}>
                               {mem.status}
                             </span>
                           </td>
@@ -2353,7 +2361,7 @@ export default function OrbitaskWorkspacePage() {
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Workspace Name<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -2367,7 +2375,7 @@ export default function OrbitaskWorkspacePage() {
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Custom workspace URL
                 </label>
                 <input
@@ -2380,7 +2388,7 @@ export default function OrbitaskWorkspacePage() {
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Description
                 </label>
                 <textarea
@@ -2413,7 +2421,7 @@ export default function OrbitaskWorkspacePage() {
 
             <form onSubmit={handleCreateProjectSubmit} className="space-y-6">
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Project Name<span className="text-red-500">*</span>
                 </label>
                 <input
@@ -2427,7 +2435,7 @@ export default function OrbitaskWorkspacePage() {
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Description
                 </label>
                 <textarea
@@ -2441,7 +2449,7 @@ export default function OrbitaskWorkspacePage() {
 
               <div>
                 <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                     Board
                   </label>
                   <input
@@ -2452,7 +2460,7 @@ export default function OrbitaskWorkspacePage() {
                     className="w-full bg-transparent text-xs font-medium font-inter text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none"
                   />
                 </div>
-                <p className="text-[11px] font-medium font-inter text-[#64748B] flex items-center gap-1.5 mt-1.5">
+                <p className="text-[10.5px] font-medium font-inter text-[#64748B] flex items-center gap-1.5 mt-1.5">
                   <Info className="w-3.5 h-3.5 text-[#94A3B8] shrink-0 stroke-[1.75]" />
                   <span>A default board named “Deafult Board” will be created automatically</span>
                 </p>
@@ -2472,7 +2480,7 @@ export default function OrbitaskWorkspacePage() {
                 ) : (
                   <div className="space-y-2">
                     <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white flex items-center gap-2">
-                      <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                      <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                         Email<span className="text-red-500">*</span>
                       </label>
                       <Mail className="w-4 h-4 text-[#94A3B8] shrink-0 stroke-[1.75]" />
@@ -2497,7 +2505,7 @@ export default function OrbitaskWorkspacePage() {
                     {invitedEmails.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {invitedEmails.map((email) => (
-                          <span key={email} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[5px] bg-blue-50 text-[#2563EB] text-[11px] font-medium font-inter border border-blue-100">
+                          <span key={email} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[5px] bg-blue-50 text-[#2563EB] text-[10.5px] font-medium font-inter border border-blue-100">
                             {email}
                             <button type="button" onClick={() => handleRemoveInvitedEmail(email)} className="hover:text-blue-900 cursor-pointer ml-0.5">
                               <X className="w-3 h-3" />
@@ -2531,7 +2539,7 @@ export default function OrbitaskWorkspacePage() {
 
             <form onSubmit={handleSaveEditProject} className="space-y-4 pt-4">
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Project Name
                 </label>
                 <input
@@ -2544,7 +2552,7 @@ export default function OrbitaskWorkspacePage() {
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
-                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#475569] font-inter select-none">
+                <label className="absolute -top-2.5 left-3 bg-white px-1 text-[10.5px] font-medium text-[#475569] font-inter select-none">
                   Description
                 </label>
                 <textarea
