@@ -1293,32 +1293,60 @@ export default function OrbitaskWorkspacePage() {
                   onClick={() => setSidebarActiveTab("overview")}
                   className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
                     sidebarActiveTab === "overview"
-                      ? "bg-slate-100 text-[#0F172A] font-semibold"
+                      ? "bg-blue-50/70 text-[#2563EB] font-semibold"
                       : "text-[#334155] hover:bg-slate-50"
                   }`}
                   title="Overview"
                 >
-                  <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                    sidebarActiveTab === "overview"
+                      ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                      : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                  }`}>
                     <Compass className="w-4 h-4 stroke-[1.75]" />
                   </div>
-                  {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Overview</span>}
+                  {!isSidebarCollapsed && (
+                    <span className={`text-sm font-medium font-inter ${
+                      sidebarActiveTab === "overview" ? "text-[#2563EB] font-semibold" : ""
+                    }`}>
+                      Overview
+                    </span>
+                  )}
                 </button>
 
                 {/* Projects accordion */}
                 <div className="space-y-1">
                   <div
                     onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
-                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] text-[#334155] hover:bg-slate-50 transition-colors cursor-pointer"
+                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                      isProjectsExpanded
+                        ? "bg-blue-50/40 text-[#2563EB] font-semibold"
+                        : "text-[#334155] hover:bg-slate-50"
+                    }`}
                     title="Projects"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                        isProjectsExpanded
+                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                      }`}>
                         <Layers className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter text-[#0F172A]">Projects</span>}
+                      {!isSidebarCollapsed && (
+                        <span className={`text-sm font-medium font-inter ${
+                          isProjectsExpanded ? "text-[#2563EB] font-semibold" : "text-[#0F172A]"
+                        }`}>
+                          Projects
+                        </span>
+                      )}
                     </div>
                     {!isSidebarCollapsed && (
-                      <ChevronDown className={`w-4 h-4 text-[#94A3B8] transition-transform ${isProjectsExpanded ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          isProjectsExpanded ? "text-[#2563EB] rotate-180" : "text-[#94A3B8]"
+                        }`}
+                      />
                     )}
                   </div>
 
@@ -1378,78 +1406,142 @@ export default function OrbitaskWorkspacePage() {
                       type="button"
                       onClick={() => setSidebarActiveTab("tasks")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "tasks" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "tasks"
+                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                          : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Tasks"
                     >
-                      <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                        sidebarActiveTab === "tasks"
+                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                      }`}>
                         <CheckSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Tasks</span>}
+                      {!isSidebarCollapsed && (
+                        <span className={`text-sm font-medium font-inter ${
+                          sidebarActiveTab === "tasks" ? "text-[#2563EB] font-semibold" : ""
+                        }`}>
+                          Tasks
+                        </span>
+                      )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("planner")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "planner" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "planner"
+                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                          : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Planner"
                     >
-                      <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                        sidebarActiveTab === "planner"
+                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                      }`}>
                         <Timer className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Planner</span>}
+                      {!isSidebarCollapsed && (
+                        <span className={`text-sm font-medium font-inter ${
+                          sidebarActiveTab === "planner" ? "text-[#2563EB] font-semibold" : ""
+                        }`}>
+                          Planner
+                        </span>
+                      )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("ai_assistant")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "ai_assistant" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "ai_assistant"
+                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                          : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="AI Assistant"
                     >
-                      <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                        sidebarActiveTab === "ai_assistant"
+                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                      }`}>
                         <Sparkles className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">AI Assistant</span>}
+                      {!isSidebarCollapsed && (
+                        <span className={`text-sm font-medium font-inter ${
+                          sidebarActiveTab === "ai_assistant" ? "text-[#2563EB] font-semibold" : ""
+                        }`}>
+                          AI Assistant
+                        </span>
+                      )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("chat")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "chat" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "chat"
+                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                          : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Chat"
                     >
-                      <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                        sidebarActiveTab === "chat"
+                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                      }`}>
                         <MessageSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Chat</span>}
+                      {!isSidebarCollapsed && (
+                        <span className={`text-sm font-medium font-inter ${
+                          sidebarActiveTab === "chat" ? "text-[#2563EB] font-semibold" : ""
+                        }`}>
+                          Chat
+                        </span>
+                      )}
                     </button>
 
                     <div className="space-y-1">
                       <div
                         onClick={() => setIsProjectMgmtExpanded(!isProjectMgmtExpanded)}
-                        className="w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] text-[#334155] hover:bg-slate-50 transition-colors cursor-pointer"
+                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                          isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
+                            ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                            : "text-[#334155] hover:bg-slate-50"
+                        }`}
                         title="Project Management"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-[8px] bg-blue-50 border border-blue-100 flex items-center justify-center text-[#2563EB] shrink-0">
-                            <Folder className="w-4 h-4 fill-[#2563EB]/20 stroke-[1.75]" />
+                          <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                            isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
+                              ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                              : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                          }`}>
+                            <Folder className="w-4 h-4 fill-current/20 stroke-[1.75]" />
                           </div>
                           {!isSidebarCollapsed && (
-                            <span className="text-sm font-medium font-inter text-[#0F172A]">
+                            <span className={`text-sm font-medium font-inter ${
+                              isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
+                                ? "text-[#2563EB] font-semibold"
+                                : "text-[#0F172A]"
+                            }`}>
                               Project Management
                             </span>
                           )}
                         </div>
                         {!isSidebarCollapsed && (
                           <ChevronDown
-                            className={`w-4 h-4 text-[#94A3B8] transition-transform ${
-                              isProjectMgmtExpanded ? "rotate-180" : ""
+                            className={`w-4 h-4 transition-transform ${
+                              isProjectMgmtExpanded
+                                ? "text-[#2563EB] rotate-180"
+                                : ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
+                                ? "text-[#2563EB]"
+                                : "text-[#94A3B8]"
                             }`}
                           />
                         )}
@@ -1482,14 +1574,26 @@ export default function OrbitaskWorkspacePage() {
                   type="button"
                   onClick={() => setSidebarActiveTab("help")}
                   className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                    sidebarActiveTab === "help" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
+                    sidebarActiveTab === "help"
+                      ? "bg-blue-50/70 text-[#2563EB] font-semibold"
+                      : "text-[#334155] hover:bg-slate-50"
                   }`}
                   title="Help & Support"
                 >
-                  <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
+                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                    sidebarActiveTab === "help"
+                      ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                      : "bg-slate-50 border border-slate-100 text-[#64748B]"
+                  }`}>
                     <HelpCircle className="w-4 h-4 stroke-[1.75]" />
                   </div>
-                  {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Help & Support</span>}
+                  {!isSidebarCollapsed && (
+                    <span className={`text-sm font-medium font-inter ${
+                      sidebarActiveTab === "help" ? "text-[#2563EB] font-semibold" : ""
+                    }`}>
+                      Help & Support
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
