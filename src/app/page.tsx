@@ -182,7 +182,7 @@ export default function OrbitaskHome() {
               />
             </svg>
           </div>
-          <span className="text-[22px] font-bold tracking-tight text-[#0F172A] -ml-0.5">
+          <span className="text-[22px] font-bold tracking-tight text-[#0F172A] -ml-0.5 font-poppins">
             rbitask
           </span>
         </div>
@@ -196,7 +196,7 @@ export default function OrbitaskHome() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-full h-10 pl-10 pr-4 bg-white border border-[#E2E8F0] rounded-[5px] text-xs text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all"
+              className="w-full h-10 pl-10 pr-4 bg-white border border-[#E2E8F0] rounded-[5px] text-xs font-medium font-inter text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all"
             />
           </div>
         </div>
@@ -219,10 +219,10 @@ export default function OrbitaskHome() {
               <span className="w-2.5 h-2.5 bg-[#3B82F6] rounded-full border-2 border-white absolute -top-1 -right-1 shadow-2xs" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-xs font-bold text-[#0F172A] leading-tight">
+              <span className="text-xs font-medium font-inter text-[#0F172A] leading-tight">
                 Bilal Khan
               </span>
-              <span className="text-[11px] font-normal text-[#94A3B8] leading-tight mt-0.5">
+              <span className="text-[11px] font-medium font-inter text-[#94A3B8] leading-tight mt-0.5">
                 Admin
               </span>
             </div>
@@ -231,7 +231,7 @@ export default function OrbitaskHome() {
 
           {/* Profile Dropdown Menu */}
           {isProfileDropdownOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-white rounded-[5px] border border-[#E2E8F0] shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 text-xs text-[#334155]">
+            <div className="absolute right-0 top-12 w-56 bg-white rounded-[5px] border border-[#E2E8F0] shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 text-xs font-medium font-inter text-[#334155]">
               {/* Header: [Avatar] Bilal Khan Admin */}
               <div className="p-3 border-b border-[#F1F5F9] flex items-center gap-3 bg-slate-50/50">
                 <div className="relative">
@@ -243,10 +243,10 @@ export default function OrbitaskHome() {
                   <span className="w-2 h-2 bg-[#3B82F6] rounded-full border border-white absolute -top-0.5 -right-0.5" />
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-xs font-bold text-[#0F172A] leading-tight">
+                  <span className="text-xs font-medium font-inter text-[#0F172A] leading-tight">
                     Bilal Khan
                   </span>
-                  <span className="text-[11px] font-medium text-[#64748B] leading-tight mt-0.5">
+                  <span className="text-[11px] font-medium font-inter text-[#64748B] leading-tight mt-0.5">
                     Admin
                   </span>
                 </div>
@@ -326,19 +326,19 @@ export default function OrbitaskHome() {
                   />
                 </svg>
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-[#0F172A]">
+              <h1 className="text-xl font-bold tracking-tight text-[#0F172A] font-poppins">
                 {workspaceName}
               </h1>
             </div>
 
             {/* Inline Navigation Tabs */}
-            <div className="flex items-center gap-6 text-xs font-medium text-[#64748B]">
+            <div className="flex items-center gap-6 text-xs font-medium font-inter text-[#64748B]">
               <button
                 type="button"
                 onClick={() => setActiveTab("overview")}
-                className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 transition-colors cursor-pointer font-medium font-inter ${
                   activeTab === "overview"
-                    ? "text-[#0F172A] font-semibold"
+                    ? "text-[#0F172A]"
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
@@ -349,9 +349,9 @@ export default function OrbitaskHome() {
               <button
                 type="button"
                 onClick={() => setActiveTab("settings")}
-                className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                className={`flex items-center gap-1.5 transition-colors cursor-pointer font-medium font-inter ${
                   activeTab === "settings"
-                    ? "text-[#0F172A] font-semibold"
+                    ? "text-[#0F172A]"
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
@@ -360,12 +360,12 @@ export default function OrbitaskHome() {
               </button>
             </div>
 
-            {/* + Create Project Button (Inline directly after Settings, matching screenshot) */}
-            <div className="pl-2">
+            {/* Action Button: Create Project (Directly in header) */}
+            <div className="ml-auto">
               <button
                 type="button"
                 onClick={() => setIsCreateProjectOpen(true)}
-                className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-[5px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Create Project</span>
@@ -517,10 +517,10 @@ export default function OrbitaskHome() {
                     {/* Card Content */}
                     <div className="p-4 flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#0F172A] leading-snug">
+                        <h3 className="text-[15px] font-bold text-[#0F172A] leading-snug font-poppins">
                           {project.name}
                         </h3>
-                        <p className="text-[11px] text-[#64748B] leading-relaxed mt-2 line-clamp-3">
+                        <p className="text-[11px] font-medium font-inter text-[#64748B] leading-relaxed mt-2 line-clamp-3">
                           {project.description}
                         </p>
                       </div>
@@ -535,7 +535,7 @@ export default function OrbitaskHome() {
                   className="w-[320px] h-[178px] rounded-[5px] border-2 border-dashed border-[#CBD5E1] hover:border-[#2563EB] hover:bg-blue-50/20 flex flex-col items-center justify-center gap-2.5 transition-all duration-200 group cursor-pointer text-center bg-transparent"
                 >
                   <Plus className="w-5 h-5 text-[#64748B] group-hover:text-[#2563EB] group-hover:scale-110 transition-all stroke-[2]" />
-                  <span className="text-xs font-medium text-[#475569] group-hover:text-[#2563EB] transition-colors">
+                  <span className="text-xs font-medium font-inter text-[#475569] group-hover:text-[#2563EB] transition-colors">
                     Add New Projects
                   </span>
                 </button>
@@ -546,7 +546,7 @@ export default function OrbitaskHome() {
                 <button
                   type="button"
                   onClick={() => setIsCreateWorkspaceOpen(true)}
-                  className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-[5px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                  className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Create Workspace</span>
@@ -559,31 +559,31 @@ export default function OrbitaskHome() {
           {activeTab === "settings" && (
             <div className="max-w-2xl bg-white p-6 rounded-[5px] border border-[#E2E8F0] shadow-xs space-y-6">
               <div>
-                <h2 className="text-base font-bold text-[#0F172A]">Workspace Settings</h2>
-                <p className="text-xs text-[#64748B] mt-1">
+                <h2 className="text-base font-bold text-[#0F172A] font-poppins">Workspace Settings</h2>
+                <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
                   Manage your workspace identity, name, and preferences.
                 </p>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
                 <div>
-                  <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                  <label className="block text-xs font-medium font-inter text-[#334155] mb-1.5">
                     Workspace Name
                   </label>
                   <input
                     type="text"
                     value={workspaceName}
                     onChange={(e) => setWorkspaceName(e.target.value)}
-                    className="w-full h-10 px-3.5 bg-white border border-[#CBD5E1] rounded-[5px] text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                    className="w-full h-10 px-3.5 bg-white border border-[#CBD5E1] rounded-[5px] text-xs font-medium font-inter text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                   />
                 </div>
 
                 <div className="flex items-center justify-between pt-3">
-                  <span className="text-xs text-[#64748B]">Changes are saved automatically.</span>
+                  <span className="text-xs font-medium font-inter text-[#64748B]">Changes are saved automatically.</span>
                   <button
                     type="button"
                     onClick={() => setActiveTab("overview")}
-                    className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-[5px] transition-colors"
+                    className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] transition-colors"
                   >
                     Done
                   </button>
@@ -602,7 +602,7 @@ export default function OrbitaskHome() {
             <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FolderPlus className="w-4 h-4 text-[#2563EB]" />
-                <h3 className="text-sm font-bold text-[#0F172A]">Create New Project</h3>
+                <h3 className="text-sm font-medium font-inter text-[#0F172A]">Create New Project</h3>
               </div>
               <button
                 type="button"
@@ -615,7 +615,7 @@ export default function OrbitaskHome() {
 
             <form onSubmit={handleCreateProjectSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                <label className="block text-xs font-medium font-inter text-[#334155] mb-1.5">
                   Project Title
                 </label>
                 <input
@@ -624,12 +624,12 @@ export default function OrbitaskHome() {
                   placeholder="e.g. Website Redesign, Mobile App"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-[5px] text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-[5px] text-xs font-medium font-inter text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                <label className="block text-xs font-medium font-inter text-[#334155] mb-1.5">
                   Description
                 </label>
                 <textarea
@@ -637,12 +637,12 @@ export default function OrbitaskHome() {
                   placeholder="Briefly describe what this project covers..."
                   value={newProjectDesc}
                   onChange={(e) => setNewProjectDesc(e.target.value)}
-                  className="w-full p-3 border border-[#CBD5E1] rounded-[5px] text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] resize-none"
+                  className="w-full p-3 border border-[#CBD5E1] rounded-[5px] text-xs font-medium font-inter text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#334155] mb-2">
+                <label className="block text-xs font-medium font-inter text-[#334155] mb-2">
                   Banner Color
                 </label>
                 <div className="flex items-center gap-3">
@@ -673,13 +673,13 @@ export default function OrbitaskHome() {
                 <button
                   type="button"
                   onClick={() => setIsCreateProjectOpen(false)}
-                  className="h-9 px-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-[5px] transition-colors"
+                  className="h-9 px-4 text-xs font-medium font-inter text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-[5px] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-[5px] transition-colors shadow-xs"
+                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] transition-colors shadow-xs"
                 >
                   Create Project
                 </button>
@@ -696,7 +696,7 @@ export default function OrbitaskHome() {
             <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-[#2563EB]" />
-                <h3 className="text-sm font-bold text-[#0F172A]">New Workspace</h3>
+                <h3 className="text-sm font-medium font-inter text-[#0F172A]">New Workspace</h3>
               </div>
               <button
                 type="button"
@@ -709,7 +709,7 @@ export default function OrbitaskHome() {
 
             <form onSubmit={handleCreateWorkspaceSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#334155] mb-1.5">
+                <label className="block text-xs font-medium font-inter text-[#334155] mb-1.5">
                   Workspace Name
                 </label>
                 <input
@@ -718,7 +718,7 @@ export default function OrbitaskHome() {
                   placeholder="e.g. Design Studio, Marketing HQ"
                   value={newWorkspaceName}
                   onChange={(e) => setNewWorkspaceName(e.target.value)}
-                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-[5px] text-xs text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                  className="w-full h-10 px-3.5 border border-[#CBD5E1] rounded-[5px] text-xs font-medium font-inter text-[#0F172A] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                 />
               </div>
 
@@ -726,13 +726,13 @@ export default function OrbitaskHome() {
                 <button
                   type="button"
                   onClick={() => setIsCreateWorkspaceOpen(false)}
-                  className="h-9 px-4 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-[5px] transition-colors"
+                  className="h-9 px-4 text-xs font-medium font-inter text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 rounded-[5px] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-[5px] transition-colors shadow-xs"
+                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] transition-colors shadow-xs"
                 >
                   Create
                 </button>
@@ -748,7 +748,7 @@ export default function OrbitaskHome() {
             <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-[#2563EB]" />
-                <h3 className="text-sm font-bold text-[#0F172A]">My Profile</h3>
+                <h3 className="text-sm font-medium font-inter text-[#0F172A]">My Profile</h3>
               </div>
               <button
                 type="button"
@@ -759,7 +759,7 @@ export default function OrbitaskHome() {
               </button>
             </div>
 
-            <div className="p-6 space-y-5 text-xs">
+            <div className="p-6 space-y-5 text-xs font-medium font-inter">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <img
@@ -770,8 +770,8 @@ export default function OrbitaskHome() {
                   <span className="w-3 h-3 bg-[#3B82F6] rounded-full border-2 border-white absolute -top-1 -right-1 shadow-2xs" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-[#0F172A]">Bilal Khan</h4>
-                  <p className="text-[#64748B] flex items-center gap-1.5 mt-0.5">
+                  <h4 className="text-sm font-medium font-inter text-[#0F172A]">Bilal Khan</h4>
+                  <p className="text-[#64748B] flex items-center gap-1.5 mt-0.5 text-[11px] font-medium font-inter">
                     <Shield className="w-3.5 h-3.5 text-[#2563EB]" />
                     Platform Admin
                   </p>
@@ -780,15 +780,15 @@ export default function OrbitaskHome() {
 
               <div className="space-y-3 pt-3 border-t border-[#F1F5F9]">
                 <div>
-                  <span className="text-[#94A3B8] block text-[11px]">Email Address</span>
-                  <span className="font-semibold text-[#0F172A] flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[#94A3B8] block text-[11px] font-medium font-inter">Email Address</span>
+                  <span className="font-medium font-inter text-[#0F172A] flex items-center gap-1.5 mt-0.5">
                     <Mail className="w-3.5 h-3.5 text-[#64748B]" />
                     bilalrauf.ds@gmail.com
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#94A3B8] block text-[11px]">Active Workspace</span>
-                  <span className="font-semibold text-[#0F172A] flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[#94A3B8] block text-[11px] font-medium font-inter">Active Workspace</span>
+                  <span className="font-medium font-inter text-[#0F172A] flex items-center gap-1.5 mt-0.5">
                     <Building2 className="w-3.5 h-3.5 text-[#64748B]" />
                     {workspaceName}
                   </span>
@@ -799,7 +799,7 @@ export default function OrbitaskHome() {
                 <button
                   type="button"
                   onClick={() => setIsProfileModalOpen(false)}
-                  className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold rounded-[5px] transition-colors cursor-pointer"
+                  className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium font-inter text-xs rounded-[5px] transition-colors cursor-pointer"
                 >
                   Close
                 </button>
