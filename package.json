@@ -19,6 +19,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@prisma/client": "^6.4.1",
     "@react-email/components": "^1.0.12",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.2.6",
     "inngest": "^4.20.0",

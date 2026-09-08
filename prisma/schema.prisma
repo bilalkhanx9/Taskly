@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,11 +14,12 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("USER")
+  role          String    @default("ADMIN")
 
   workspaces    Workspace[]
   accounts      Account[]
   sessions      Session[]
+  attachments   Attachment[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -72,14 +73,32 @@ model Workspace {
 }
 
 model Project {
-  id          String    @id @default(cuid())
+  id          String       @id @default(cuid())
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   name        String
   description String?
-  bannerColor String    @default("#2563EB")
-  isFavorite  Boolean   @default(false)
+  bannerColor String       @default("#2563EB")
+  isFavorite  Boolean      @default(false)
+  attachments Attachment[]
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Attachment {
+  id          String   @id @default(cuid())
+  filename    String
+  fileUrl     String
+  fileKey     String
+  fileSize    Int?
+  mimeType    String?
+  
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  uploaderId  String?
+  uploader    User?    @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now())
 }
