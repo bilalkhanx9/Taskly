@@ -1514,7 +1514,27 @@ export default function OrbitaskWorkspacePage() {
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* 1. Messaging Icon */}
+                <button
+                  type="button"
+                  onClick={() => setSidebarActiveTab("chat")}
+                  className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer"
+                  title="Messages"
+                >
+                  <MessageSquare className="w-4 h-4 stroke-[1.75]" />
+                </button>
+
+                {/* 2. Notification Icon */}
+                <button
+                  type="button"
+                  className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors cursor-pointer"
+                  title="Notifications"
+                >
+                  <Bell className="w-4 h-4 stroke-[1.75]" />
+                </button>
+
+                {/* 3. Admin Profile on Right */}
+                <div className="flex items-center gap-2 cursor-pointer">
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
                     alt="Moni Roy"
@@ -1524,25 +1544,8 @@ export default function OrbitaskWorkspacePage() {
                     <span className="text-xs font-semibold font-inter text-[#0F172A] leading-tight">Moni Roy</span>
                     <span className="text-[9.5px] font-medium font-inter text-[#94A3B8] leading-tight">Admin</span>
                   </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] hidden lg:block" />
                 </div>
-
-                <button type="button" className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors">
-                  <Bell className="w-4 h-4 stroke-[1.75]" />
-                </button>
-
-                <button type="button" className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors">
-                  <Settings className="w-4 h-4 stroke-[1.75]" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setCurrentView("workspaces_grid")}
-                  className="h-8 px-2.5 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#475569] hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer transition-colors ml-1"
-                  title="Back to All Workspaces"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Workspaces</span>
-                </button>
               </div>
             </header>
 
