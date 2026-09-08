@@ -281,12 +281,16 @@ export default function OrbitaskWorkspacePage() {
 
   // Close menus when clicking outside
   useEffect(() => {
-    function handleClickOutside() {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as HTMLElement | null;
+      if (target && target.closest("[data-menu-container]")) {
+        return;
+      }
       setActiveMenuProjectId(null);
       setIsColorSubmenuOpen(null);
     }
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Handlers for Project Creation
@@ -842,22 +846,20 @@ export default function OrbitaskWorkspacePage() {
                                     </button>
 
                                     {/* 3-Dots Action Button */}
-                                    <div className="relative">
+                                    <div className="relative" data-menu-container="true">
                                       <button
                                         type="button"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          setActiveMenuProjectId(
-                                            activeMenuProjectId === project.id
-                                              ? null
-                                              : project.id
+                                          setActiveMenuProjectId((prev) =>
+                                            prev === project.id ? null : project.id
                                           );
                                           setIsColorSubmenuOpen(null);
                                         }}
-                                        className="relative z-20 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded-[5px]"
+                                        className="relative z-20 p-1.5 text-white hover:text-white/80 transition-colors cursor-pointer rounded-[5px]"
                                         title="Project options"
                                       >
-                                        <MoreVertical className="w-3.5 h-3.5 stroke-[1.75]" />
+                                        <MoreVertical className="w-4 h-4 stroke-[2]" />
                                       </button>
 
                                       {/* Dropdown Menu (Exact match to User's Screenshot) */}
