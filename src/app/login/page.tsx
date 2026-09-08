@@ -36,6 +36,7 @@ import {
   BarChart3,
   ShieldCheck,
   CheckSquare,
+  Info,
 } from "lucide-react";
 
 function AuthComponent() {
@@ -44,9 +45,16 @@ function AuthComponent() {
   const initialMode = searchParams.get("mode") === "signin" ? "signin" : "signup";
 
   // Auth & Onboarding steps:
-  // "signup" | "verify" | "signin" | "onboarding-1" | "onboarding-2" | "onboarding-3"
+  // "signup" | "verify" | "signin" | "onboarding-1" | "onboarding-2" | "onboarding-3" | "onboarding-4" | "onboarding-5"
   const [authStep, setAuthStep] = useState<
-    "signup" | "verify" | "signin" | "onboarding-1" | "onboarding-2" | "onboarding-3"
+    | "signup"
+    | "verify"
+    | "signin"
+    | "onboarding-1"
+    | "onboarding-2"
+    | "onboarding-3"
+    | "onboarding-4"
+    | "onboarding-5"
   >(initialMode);
 
   // Sign up Form state
@@ -86,6 +94,30 @@ function AuthComponent() {
   const [teamSize, setTeamSize] = useState("");
   const [openIndustryDropdown, setOpenIndustryDropdown] = useState(false);
   const [openTeamSizeDropdown, setOpenTeamSizeDropdown] = useState(false);
+
+  // Onboarding Step 4 state (Set up your first project)
+  const [projectName, setProjectName] = useState("");
+  const [projectDesc, setProjectDesc] = useState("");
+  const [boardName, setBoardName] = useState("");
+
+  // Onboarding Step 5 state (Invite your Team Members)
+  const [inviteEmails, setInviteEmails] = useState<string[]>([
+    "Emmacollins@mail.com",
+    "",
+    "",
+  ]);
+
+  const handleUpdateInviteEmail = (index: number, val: string) => {
+    setInviteEmails((prev) => {
+      const next = [...prev];
+      next[index] = val;
+      return next;
+    });
+  };
+
+  const handleAddInviteEmail = () => {
+    setInviteEmails((prev) => [...prev, ""]);
+  };
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -307,11 +339,32 @@ function AuthComponent() {
     setActiveSlide(1); // Kanban slide matching Screenshot 3
   };
 
-  // Final Step Finish & Launch
-  const handleFinishOnboarding = async () => {
+  // Step 3 -> Step 4
+  const handleStep3Next = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOpenIndustryDropdown(false);
+    setOpenTeamSizeDropdown(false);
+    setAuthStep("onboarding-4");
+    setActiveSlide(2); // Development Planner slide matching Screenshot 1
+  };
+
+  // Step 4 -> Step 5
+  const handleStep4Next = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthStep("onboarding-5");
+    setActiveSlide(3); // Galaxy View slide matching Screenshot 2
+  };
+
+  // Final Step Finish & Launch -> direct to /workspace
+  const handleFinishOnboarding = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     try {
       if (workspaceName.trim()) {
-        await createWorkspace(workspaceName.trim());
+        await createWorkspace(
+          workspaceName.trim(),
+          projectName.trim() || undefined,
+          projectDesc.trim() || undefined
+        );
       }
     } catch (err) {
       console.error("Workspace save notice:", err);
@@ -335,14 +388,14 @@ function AuthComponent() {
       });
 
       if (res?.error) {
-        setError("Invalid email or password. You can also sign up or use demo credentials.");
+        setError(res.error || "Invalid email or password.");
       } else {
         setSuccess("Signed in successfully! Redirecting...");
         router.push("/workspace");
         router.refresh();
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred during sign in.");
+      setError(err.message || "An unexpected error occurred during sign in.");
     } finally {
       setLoading(false);
     }
@@ -384,7 +437,11 @@ function AuthComponent() {
   ];
 
   const isOnboarding =
-    authStep === "onboarding-1" || authStep === "onboarding-2" || authStep === "onboarding-3";
+    authStep === "onboarding-1" ||
+    authStep === "onboarding-2" ||
+    authStep === "onboarding-3" ||
+    authStep === "onboarding-4" ||
+    authStep === "onboarding-5";
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row font-inter selection:bg-blue-100 selection:text-blue-900">
@@ -435,7 +492,13 @@ function AuthComponent() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (authStep === "onboarding-3") {
+                    if (authStep === "onboarding-5") {
+                      setAuthStep("onboarding-4");
+                      setActiveSlide(2);
+                    } else if (authStep === "onboarding-4") {
+                      setAuthStep("onboarding-3");
+                      setActiveSlide(1);
+                    } else if (authStep === "onboarding-3") {
                       setAuthStep("onboarding-2");
                       setActiveSlide(0);
                     } else if (authStep === "onboarding-2") {
@@ -850,9 +913,9 @@ function AuthComponent() {
                 </button>
               </form>
 
-              {/* Progress Bar (Step 1/3: 33%) */}
+              {/* Progress Bar (Step 1/5: 20%) */}
               <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
-                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-1/3 transition-all duration-300" />
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[20%] transition-all duration-300" />
               </div>
             </div>
           )}
@@ -996,9 +1059,9 @@ function AuthComponent() {
                 </button>
               </div>
 
-              {/* Progress Bar (Step 2/3: 66%) */}
+              {/* Progress Bar (Step 2/5: 40%) */}
               <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
-                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-2/3 transition-all duration-300" />
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[40%] transition-all duration-300" />
               </div>
             </div>
           )}
@@ -1148,14 +1211,153 @@ function AuthComponent() {
 
                 <button
                   type="button"
-                  onClick={handleFinishOnboarding}
+                  onClick={handleStep3Next}
                   className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
                 >
                   Next
                 </button>
               </div>
 
-              {/* Progress Bar (Step 3/3: 100%) */}
+              {/* Progress Bar (Step 3/5: 60%) */}
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[60%] transition-all duration-300" />
+              </div>
+            </div>
+          )}
+
+          {/* ================= ONBOARDING STEP 4: SET UP YOUR FIRST PROJECT ================= */}
+          {authStep === "onboarding-4" && (
+            <div className="animate-in fade-in duration-300">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+                Set up your first project
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-6">
+                Enter a name to create your first project in Orbitask.
+              </p>
+
+              {/* Workspace Badge / Avatar matching Screenshot */}
+              <div className="flex flex-col items-center justify-center my-6">
+                <div className="w-16 h-16 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#0F172A] font-bold text-lg font-poppins shadow-xs">
+                  OR
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-[#0F172A] mt-2">
+                  {workspaceName || "Orbitask"}
+                </span>
+              </div>
+
+              <form onSubmit={handleStep4Next} className="space-y-5">
+                {/* Field 1: Project Name */}
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
+                    Project Name<span className="text-red-500 ml-0.5">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder="ex: Marketing Website Redesign"
+                    className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
+                    required
+                  />
+                </div>
+
+                {/* Field 2: Description */}
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
+                    Description
+                  </label>
+                  <textarea
+                    value={projectDesc}
+                    onChange={(e) => setProjectDesc(e.target.value)}
+                    placeholder="ex: A project to revamp the company’s website"
+                    rows={3}
+                    className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0 resize-none"
+                  />
+                </div>
+
+                {/* Field 3: Board */}
+                <div>
+                  <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
+                      Board
+                    </label>
+                    <input
+                      type="text"
+                      value={boardName}
+                      onChange={(e) => setBoardName(e.target.value)}
+                      placeholder="ex: UI Team"
+                      className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2 text-[11px] text-[#64748B]">
+                    <Info className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                    <span>A default board named “Default Board” will be created automatically</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                >
+                  Create Project
+                </button>
+              </form>
+
+              {/* Progress Bar (Step 4/5: 80%) */}
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[80%] transition-all duration-300" />
+              </div>
+            </div>
+          )}
+
+          {/* ================= ONBOARDING STEP 5: INVITE YOUR TEAM MEMBERS ================= */}
+          {authStep === "onboarding-5" && (
+            <div className="animate-in fade-in duration-300">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+                Invite your Team Members
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+                Add your teammates to collaborate and start building your projects together in Orbitask.
+              </p>
+
+              <form onSubmit={handleFinishOnboarding} className="space-y-4">
+                <div className="space-y-3">
+                  {inviteEmails.map((emailVal, idx) => (
+                    <div
+                      key={idx}
+                      className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 py-3 flex items-center gap-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors"
+                    >
+                      <Mail className="w-4 h-4 text-[#94A3B8] shrink-0" />
+                      <input
+                        type="email"
+                        value={emailVal}
+                        onChange={(e) => handleUpdateInviteEmail(idx, e.target.value)}
+                        placeholder="ex: example@domain.com"
+                        className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleAddInviteEmail}
+                    className="inline-flex items-center gap-1.5 border border-[#CBD5E1] bg-white hover:bg-slate-50 text-[#0F172A] text-xs font-medium px-3.5 py-2 rounded-[5px] transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <span>Add another</span>
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                >
+                  Send Invite & continue
+                </button>
+              </form>
+
+              {/* Progress Bar (Step 5/5: 100%) */}
               <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-full transition-all duration-300" />
               </div>

@@ -53,7 +53,7 @@ export async function getActiveWorkspace(slugOrId?: string) {
   }
 }
 
-export async function createWorkspace(name: string) {
+export async function createWorkspace(name: string, projectName?: string, projectDesc?: string) {
   try {
     if (!name.trim()) {
       return { success: false, error: "Workspace name is required" };
@@ -66,6 +66,14 @@ export async function createWorkspace(name: string) {
       data: {
         name: name.trim(),
         slug: uniqueSlug,
+        projects: projectName?.trim()
+          ? {
+              create: {
+                name: projectName.trim(),
+                description: projectDesc?.trim() || null,
+              },
+            }
+          : undefined,
       },
       include: {
         projects: true,
