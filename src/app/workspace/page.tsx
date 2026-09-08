@@ -1287,27 +1287,27 @@ export default function OrbitaskWorkspacePage() {
                   <span className="text-xs font-medium text-[#94A3B8] font-inter px-2">Main menu</span>
                 )}
 
-                {/* Overview button (Active rounded pill in screenshot) */}
+                {/* Overview button */}
                 <button
                   type="button"
                   onClick={() => setSidebarActiveTab("overview")}
-                  className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                     sidebarActiveTab === "overview"
-                      ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                      : "text-[#334155] hover:bg-slate-50"
+                      ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                      : "text-[#475569] hover:bg-slate-50"
                   }`}
                   title="Overview"
                 >
-                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                  <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                     sidebarActiveTab === "overview"
-                      ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                      ? "bg-white shadow-2xs text-[#2563EB]"
                       : "bg-slate-50 border border-slate-100 text-[#64748B]"
                   }`}>
                     <Compass className="w-4 h-4 stroke-[1.75]" />
                   </div>
                   {!isSidebarCollapsed && (
-                    <span className={`text-sm font-medium font-inter ${
-                      sidebarActiveTab === "overview" ? "text-[#2563EB] font-semibold" : ""
+                    <span className={`text-sm font-inter ${
+                      sidebarActiveTab === "overview" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                     }`}>
                       Overview
                     </span>
@@ -1318,24 +1318,24 @@ export default function OrbitaskWorkspacePage() {
                 <div className="space-y-1">
                   <div
                     onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
-                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                       isProjectsExpanded
-                        ? "bg-blue-50/40 text-[#2563EB] font-semibold"
-                        : "text-[#334155] hover:bg-slate-50"
+                        ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                        : "text-[#475569] hover:bg-slate-50"
                     }`}
                     title="Projects"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                      <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                         isProjectsExpanded
-                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          ? "bg-white shadow-2xs text-[#2563EB]"
                           : "bg-slate-50 border border-slate-100 text-[#64748B]"
                       }`}>
                         <Layers className="w-4 h-4 stroke-[1.75]" />
                       </div>
                       {!isSidebarCollapsed && (
-                        <span className={`text-sm font-medium font-inter ${
-                          isProjectsExpanded ? "text-[#2563EB] font-semibold" : "text-[#0F172A]"
+                        <span className={`text-sm font-inter ${
+                          isProjectsExpanded ? "text-[#2563EB] font-medium" : "text-[#334155]"
                         }`}>
                           Projects
                         </span>
@@ -1344,14 +1344,14 @@ export default function OrbitaskWorkspacePage() {
                     {!isSidebarCollapsed && (
                       <ChevronDown
                         className={`w-4 h-4 transition-transform ${
-                          isProjectsExpanded ? "text-[#2563EB] rotate-180" : "text-[#94A3B8]"
+                          isProjectsExpanded ? "text-[#334155] rotate-180" : "text-[#94A3B8]"
                         }`}
                       />
                     )}
                   </div>
 
                   {!isSidebarCollapsed && isProjectsExpanded && (
-                    <div className="border-l-2 border-[#E2E8F0] ml-6 pl-4 space-y-2.5 pt-1 pb-1 text-sm font-inter">
+                    <div className="border-l border-[#E2E8F0] ml-6 pl-4 space-y-3 pt-2 text-sm font-inter">
                       {activeWorkspace?.projects.map((proj) => (
                         <div
                           key={proj.id}
@@ -1360,7 +1360,7 @@ export default function OrbitaskWorkspacePage() {
                             setSidebarActiveTab("overview");
                           }}
                           className={`cursor-pointer transition-colors ${
-                            proj.id === activeProjectId ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"
+                            proj.id === activeProjectId ? "text-[#2563EB] font-medium" : "text-[#475569] hover:text-[#0F172A]"
                           }`}
                         >
                           {proj.name}
@@ -1369,21 +1369,23 @@ export default function OrbitaskWorkspacePage() {
 
                       {(!activeWorkspace?.projects || activeWorkspace.projects.length === 0) && (
                         <>
-                          <div className="text-[#2563EB] font-semibold cursor-pointer">Marketing</div>
-                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">Development</div>
-                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">Support</div>
+                          <div className="text-[#2563EB] font-medium cursor-pointer">Marketing</div>
+                          <div className="text-[#475569] hover:text-[#0F172A] cursor-pointer">Development</div>
+                          <div className="text-[#475569] hover:text-[#0F172A] cursor-pointer">Support</div>
                         </>
                       )}
-
-                      <button
-                        type="button"
-                        onClick={() => openCreateProjectModal(activeWorkspace.id)}
-                        className="text-xs font-medium text-[#2563EB] hover:underline flex items-center gap-1 cursor-pointer pt-1"
-                      >
-                        <Plus className="w-3.5 h-3.5 stroke-[2]" />
-                        <span>Add project</span>
-                      </button>
                     </div>
+                  )}
+
+                  {!isSidebarCollapsed && isProjectsExpanded && (
+                    <button
+                      type="button"
+                      onClick={() => openCreateProjectModal(activeWorkspace.id)}
+                      className="ml-6 text-xs font-medium text-[#2563EB] hover:underline flex items-center gap-1.5 cursor-pointer pt-2"
+                    >
+                      <Plus className="w-3.5 h-3.5 stroke-[2]" />
+                      <span>Add project</span>
+                    </button>
                   )}
                 </div>
               </div>
@@ -1405,23 +1407,23 @@ export default function OrbitaskWorkspacePage() {
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("tasks")}
-                      className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                         sidebarActiveTab === "tasks"
-                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                          ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                          : "text-[#475569] hover:bg-slate-50"
                       }`}
                       title="Tasks"
                     >
-                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                      <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                         sidebarActiveTab === "tasks"
-                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          ? "bg-white shadow-2xs text-[#2563EB]"
                           : "bg-slate-50 border border-slate-100 text-[#64748B]"
                       }`}>
                         <CheckSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
                       {!isSidebarCollapsed && (
-                        <span className={`text-sm font-medium font-inter ${
-                          sidebarActiveTab === "tasks" ? "text-[#2563EB] font-semibold" : ""
+                        <span className={`text-sm font-inter ${
+                          sidebarActiveTab === "tasks" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                         }`}>
                           Tasks
                         </span>
@@ -1431,23 +1433,23 @@ export default function OrbitaskWorkspacePage() {
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("planner")}
-                      className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                         sidebarActiveTab === "planner"
-                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                          ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                          : "text-[#475569] hover:bg-slate-50"
                       }`}
                       title="Planner"
                     >
-                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                      <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                         sidebarActiveTab === "planner"
-                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          ? "bg-white shadow-2xs text-[#2563EB]"
                           : "bg-slate-50 border border-slate-100 text-[#64748B]"
                       }`}>
                         <Timer className="w-4 h-4 stroke-[1.75]" />
                       </div>
                       {!isSidebarCollapsed && (
-                        <span className={`text-sm font-medium font-inter ${
-                          sidebarActiveTab === "planner" ? "text-[#2563EB] font-semibold" : ""
+                        <span className={`text-sm font-inter ${
+                          sidebarActiveTab === "planner" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                         }`}>
                           Planner
                         </span>
@@ -1457,23 +1459,23 @@ export default function OrbitaskWorkspacePage() {
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("ai_assistant")}
-                      className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                         sidebarActiveTab === "ai_assistant"
-                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                          ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                          : "text-[#475569] hover:bg-slate-50"
                       }`}
                       title="AI Assistant"
                     >
-                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                      <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                         sidebarActiveTab === "ai_assistant"
-                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          ? "bg-white shadow-2xs text-[#2563EB]"
                           : "bg-slate-50 border border-slate-100 text-[#64748B]"
                       }`}>
                         <Sparkles className="w-4 h-4 stroke-[1.75]" />
                       </div>
                       {!isSidebarCollapsed && (
-                        <span className={`text-sm font-medium font-inter ${
-                          sidebarActiveTab === "ai_assistant" ? "text-[#2563EB] font-semibold" : ""
+                        <span className={`text-sm font-inter ${
+                          sidebarActiveTab === "ai_assistant" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                         }`}>
                           AI Assistant
                         </span>
@@ -1483,23 +1485,23 @@ export default function OrbitaskWorkspacePage() {
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("chat")}
-                      className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                         sidebarActiveTab === "chat"
-                          ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                          ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                          : "text-[#475569] hover:bg-slate-50"
                       }`}
                       title="Chat"
                     >
-                      <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                      <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                         sidebarActiveTab === "chat"
-                          ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                          ? "bg-white shadow-2xs text-[#2563EB]"
                           : "bg-slate-50 border border-slate-100 text-[#64748B]"
                       }`}>
                         <MessageSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
                       {!isSidebarCollapsed && (
-                        <span className={`text-sm font-medium font-inter ${
-                          sidebarActiveTab === "chat" ? "text-[#2563EB] font-semibold" : ""
+                        <span className={`text-sm font-inter ${
+                          sidebarActiveTab === "chat" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                         }`}>
                           Chat
                         </span>
@@ -1509,25 +1511,25 @@ export default function OrbitaskWorkspacePage() {
                     <div className="space-y-1">
                       <div
                         onClick={() => setIsProjectMgmtExpanded(!isProjectMgmtExpanded)}
-                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                           isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
-                            ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                            : "text-[#334155] hover:bg-slate-50"
+                            ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                            : "text-[#475569] hover:bg-slate-50"
                         }`}
                         title="Project Management"
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                          <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                             isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
-                              ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                              ? "bg-white shadow-2xs text-[#2563EB]"
                               : "bg-slate-50 border border-slate-100 text-[#64748B]"
                           }`}>
                             <Folder className="w-4 h-4 fill-current/20 stroke-[1.75]" />
                           </div>
                           {!isSidebarCollapsed && (
-                            <span className={`text-sm font-medium font-inter ${
+                            <span className={`text-sm font-inter ${
                               isProjectMgmtExpanded || ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
-                                ? "text-[#2563EB] font-semibold"
+                                ? "text-[#2563EB] font-medium"
                                 : "text-[#0F172A]"
                             }`}>
                               Project Management
@@ -1538,7 +1540,7 @@ export default function OrbitaskWorkspacePage() {
                           <ChevronDown
                             className={`w-4 h-4 transition-transform ${
                               isProjectMgmtExpanded
-                                ? "text-[#2563EB] rotate-180"
+                                ? "text-[#334155] rotate-180"
                                 : ["team", "files", "automation", "settings"].includes(sidebarActiveTab)
                                 ? "text-[#2563EB]"
                                 : "text-[#94A3B8]"
@@ -1548,17 +1550,17 @@ export default function OrbitaskWorkspacePage() {
                       </div>
 
                       {!isSidebarCollapsed && isProjectMgmtExpanded && (
-                        <div className="border-l-2 border-[#E2E8F0] ml-6 pl-4 space-y-2.5 pt-1 pb-1 text-sm font-inter">
-                          <div onClick={() => setSidebarActiveTab("team")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "team" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                        <div className="border-l border-[#E2E8F0] ml-6 pl-4 space-y-3 pt-2 text-sm font-inter">
+                          <div onClick={() => setSidebarActiveTab("team")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "team" ? "text-[#2563EB] font-medium" : "text-[#475569] hover:text-[#0F172A]"}`}>
                             Team
                           </div>
-                          <div onClick={() => setSidebarActiveTab("files")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "files" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                          <div onClick={() => setSidebarActiveTab("files")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "files" ? "text-[#2563EB] font-medium" : "text-[#475569] hover:text-[#0F172A]"}`}>
                             Files
                           </div>
-                          <div onClick={() => setSidebarActiveTab("automation")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "automation" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                          <div onClick={() => setSidebarActiveTab("automation")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "automation" ? "text-[#2563EB] font-medium" : "text-[#475569] hover:text-[#0F172A]"}`}>
                             Automation
                           </div>
-                          <div onClick={() => setSidebarActiveTab("settings")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "settings" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                          <div onClick={() => setSidebarActiveTab("settings")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "settings" ? "text-[#2563EB] font-medium" : "text-[#475569] hover:text-[#0F172A]"}`}>
                             Settings
                           </div>
                         </div>
@@ -1573,23 +1575,23 @@ export default function OrbitaskWorkspacePage() {
                 <button
                   type="button"
                   onClick={() => setSidebarActiveTab("help")}
-                  className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-[8px] transition-colors cursor-pointer ${
                     sidebarActiveTab === "help"
-                      ? "bg-blue-50/70 text-[#2563EB] font-semibold"
-                      : "text-[#334155] hover:bg-slate-50"
+                      ? "bg-[#F1F5F9] text-[#2563EB] font-medium"
+                      : "text-[#475569] hover:bg-slate-50"
                   }`}
                   title="Help & Support"
                 >
-                  <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 transition-colors ${
+                  <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center shrink-0 transition-colors ${
                     sidebarActiveTab === "help"
-                      ? "bg-blue-100/70 border border-blue-200 text-[#2563EB]"
+                      ? "bg-white shadow-2xs text-[#2563EB]"
                       : "bg-slate-50 border border-slate-100 text-[#64748B]"
                   }`}>
                     <HelpCircle className="w-4 h-4 stroke-[1.75]" />
                   </div>
                   {!isSidebarCollapsed && (
-                    <span className={`text-sm font-medium font-inter ${
-                      sidebarActiveTab === "help" ? "text-[#2563EB] font-semibold" : ""
+                    <span className={`text-sm font-inter ${
+                      sidebarActiveTab === "help" ? "text-[#2563EB] font-medium" : "text-[#334155]"
                     }`}>
                       Help & Support
                     </span>
