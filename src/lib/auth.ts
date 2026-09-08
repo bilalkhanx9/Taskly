@@ -1,22 +1,13 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
-import GitHub from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID || "",
-      clientSecret: process.env.AUTH_GITHUB_SECRET || "",
-    }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID || "",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
-    }),
     Credentials({
       name: "credentials",
       credentials: {
@@ -24,32 +15,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
-        // Dev demo user fallback or database lookup
         try {
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
+            where: { email: (credentials.email as string).toLowerCase().trim() },
           });
 
-          if (user) {
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              image: user.image,
-            };
+          if (!user || !user.password) {
+            return null;
           }
-        } catch (e) {
-          // Fallback if DB is not yet populated
-        }
 
-        return {
-          id: "demo-user-1",
-          email: credentials.email as string,
-          name: (credentials.email as string).split("@")[0] || "Demo User",
-          image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-        };
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password as string,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name || "Bilal Khan",
+            image: user.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+            role: user.role || "ADMIN",
+          };
+        } catch (error) {
+          console.error("Auth authorization error:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -57,12 +53,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token?.sub && session.user) {
         session.user.id = token.sub;
+        (session.user as { role?: string }).role = (token.role as string) || "ADMIN";
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.role = (user as { role?: string }).role || "ADMIN";
       }
       return token;
     },
