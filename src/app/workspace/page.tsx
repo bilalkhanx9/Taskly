@@ -760,63 +760,68 @@ export default function OrbitaskWorkspacePage() {
                             return (
                               <div
                                 key={project.id}
-                                className="w-full rounded-[5px] bg-white border border-[#E2E8F0] shadow-xs hover:shadow-md transition-all duration-200 overflow-visible group relative flex flex-col justify-between"
+                                className={`w-full rounded-[5px] bg-white border border-[#E2E8F0] shadow-xs hover:shadow-md transition-all duration-200 group relative flex flex-col justify-between ${
+                                  activeMenuProjectId === project.id ? "z-40" : "z-10"
+                                }`}
                               >
                                 <div>
-                                  {/* Topographic Wave Graphic Banner */}
+                                  {/* Topographic Wave Graphic Banner (without overflow-hidden on container so menu pops out!) */}
                                   <div
-                                    className="h-[76px] rounded-t-[5px] relative overflow-hidden flex items-start justify-end p-2.5 gap-1 shrink-0"
+                                    className="h-[76px] rounded-t-[5px] relative flex items-start justify-end p-2.5 gap-1 shrink-0"
                                     style={{ backgroundColor: project.bannerColor }}
                                   >
-                                    <svg
-                                      className="absolute inset-0 w-full h-full opacity-40 pointer-events-none"
-                                      viewBox="0 0 320 76"
-                                      fill="none"
-                                      preserveAspectRatio="none"
-                                    >
-                                      <path
-                                        d="M-20 15 C50 0 110 35 180 10 C240 -8 290 25 350 12"
-                                        stroke="white"
-                                        strokeWidth="1.25"
+                                    {/* Clipped SVG pattern container */}
+                                    <div className="absolute inset-0 overflow-hidden rounded-t-[5px] pointer-events-none">
+                                      <svg
+                                        className="w-full h-full opacity-40"
+                                        viewBox="0 0 320 76"
                                         fill="none"
-                                      />
-                                      <path
-                                        d="M-20 30 C40 18 130 50 200 25 C260 8 300 38 350 30"
-                                        stroke="white"
-                                        strokeWidth="1.25"
-                                        fill="none"
-                                      />
-                                      <path
-                                        d="M-20 48 C30 38 120 68 190 42 C270 20 300 55 350 48"
-                                        stroke="white"
-                                        strokeWidth="1.25"
-                                        fill="none"
-                                      />
-                                      <path
-                                        d="M-20 65 C60 52 140 82 220 60 C280 38 320 72 350 65"
-                                        stroke="white"
-                                        strokeWidth="1.25"
-                                        fill="none"
-                                      />
-                                      <ellipse
-                                        cx="260"
-                                        cy="30"
-                                        rx="35"
-                                        ry="15"
-                                        stroke="white"
-                                        strokeWidth="1.25"
-                                        fill="none"
-                                      />
-                                      <ellipse
-                                        cx="85"
-                                        cy="42"
-                                        rx="40"
-                                        ry="18"
-                                        stroke="white"
-                                        strokeWidth="1.25"
-                                        fill="none"
-                                      />
-                                    </svg>
+                                        preserveAspectRatio="none"
+                                      >
+                                        <path
+                                          d="M-20 15 C50 0 110 35 180 10 C240 -8 290 25 350 12"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                        <path
+                                          d="M-20 30 C40 18 130 50 200 25 C260 8 300 38 350 30"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                        <path
+                                          d="M-20 48 C30 38 120 68 190 42 C270 20 300 55 350 48"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                        <path
+                                          d="M-20 65 C60 52 140 82 220 60 C280 38 320 72 350 65"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                        <ellipse
+                                          cx="260"
+                                          cy="30"
+                                          rx="35"
+                                          ry="15"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                        <ellipse
+                                          cx="85"
+                                          cy="42"
+                                          rx="40"
+                                          ry="18"
+                                          stroke="white"
+                                          strokeWidth="1.25"
+                                          fill="none"
+                                        />
+                                      </svg>
+                                    </div>
 
                                     {/* Star Button */}
                                     <button
@@ -849,17 +854,17 @@ export default function OrbitaskWorkspacePage() {
                                           );
                                           setIsColorSubmenuOpen(null);
                                         }}
-                                        className="relative z-10 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded-[5px]"
+                                        className="relative z-20 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded-[5px]"
                                         title="Project options"
                                       >
                                         <MoreVertical className="w-3.5 h-3.5 stroke-[1.75]" />
                                       </button>
 
-                                      {/* Dropdown Menu (Exact match to Image 1) */}
+                                      {/* Dropdown Menu (Exact match to User's Screenshot) */}
                                       {activeMenuProjectId === project.id && (
                                         <div
                                           onClick={(e) => e.stopPropagation()}
-                                          className="absolute right-0 top-7 w-48 bg-white rounded-[5px] border border-[#E2E8F0] shadow-xl z-40 py-1 text-xs text-[#334155] animate-in fade-in zoom-in-95 font-inter"
+                                          className="absolute right-0 top-8 w-48 bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl z-50 py-2 px-1 text-[13px] font-inter animate-in fade-in zoom-in-95"
                                         >
                                           {/* Rename project */}
                                           <button
@@ -874,9 +879,20 @@ export default function OrbitaskWorkspacePage() {
                                                 description: project.description,
                                               });
                                             }}
-                                            className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2.5 text-[#334155] cursor-pointer"
+                                            className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                           >
-                                            <Edit2 className="w-3.5 h-3.5 text-[#64748B] stroke-[1.75]" />
+                                            <svg
+                                              className="w-4 h-4 text-[#475569] shrink-0"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="1.75"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                            >
+                                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                            </svg>
                                             <span>Rename project</span>
                                           </button>
 
@@ -893,9 +909,19 @@ export default function OrbitaskWorkspacePage() {
                                                 description: project.description,
                                               });
                                             }}
-                                            className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2.5 text-[#334155] cursor-pointer"
+                                            className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                           >
-                                            <RefreshCw className="w-3.5 h-3.5 text-[#64748B] stroke-[1.75]" />
+                                            <svg
+                                              className="w-4 h-4 text-[#475569] shrink-0"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="1.75"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                            >
+                                              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                                            </svg>
                                             <span>Edit description</span>
                                           </button>
 
@@ -905,37 +931,49 @@ export default function OrbitaskWorkspacePage() {
                                             onMouseEnter={() =>
                                               setIsColorSubmenuOpen(project.id)
                                             }
-                                            onMouseLeave={() =>
-                                              setIsColorSubmenuOpen(null)
-                                            }
                                           >
                                             <button
                                               type="button"
-                                              onClick={() =>
+                                              onClick={(e) => {
+                                                e.stopPropagation();
                                                 setIsColorSubmenuOpen(
                                                   isColorSubmenuOpen === project.id
                                                     ? null
                                                     : project.id
-                                                )
-                                              }
-                                              className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between text-[#334155] cursor-pointer"
+                                                );
+                                              }}
+                                              className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                             >
-                                              <div className="flex items-center gap-2.5">
-                                                <Palette className="w-3.5 h-3.5 text-[#64748B] stroke-[1.75]" />
+                                              <div className="flex items-center gap-3">
+                                                <svg
+                                                  className="w-4 h-4 text-[#475569] shrink-0"
+                                                  viewBox="0 0 24 24"
+                                                  fill="none"
+                                                  stroke="currentColor"
+                                                  strokeWidth="1.75"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                >
+                                                  <rect x="2" y="3" width="16" height="5" rx="1" />
+                                                  <path d="M10 8v3a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v4" />
+                                                </svg>
                                                 <span>change color</span>
                                               </div>
-                                              <ChevronRight className="w-3 h-3 text-[#94A3B8]" />
+                                              <ChevronRight className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
                                             </button>
 
-                                            {/* Submenu with color dots from Image 1 */}
+                                            {/* Submenu with color dots (Exact match to User's Screenshot) */}
                                             {isColorSubmenuOpen === project.id && (
-                                              <div className="absolute left-full top-0 ml-1 w-32 bg-white rounded-[5px] border border-[#E2E8F0] shadow-xl py-1 text-xs text-[#334155] animate-in fade-in z-50">
+                                              <div
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="absolute left-full top-0 ml-1.5 min-w-[125px] bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl p-2 z-50 animate-in fade-in"
+                                              >
                                                 {[
                                                   { label: "Blue", color: "#2563EB" },
-                                                  { label: "Teal", color: "#0D9488" },
-                                                  { label: "Yellow", color: "#F59E0B" },
+                                                  { label: "Teal", color: "#00A3A6" },
+                                                  { label: "Yellow", color: "#D97706" },
                                                   { label: "Red", color: "#EF4444" },
-                                                  { label: "Green", color: "#10B981" },
+                                                  { label: "Green", color: "#2E7D32" },
                                                 ].map((c) => (
                                                   <button
                                                     key={c.color}
@@ -948,17 +986,15 @@ export default function OrbitaskWorkspacePage() {
                                                         e
                                                       )
                                                     }
-                                                    className="w-full px-3 py-1.5 text-left hover:bg-[#F8FAFC] flex items-center gap-2.5 cursor-pointer"
+                                                    className="w-full px-2.5 py-1.5 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[4px] cursor-pointer transition-colors text-[13px] font-normal text-[#334155]"
                                                   >
                                                     <span
-                                                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                                                      className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs"
                                                       style={{
                                                         backgroundColor: c.color,
                                                       }}
                                                     />
-                                                    <span className="text-xs font-medium">
-                                                      {c.label}
-                                                    </span>
+                                                    <span>{c.label}</span>
                                                   </button>
                                                 ))}
                                               </div>
@@ -975,9 +1011,9 @@ export default function OrbitaskWorkspacePage() {
                                                 e
                                               )
                                             }
-                                            className="w-full px-3.5 py-2 text-left hover:bg-red-50 text-red-600 flex items-center gap-2.5 border-t border-[#F1F5F9] mt-1 cursor-pointer"
+                                            className="w-full px-3 py-2 text-left hover:bg-red-50/70 text-[#EF4444] flex items-center gap-3 rounded-[5px] cursor-pointer transition-colors mt-0.5"
                                           >
-                                            <Trash2 className="w-3.5 h-3.5 stroke-[1.75]" />
+                                            <Trash2 className="w-4 h-4 text-[#EF4444] shrink-0 stroke-[1.75]" />
                                             <span>Delete Permanently</span>
                                           </button>
                                         </div>
