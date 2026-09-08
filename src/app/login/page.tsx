@@ -444,13 +444,13 @@ function AuthComponent() {
     authStep === "onboarding-5";
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row font-inter selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-white flex flex-col lg:flex-row font-inter selection:bg-blue-100 selection:text-blue-900">
       {/* ================= LEFT COLUMN: AUTH & ONBOARDING FORMS ================= */}
-      <div className="w-full lg:w-[48%] xl:w-[45%] flex flex-col justify-between px-6 sm:px-12 lg:px-16 py-8 sm:py-12">
+      <div className="w-full lg:w-[48%] xl:w-[45%] flex flex-col justify-between px-6 sm:px-10 lg:px-12 xl:px-14 py-4 sm:py-6 h-full overflow-y-auto">
         {/* Top Bar (Brand Logo or Onboarding Top Bar) */}
         <div>
           {!isOnboarding ? (
-            <Link href="/" className="inline-flex items-center gap-1.5 select-none mb-10 sm:mb-14">
+            <Link href="/" className="inline-flex items-center gap-1.5 select-none mb-6 sm:mb-8">
               <div className="relative flex items-center justify-center">
                 <svg
                   className="w-8 h-8 text-[#0284C7]"
@@ -487,7 +487,7 @@ function AuthComponent() {
               </span>
             </Link>
           ) : (
-            <div className="flex items-center justify-between mb-8 sm:mb-10">
+            <div className="flex items-center justify-between mb-4 sm:mb-5">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -583,14 +583,14 @@ function AuthComponent() {
           {/* ================= SCREEN 1: SIGN UP ================= */}
           {authStep === "signup" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-3xl sm:text-[34px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[30px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1.5">
                 Welcome to <span className="text-[#2563EB]">Orbitask</span>
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-4 sm:mb-5">
                 Please enter your email address to create an account.
               </p>
 
-              <form onSubmit={handleSignUp} className="space-y-5">
+              <form onSubmit={handleSignUp} className="space-y-3.5">
                 {/* Full name field with embedded border label */}
                 <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                   <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
@@ -653,7 +653,7 @@ function AuthComponent() {
                 </div>
 
                 {/* User Agreement & Privacy Policy Checkbox */}
-                <label className="flex items-start gap-2.5 cursor-pointer select-none text-xs font-medium text-[#475569] pt-1">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none text-xs font-medium text-[#475569] pt-0.5">
                   <input
                     type="checkbox"
                     checked={agreed}
@@ -676,7 +676,7 @@ function AuthComponent() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-1"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>{loading ? "Creating Account..." : "Sign Up"}</span>
@@ -684,7 +684,7 @@ function AuthComponent() {
               </form>
 
               {/* Toggle to Sign in */}
-              <div className="mt-8 text-center text-xs font-medium text-[#64748B]">
+              <div className="mt-5 text-center text-xs font-medium text-[#64748B]">
                 Already have an account?{" "}
                 <button
                   type="button"
@@ -704,7 +704,7 @@ function AuthComponent() {
           {authStep === "verify" && (
             <div className="animate-in fade-in duration-300">
               {/* Quick autofill helper for easy testing */}
-              <div className="mb-4 flex items-center justify-between p-2.5 bg-blue-50/80 border border-blue-200 rounded-[5px] text-[11px] font-medium text-[#1E40AF]">
+              <div className="mb-3 flex items-center justify-between p-2.5 bg-blue-50/80 border border-blue-200 rounded-[5px] text-[11px] font-medium text-[#1E40AF]">
                 <span>Active OTP: <strong className="font-mono tracking-wider">{verificationCode}</strong></span>
                 <button
                   type="button"
@@ -715,16 +715,16 @@ function AuthComponent() {
                 </button>
               </div>
 
-              <h1 className="text-2xl sm:text-[30px] font-bold tracking-tight text-[#0F172A] font-poppins mb-3 leading-tight">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins mb-1.5 leading-tight">
                 Email Verification Code
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] leading-relaxed mb-6">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] leading-relaxed mb-4">
                 We've sent a 6-digit confirmation code to your email. Please enter the code in the
                 box below to verify your account creation request.
               </p>
 
-              <div className="mb-6">
-                <p className="text-xs font-medium text-[#64748B] mb-1">
+              <div className="mb-4">
+                <p className="text-xs font-medium text-[#64748B] mb-0.5">
                   Please enter the verification code sent to
                 </p>
                 <p className="text-xs sm:text-sm font-semibold text-[#0F172A]">
@@ -733,7 +733,7 @@ function AuthComponent() {
               </div>
 
               {/* 6 OTP Digit Input Boxes */}
-              <div className="flex items-center gap-2 sm:gap-3 mb-6">
+              <div className="flex items-center gap-2 sm:gap-2.5 mb-4">
                 {otpDigits.map((digit, idx) => (
                   <input
                     key={idx}
@@ -747,13 +747,13 @@ function AuthComponent() {
                     onChange={(e) => handleOtpChange(idx, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(idx, e)}
                     onPaste={handleOtpPaste}
-                    className="w-10 h-12 sm:w-13 sm:h-14 border border-[#CBD5E1] rounded-[5px] text-center text-lg sm:text-xl font-bold font-poppins text-[#0F172A] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] outline-none transition-colors"
+                    className="w-9.5 h-11 sm:w-11 sm:h-12 border border-[#CBD5E1] rounded-[5px] text-center text-lg sm:text-xl font-bold font-poppins text-[#0F172A] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] outline-none transition-colors"
                   />
                 ))}
               </div>
 
               {/* Footer: Resend & Timer */}
-              <div className="flex items-center justify-between text-xs font-medium text-[#64748B] mb-8">
+              <div className="flex items-center justify-between text-xs font-medium text-[#64748B] mb-5">
                 <div>
                   <span>Didn't receive the code? </span>
                   {canResend ? (
@@ -778,7 +778,7 @@ function AuthComponent() {
                 type="button"
                 onClick={() => verifyAndComplete(otpDigits.join(""))}
                 disabled={isVerifying || otpDigits.join("").length !== 6}
-                className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
               >
                 {isVerifying ? (
                   <span>Verifying Account...</span>
@@ -790,7 +790,7 @@ function AuthComponent() {
                 )}
               </button>
 
-              <div className="mt-6 text-center">
+              <div className="mt-4 text-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -808,19 +808,19 @@ function AuthComponent() {
           {/* ================= ONBOARDING STEP 1: CREATE A NEW WORKSPACE ================= */}
           {authStep === "onboarding-1" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Create a new workspace
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-5">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-3">
                 Your Orbitask account has been successfully verified. Next, provide your organization's
                 name and address to proceed.
               </p>
 
               {/* Logo Upload Avatar */}
-              <div className="flex flex-col items-center justify-center my-6">
+              <div className="flex flex-col items-center justify-center my-3 sm:my-3.5">
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-18 h-18 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] cursor-pointer hover:bg-blue-100 transition-all shadow-xs relative overflow-hidden group"
+                  className="w-14 h-14 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] cursor-pointer hover:bg-blue-100 transition-all shadow-xs relative overflow-hidden group"
                   title="Click to upload workspace logo"
                 >
                   {workspaceLogo ? (
@@ -831,7 +831,7 @@ function AuthComponent() {
                     />
                   ) : (
                     <svg
-                      className="w-8 h-8 text-[#2563EB]"
+                      className="w-6 h-6 text-[#2563EB]"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -845,7 +845,7 @@ function AuthComponent() {
                     </svg>
                   )}
                 </div>
-                <p className="text-[11px] font-medium text-[#64748B] mt-2 flex items-center gap-1.5">
+                <p className="text-[11px] font-medium text-[#64748B] mt-1.5 flex items-center gap-1.5">
                   <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-[#94A3B8] text-[9px] font-bold text-[#64748B]">
                     i
                   </span>
@@ -861,7 +861,7 @@ function AuthComponent() {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleStep1Next} className="space-y-4">
+              <form onSubmit={handleStep1Next} className="space-y-3">
                 <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                   <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
                     Workspace Name<span className="text-red-500 ml-0.5">*</span>
@@ -897,7 +897,7 @@ function AuthComponent() {
                     Description
                   </label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={workspaceDesc}
                     onChange={(e) => setWorkspaceDesc(e.target.value)}
                     placeholder="ex: A workspace for managing Orbitask projects"
@@ -907,14 +907,14 @@ function AuthComponent() {
 
                 <button
                   type="submit"
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-4 sm:mt-5"
                 >
                   Next
                 </button>
               </form>
 
               {/* Progress Bar (Step 1/5: 20%) */}
-              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-4 sm:mt-5 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[20%] transition-all duration-300" />
               </div>
             </div>
@@ -923,14 +923,14 @@ function AuthComponent() {
           {/* ================= ONBOARDING STEP 2: GETTING YOUR WORKSPACE READY ================= */}
           {authStep === "onboarding-2" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Getting your workspace ready
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-4">
                 Answer a few quick questions so we can personalize your Orbitask experience.
               </p>
 
-              <div className="space-y-5">
+              <div className="space-y-3.5">
                 {/* Dropdown 1: What type of work do you manage? */}
                 <div className="relative z-20">
                   <div
@@ -1053,14 +1053,14 @@ function AuthComponent() {
                 <button
                   type="button"
                   onClick={handleStep2Next}
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-4 sm:mt-5"
                 >
                   Next
                 </button>
               </div>
 
               {/* Progress Bar (Step 2/5: 40%) */}
-              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-4 sm:mt-5 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[40%] transition-all duration-300" />
               </div>
             </div>
@@ -1069,15 +1069,15 @@ function AuthComponent() {
           {/* ================= ONBOARDING STEP 3: PREPARING YOUR WORKSPACE ================= */}
           {authStep === "onboarding-3" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Preparing your workspace
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-4">
                 Great, you're here to manage {workType.split("&")[0].trim() || "Support"} and are
                 currently working on {currentFocus}.
               </p>
 
-              <div className="space-y-5">
+              <div className="space-y-3.5">
                 {/* Dropdown 1: Industry */}
                 <div className="relative z-20">
                   <div
@@ -1212,14 +1212,14 @@ function AuthComponent() {
                 <button
                   type="button"
                   onClick={handleStep3Next}
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-4 sm:mt-5"
                 >
                   Next
                 </button>
               </div>
 
               {/* Progress Bar (Step 3/5: 60%) */}
-              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-4 sm:mt-5 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[60%] transition-all duration-300" />
               </div>
             </div>
@@ -1228,26 +1228,26 @@ function AuthComponent() {
           {/* ================= ONBOARDING STEP 4: SET UP YOUR FIRST PROJECT ================= */}
           {authStep === "onboarding-4" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Set up your first project
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-6">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-3">
                 Enter a name to create your first project in Orbitask.
               </p>
 
               {/* Workspace Badge / Avatar matching Screenshot */}
-              <div className="flex flex-col items-center justify-center my-6">
-                <div className="w-16 h-16 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#0F172A] font-bold text-lg font-poppins shadow-xs">
+              <div className="flex flex-col items-center justify-center my-3 sm:my-3.5">
+                <div className="w-14 h-14 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#0F172A] font-bold text-base font-poppins shadow-xs">
                   OR
                 </div>
-                <span className="text-xs sm:text-sm font-semibold text-[#0F172A] mt-2">
+                <span className="text-xs sm:text-sm font-semibold text-[#0F172A] mt-1.5">
                   {workspaceName || "Orbitask"}
                 </span>
               </div>
 
-              <form onSubmit={handleStep4Next} className="space-y-5">
+              <form onSubmit={handleStep4Next} className="space-y-3">
                 {/* Field 1: Project Name */}
-                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                   <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
                     Project Name<span className="text-red-500 ml-0.5">*</span>
                   </label>
@@ -1262,7 +1262,7 @@ function AuthComponent() {
                 </div>
 
                 {/* Field 2: Description */}
-                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                   <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
                     Description
                   </label>
@@ -1270,14 +1270,14 @@ function AuthComponent() {
                     value={projectDesc}
                     onChange={(e) => setProjectDesc(e.target.value)}
                     placeholder="ex: A project to revamp the company’s website"
-                    rows={3}
+                    rows={2}
                     className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0 resize-none"
                   />
                 </div>
 
                 {/* Field 3: Board */}
                 <div>
-                  <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                     <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
                       Board
                     </label>
@@ -1289,7 +1289,7 @@ function AuthComponent() {
                       className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
                     />
                   </div>
-                  <div className="flex items-center gap-1.5 mt-2 text-[11px] text-[#64748B]">
+                  <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-[#64748B]">
                     <Info className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
                     <span>A default board named “Default Board” will be created automatically</span>
                   </div>
@@ -1297,14 +1297,14 @@ function AuthComponent() {
 
                 <button
                   type="submit"
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-4 sm:mt-5"
                 >
                   Create Project
                 </button>
               </form>
 
               {/* Progress Bar (Step 4/5: 80%) */}
-              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-4 sm:mt-5 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-[80%] transition-all duration-300" />
               </div>
             </div>
@@ -1313,19 +1313,19 @@ function AuthComponent() {
           {/* ================= ONBOARDING STEP 5: INVITE YOUR TEAM MEMBERS ================= */}
           {authStep === "onboarding-5" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Invite your Team Members
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-4">
                 Add your teammates to collaborate and start building your projects together in Orbitask.
               </p>
 
-              <form onSubmit={handleFinishOnboarding} className="space-y-4">
-                <div className="space-y-3">
+              <form onSubmit={handleFinishOnboarding} className="space-y-3">
+                <div className="space-y-2">
                   {inviteEmails.map((emailVal, idx) => (
                     <div
                       key={idx}
-                      className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 py-3 flex items-center gap-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors"
+                      className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 py-2 flex items-center gap-2.5 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors"
                     >
                       <Mail className="w-4 h-4 text-[#94A3B8] shrink-0" />
                       <input
@@ -1343,7 +1343,7 @@ function AuthComponent() {
                   <button
                     type="button"
                     onClick={handleAddInviteEmail}
-                    className="inline-flex items-center gap-1.5 border border-[#CBD5E1] bg-white hover:bg-slate-50 text-[#0F172A] text-xs font-medium px-3.5 py-2 rounded-[5px] transition-colors cursor-pointer shadow-2xs"
+                    className="inline-flex items-center gap-1.5 border border-[#CBD5E1] bg-white hover:bg-slate-50 text-[#0F172A] text-xs font-medium px-3.5 py-1.5 rounded-[5px] transition-colors cursor-pointer shadow-2xs"
                   >
                     <span>Add another</span>
                   </button>
@@ -1351,14 +1351,14 @@ function AuthComponent() {
 
                 <button
                   type="submit"
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-4 sm:mt-5"
                 >
                   Send Invite & continue
                 </button>
               </form>
 
               {/* Progress Bar (Step 5/5: 100%) */}
-              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-4 sm:mt-5 overflow-hidden">
                 <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-full transition-all duration-300" />
               </div>
             </div>
@@ -1367,15 +1367,15 @@ function AuthComponent() {
           {/* ================= SCREEN SIGN IN ================= */}
           {authStep === "signin" && (
             <div className="animate-in fade-in duration-300">
-              <h1 className="text-3xl sm:text-[34px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-1">
                 Sign in to <span className="text-[#2563EB]">Orbitask</span>
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-6">
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-3">
                 Enter your email address and password to access your workspaces.
               </p>
 
               {/* Quick Admin fill */}
-              <div className="mb-5 flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-[5px] text-[11px] font-medium text-slate-700">
+              <div className="mb-3 flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-[5px] text-[11px] font-medium text-slate-700">
                 <span>Platform Admin: <strong>Bilal Khan</strong></span>
                 <button
                   type="button"
@@ -1386,7 +1386,7 @@ function AuthComponent() {
                 </button>
               </div>
 
-              <form onSubmit={handleSignIn} className="space-y-5">
+              <form onSubmit={handleSignIn} className="space-y-3.5">
                 {/* Email */}
                 <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
                   <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
@@ -1431,7 +1431,7 @@ function AuthComponent() {
                 </div>
 
                 {/* Remember Me & Forgot Password */}
-                <div className="flex items-center justify-between text-xs font-medium text-[#475569] pt-1">
+                <div className="flex items-center justify-between text-xs font-medium text-[#475569] pt-0.5">
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -1449,7 +1449,7 @@ function AuthComponent() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                  className="w-full h-10 sm:h-10.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-1"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>{loading ? "Signing in..." : "Sign In"}</span>
@@ -1457,7 +1457,7 @@ function AuthComponent() {
               </form>
 
               {/* Toggle to Sign up */}
-              <div className="mt-8 text-center text-xs font-medium text-[#64748B]">
+              <div className="mt-5 text-center text-xs font-medium text-[#64748B]">
                 Don't have an account?{" "}
                 <button
                   type="button"
@@ -1475,14 +1475,14 @@ function AuthComponent() {
         </div>
 
         {/* Left column bottom copyright */}
-        <div className="mt-8 pt-4 text-xs font-medium text-[#94A3B8] text-center lg:text-left">
+        <div className="mt-4 pt-2 text-[11px] font-medium text-[#94A3B8] text-center lg:text-left">
           © 2026 Orbitask Inc. All rights reserved.
         </div>
       </div>
 
       {/* ================= RIGHT COLUMN: BLUE CAROUSEL & PERSPECTIVE UI MOCKUPS ================= */}
-      <div className="hidden lg:flex w-[52%] xl:w-[55%] p-4 sm:p-6">
-        <div className="w-full bg-[#2563EB] rounded-[24px] flex flex-col justify-between p-8 xl:p-12 relative overflow-hidden text-white shadow-xl min-h-[750px]">
+      <div className="hidden lg:flex w-[52%] xl:w-[55%] p-3 xl:p-4 h-full max-h-screen overflow-hidden">
+        <div className="w-full h-full bg-[#2563EB] rounded-[20px] xl:rounded-[24px] flex flex-col justify-between p-6 xl:p-8 relative overflow-hidden text-white shadow-xl">
           {/* Organic wavy topography contour lines */}
           <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
             <svg
@@ -1520,15 +1520,15 @@ function AuthComponent() {
 
           {/* Top Carousel Quotes & Pagination */}
           <div className="relative z-10 max-w-xl">
-            <h2 className="text-3xl xl:text-[36px] font-bold font-poppins text-white leading-[1.2] mb-3">
+            <h2 className="text-2xl xl:text-[28px] font-bold font-poppins text-white leading-[1.25] mb-2">
               {slides[activeSlide]?.title || slides[0].title}
             </h2>
-            <p className="text-xs sm:text-sm font-medium text-white/80 leading-relaxed mb-6 italic">
+            <p className="text-xs sm:text-[13px] font-medium text-white/80 leading-relaxed mb-3.5 italic line-clamp-2">
               {slides[activeSlide]?.quote || slides[0].quote}
             </p>
 
             {/* Pagination Pill Dots */}
-            <div className="flex items-center gap-1.5 mb-8">
+            <div className="flex items-center gap-1.5 mb-4 xl:mb-5">
               {[0, 1, 2, 3].map((i) => {
                 const isActive = activeSlide === i;
                 return (
@@ -1547,8 +1547,8 @@ function AuthComponent() {
           </div>
 
           {/* Bottom Perspective Floating Dashboard Mockups */}
-          <div className="relative z-10 w-full flex items-center justify-center -mb-24 xl:-mb-28">
-            <div className="w-full max-w-[640px] bg-white rounded-[14px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-white/60 p-4 text-[#0F172A] transform rotate-[-4deg] scale-[0.96] hover:rotate-0 hover:scale-[1.0] transition-all duration-500 origin-bottom-left">
+          <div className="relative z-10 w-full flex items-center justify-center -mb-20 xl:-mb-24">
+            <div className="w-full max-w-[620px] bg-white rounded-[14px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-white/60 p-3.5 text-[#0F172A] transform rotate-[-3.5deg] scale-[0.88] xl:scale-[0.93] hover:rotate-0 hover:scale-[0.98] transition-all duration-500 origin-bottom-left">
               {/* SLIDE 0: Overview Dashboard (Screenshot 2 of Onboarding) */}
               {activeSlide === 0 && (
                 <div className="space-y-4">
