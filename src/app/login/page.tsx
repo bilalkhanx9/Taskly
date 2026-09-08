@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUser, sendOtpAction } from "@/actions/auth";
+import { createWorkspace } from "@/actions/workspace";
 import {
   User,
   Mail,
@@ -15,6 +16,7 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowRight,
+  ArrowLeft,
   LogIn,
   Search,
   Plus,
@@ -22,6 +24,7 @@ import {
   Layers,
   Sparkles,
   ChevronDown,
+  ChevronUp,
   Kanban,
   Table as TableIcon,
   Calendar,
@@ -40,10 +43,13 @@ function AuthComponent() {
   const searchParams = useSearchParams();
   const initialMode = searchParams.get("mode") === "signin" ? "signin" : "signup";
 
-  // Auth steps: "signup" | "verify" | "signin"
-  const [authStep, setAuthStep] = useState<"signup" | "verify" | "signin">(initialMode);
+  // Auth & Onboarding steps:
+  // "signup" | "verify" | "signin" | "onboarding-1" | "onboarding-2" | "onboarding-3"
+  const [authStep, setAuthStep] = useState<
+    "signup" | "verify" | "signin" | "onboarding-1" | "onboarding-2" | "onboarding-3"
+  >(initialMode);
 
-  // Form state
+  // Sign up Form state
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,9 +68,32 @@ function AuthComponent() {
   const [canResend, setCanResend] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // Onboarding Step 1 state
+  const [workspaceName, setWorkspaceName] = useState("Orbitask Team");
+  const [workspaceUrl, setWorkspaceUrl] = useState("orbitask-team");
+  const [workspaceDesc, setWorkspaceDesc] = useState("A workspace for managing Orbitask projects");
+  const [workspaceLogo, setWorkspaceLogo] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Onboarding Step 2 state
+  const [workType, setWorkType] = useState("Brand Strategy & Positioning");
+  const [currentFocus, setCurrentFocus] = useState("Launching a Social Media Campaign");
+  const [openWorkTypeDropdown, setOpenWorkTypeDropdown] = useState(false);
+  const [openFocusDropdown, setOpenFocusDropdown] = useState(true);
+
+  // Onboarding Step 3 state
+  const [industry, setIndustry] = useState("Select company industry");
+  const [teamSize, setTeamSize] = useState("2–5 team members");
+  const [openIndustryDropdown, setOpenIndustryDropdown] = useState(false);
+  const [openTeamSizeDropdown, setOpenTeamSizeDropdown] = useState(true);
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Carousel slide state (0 = Overview, 1 = Kanban, 2 = Planner)
+  // Carousel slide state:
+  // 0 = Overview Dashboard (Screenshot 2 of Onboarding)
+  // 1 = Kanban Board (Screenshot 3 of Onboarding)
+  // 2 = Planner Table
+  // 3 = Galaxy View (Screenshot 1 of Onboarding)
   const [activeSlide, setActiveSlide] = useState(0);
 
   // Resend Countdown Timer
@@ -86,7 +115,6 @@ function AuthComponent() {
     };
   }, [authStep, timerSeconds]);
 
-  // Handle Sign Up Submission -> transitions to Verification
   // Handle Sign Up Submission -> sends real OTP via Resend & transitions to Verification
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,7 +227,7 @@ function AuthComponent() {
     }
   };
 
-  // Verify and complete registration / login
+  // Verify and complete registration -> transitions to Onboarding Step 1
   const verifyAndComplete = async (codeToVerify: string) => {
     if (codeToVerify !== verificationCode) {
       setError("Invalid verification code. Please check and try again.");
@@ -217,28 +245,67 @@ function AuthComponent() {
         password: password || "password123",
       });
 
-      // Sign in and redirect to workspace
+      // Sign in and establish session
       await signIn("credentials", {
         email: email || "LucasBennett2002@gmail.com",
         password: password || "password123",
         redirect: false,
       });
 
-      setSuccess("Email verified successfully! Redirecting to workspace...");
+      // Transition to Onboarding Step 1: Create a new workspace!
+      setSuccess("Email verified successfully!");
       setTimeout(() => {
-        router.push("/workspace");
-        router.refresh();
-      }, 700);
+        setSuccess(null);
+        setAuthStep("onboarding-1");
+        setActiveSlide(3); // Galaxy View matching Screenshot 1
+      }, 500);
     } catch (err: any) {
       console.error(err);
-      // Fallback graceful redirect to workspace
-      setSuccess("Account verified! Launching your workspace...");
-      setTimeout(() => {
-        router.push("/workspace");
-      }, 800);
+      // Fallback graceful transition to onboarding
+      setAuthStep("onboarding-1");
+      setActiveSlide(3);
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  // Handle Logo Upload in Step 1
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setWorkspaceLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Step 1 -> Step 2
+  const handleStep1Next = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthStep("onboarding-2");
+    setActiveSlide(0); // Overview slide matching Screenshot 2
+  };
+
+  // Step 2 -> Step 3
+  const handleStep2Next = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthStep("onboarding-3");
+    setActiveSlide(1); // Kanban slide matching Screenshot 3
+  };
+
+  // Final Step Finish & Launch
+  const handleFinishOnboarding = async () => {
+    try {
+      if (workspaceName.trim()) {
+        await createWorkspace(workspaceName.trim());
+      }
+    } catch (err) {
+      console.error("Workspace save notice:", err);
+    }
+    router.push("/workspace");
+    router.refresh();
   };
 
   // Sign In Submission
@@ -280,7 +347,7 @@ function AuthComponent() {
     verifyAndComplete(verificationCode);
   };
 
-  // Slide content data matching screenshots
+  // 4 Carousel Slides data matching screenshots
   const slides = [
     {
       title: "Effortlessly manage your team and operations.",
@@ -297,50 +364,128 @@ function AuthComponent() {
       quote:
         "“When something is important enough, you do it even if the odds are not in your favor.”",
     },
+    {
+      title: "See every task’s priority and status at a glance with the Galaxy View.",
+      quote:
+        "“It takes 20 years to build a reputation and five minutes to ruin it. If you think about that, you'll do things differently.”",
+    },
   ];
+
+  const isOnboarding =
+    authStep === "onboarding-1" || authStep === "onboarding-2" || authStep === "onboarding-3";
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row font-inter selection:bg-blue-100 selection:text-blue-900">
-      {/* ================= LEFT COLUMN: AUTH FORMS ================= */}
+      {/* ================= LEFT COLUMN: AUTH & ONBOARDING FORMS ================= */}
       <div className="w-full lg:w-[48%] xl:w-[45%] flex flex-col justify-between px-6 sm:px-12 lg:px-16 py-8 sm:py-12">
-        {/* Brand Logo */}
+        {/* Top Bar (Brand Logo or Onboarding Top Bar) */}
         <div>
-          <Link href="/" className="inline-flex items-center gap-1.5 select-none mb-10 sm:mb-14">
-            <div className="relative flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-[#0284C7]"
-                viewBox="0 0 36 36"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          {!isOnboarding ? (
+            <Link href="/" className="inline-flex items-center gap-1.5 select-none mb-10 sm:mb-14">
+              <div className="relative flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-[#0284C7]"
+                  viewBox="0 0 36 36"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="18" cy="18" r="6" fill="#0284C7" />
+                  <ellipse
+                    cx="18"
+                    cy="18"
+                    rx="14"
+                    ry="5.5"
+                    stroke="#0284C7"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    transform="rotate(-38 18 18)"
+                  />
+                  <ellipse
+                    cx="18"
+                    cy="18"
+                    rx="14"
+                    ry="5.5"
+                    stroke="#38BDF8"
+                    strokeWidth="2.4"
+                    strokeDasharray="20 40"
+                    strokeLinecap="round"
+                    transform="rotate(-38 18 18)"
+                  />
+                </svg>
+              </div>
+              <span className="text-[22px] font-bold tracking-tight text-[#0F172A] -ml-0.5 font-poppins">
+                rbitask
+              </span>
+            </Link>
+          ) : (
+            <div className="flex items-center justify-between mb-8 sm:mb-10">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (authStep === "onboarding-3") {
+                      setAuthStep("onboarding-2");
+                      setActiveSlide(0);
+                    } else if (authStep === "onboarding-2") {
+                      setAuthStep("onboarding-1");
+                      setActiveSlide(3);
+                    } else if (authStep === "onboarding-1") {
+                      setAuthStep("verify");
+                      setActiveSlide(1);
+                    }
+                  }}
+                  className="text-[#64748B] hover:text-[#0F172A] transition-colors p-1 cursor-pointer"
+                  title="Go back"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <Link href="/" className="inline-flex items-center gap-1.5 select-none">
+                  <div className="relative flex items-center justify-center">
+                    <svg
+                      className="w-7 h-7 text-[#0284C7]"
+                      viewBox="0 0 36 36"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="18" cy="18" r="6" fill="#0284C7" />
+                      <ellipse
+                        cx="18"
+                        cy="18"
+                        rx="14"
+                        ry="5.5"
+                        stroke="#0284C7"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        transform="rotate(-38 18 18)"
+                      />
+                      <ellipse
+                        cx="18"
+                        cy="18"
+                        rx="14"
+                        ry="5.5"
+                        stroke="#38BDF8"
+                        strokeWidth="2.4"
+                        strokeDasharray="20 40"
+                        strokeLinecap="round"
+                        transform="rotate(-38 18 18)"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-[20px] font-bold tracking-tight text-[#0F172A] -ml-0.5 font-poppins">
+                    rbitask
+                  </span>
+                </Link>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleFinishOnboarding}
+                className="text-xs font-semibold text-[#2563EB] hover:underline cursor-pointer"
               >
-                <circle cx="18" cy="18" r="6" fill="#0284C7" />
-                <ellipse
-                  cx="18"
-                  cy="18"
-                  rx="14"
-                  ry="5.5"
-                  stroke="#0284C7"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  transform="rotate(-38 18 18)"
-                />
-                <ellipse
-                  cx="18"
-                  cy="18"
-                  rx="14"
-                  ry="5.5"
-                  stroke="#38BDF8"
-                  strokeWidth="2.4"
-                  strokeDasharray="20 40"
-                  strokeLinecap="round"
-                  transform="rotate(-38 18 18)"
-                />
-              </svg>
+                Skip and start
+              </button>
             </div>
-            <span className="text-[22px] font-bold tracking-tight text-[#0F172A] -ml-0.5 font-poppins">
-              rbitask
-            </span>
-          </Link>
+          )}
         </div>
 
         {/* Form Container */}
@@ -480,7 +625,7 @@ function AuthComponent() {
             </div>
           )}
 
-          {/* ================= SCREEN 2 & 3: EMAIL VERIFICATION CODE ================= */}
+          {/* ================= SCREEN 2: EMAIL VERIFICATION CODE ================= */}
           {authStep === "verify" && (
             <div className="animate-in fade-in duration-300">
               {/* Quick autofill helper for easy testing */}
@@ -553,7 +698,7 @@ function AuthComponent() {
                 </div>
               </div>
 
-              {/* Verify Manual Button (if filled) */}
+              {/* Verify Manual Button */}
               <button
                 type="button"
                 onClick={() => verifyAndComplete(otpDigits.join(""))}
@@ -581,6 +726,360 @@ function AuthComponent() {
                 >
                   ← Back to registration
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* ================= ONBOARDING STEP 1: CREATE A NEW WORKSPACE ================= */}
+          {authStep === "onboarding-1" && (
+            <div className="animate-in fade-in duration-300">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+                Create a new workspace
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-5">
+                Your Orbitask account has been successfully verified. Next, provide your organization's
+                name and address to proceed.
+              </p>
+
+              {/* Logo Upload Avatar */}
+              <div className="flex flex-col items-center justify-center my-6">
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-18 h-18 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] cursor-pointer hover:bg-blue-100 transition-all shadow-xs relative overflow-hidden group"
+                  title="Click to upload workspace logo"
+                >
+                  {workspaceLogo ? (
+                    <img
+                      src={workspaceLogo}
+                      alt="Workspace Logo"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      className="w-8 h-8 text-[#2563EB]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                      <circle cx="9" cy="9" r="2" />
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                  )}
+                </div>
+                <p className="text-[11px] font-medium text-[#64748B] mt-2 flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-[#94A3B8] text-[9px] font-bold text-[#64748B]">
+                    i
+                  </span>
+                  Upload your workspace logo or image
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleStep1Next} className="space-y-4">
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
+                    Workspace Name<span className="text-red-500 ml-0.5">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={workspaceName}
+                    onChange={(e) => {
+                      setWorkspaceName(e.target.value);
+                      setWorkspaceUrl(e.target.value.toLowerCase().trim().replace(/\s+/g, "-"));
+                    }}
+                    placeholder="ex: Orbitask Team"
+                    className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
+                    required
+                  />
+                </div>
+
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
+                    Custom workspace URL
+                  </label>
+                  <input
+                    type="text"
+                    value={workspaceUrl}
+                    onChange={(e) => setWorkspaceUrl(e.target.value)}
+                    placeholder="ex: your-workspace"
+                    className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0"
+                  />
+                </div>
+
+                <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-2.5 pb-2 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-colors">
+                  <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155] flex items-center">
+                    Description
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={workspaceDesc}
+                    onChange={(e) => setWorkspaceDesc(e.target.value)}
+                    placeholder="ex: A workspace for managing Orbitask projects"
+                    className="w-full bg-transparent border-0 outline-none text-xs sm:text-sm font-medium text-[#0F172A] placeholder:text-[#94A3B8] p-0 resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                >
+                  Next
+                </button>
+              </form>
+
+              {/* Progress Bar (Step 1/3: 33%) */}
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-1/3 transition-all duration-300" />
+              </div>
+            </div>
+          )}
+
+          {/* ================= ONBOARDING STEP 2: GETTING YOUR WORKSPACE READY ================= */}
+          {authStep === "onboarding-2" && (
+            <div className="animate-in fade-in duration-300">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+                Getting your workspace ready
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+                Answer a few quick questions so we can personalize your Orbitask experience.
+              </p>
+
+              <div className="space-y-5">
+                {/* Dropdown 1: What type of work do you manage? */}
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenWorkTypeDropdown(!openWorkTypeDropdown)}
+                    className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer focus-within:border-[#2563EB]"
+                  >
+                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
+                      What type of work do you manage?
+                    </label>
+                    <span className="text-xs sm:text-sm font-medium text-[#0F172A]">{workType}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#64748B] transition-transform ${
+                        openWorkTypeDropdown ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+
+                  {openWorkTypeDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg z-30 py-1 text-xs sm:text-sm font-medium">
+                      {[
+                        "Brand Strategy & Positioning",
+                        "Engineering & Software Development",
+                        "Product Management & UI/UX",
+                        "Sales & Marketing Operations",
+                        "Customer Support & Success",
+                      ].map((option) => (
+                        <div
+                          key={option}
+                          onClick={() => {
+                            setWorkType(option);
+                            setOpenWorkTypeDropdown(false);
+                          }}
+                          className={`px-3.5 py-2 hover:bg-blue-50 cursor-pointer transition-colors ${
+                            workType === option
+                              ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                              : "text-[#0F172A]"
+                          }`}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2 (What are you currently working on?) - Matches Screenshot 2 open state */}
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenFocusDropdown(!openFocusDropdown)}
+                    className="relative border border-[#2563EB] ring-1 ring-[#2563EB] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer"
+                  >
+                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#2563EB]">
+                      What are you currently working on?
+                    </label>
+                    <span className="text-xs sm:text-sm font-medium text-[#0F172A]">
+                      {currentFocus}
+                    </span>
+                    <ChevronUp className="w-4 h-4 text-[#2563EB]" />
+                  </div>
+
+                  {/* Dropdown menu */}
+                  {openFocusDropdown && (
+                    <div className="mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg py-1 text-xs sm:text-sm font-medium">
+                      {[
+                        "Creating an Email Marketing Workflow",
+                        "Optimizing SEO and Website Content",
+                        "Developing New Marketing Collateral",
+                        "Launching a Social Media Campaign",
+                      ].map((item) => {
+                        const isSelected = currentFocus === item;
+                        return (
+                          <div
+                            key={item}
+                            onClick={() => setCurrentFocus(item)}
+                            className={`px-3.5 py-2.5 cursor-pointer transition-colors ${
+                              isSelected
+                                ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                                : "text-[#0F172A] hover:bg-slate-50"
+                            }`}
+                          >
+                            {item}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleStep2Next}
+                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                >
+                  Next
+                </button>
+              </div>
+
+              {/* Progress Bar (Step 2/3: 66%) */}
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-2/3 transition-all duration-300" />
+              </div>
+            </div>
+          )}
+
+          {/* ================= ONBOARDING STEP 3: PREPARING YOUR WORKSPACE ================= */}
+          {authStep === "onboarding-3" && (
+            <div className="animate-in fade-in duration-300">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight text-[#0F172A] font-poppins leading-tight mb-2">
+                Preparing your workspace
+              </h1>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] mb-8">
+                Great, you're here to manage {workType.split("&")[0].trim() || "Support"} and are
+                currently working on {currentFocus}.
+              </p>
+
+              <div className="space-y-5">
+                {/* Dropdown 1: Industry */}
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenIndustryDropdown(!openIndustryDropdown)}
+                    className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer focus-within:border-[#2563EB]"
+                  >
+                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#334155]">
+                      What is your company industry?
+                    </label>
+                    <span
+                      className={`text-xs sm:text-sm font-medium ${
+                        industry === "Select company industry" ? "text-[#94A3B8]" : "text-[#0F172A]"
+                      }`}
+                    >
+                      {industry}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#64748B] transition-transform ${
+                        openIndustryDropdown ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+
+                  {openIndustryDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg z-30 py-1 text-xs sm:text-sm font-medium max-h-48 overflow-y-auto">
+                      {[
+                        "Technology & Software",
+                        "E-Commerce & Retail",
+                        "Finance & Fintech",
+                        "Healthcare & Medical",
+                        "Marketing & Creative Agency",
+                        "Education & Training",
+                        "Other",
+                      ].map((ind) => (
+                        <div
+                          key={ind}
+                          onClick={() => {
+                            setIndustry(ind);
+                            setOpenIndustryDropdown(false);
+                          }}
+                          className={`px-3.5 py-2 hover:bg-blue-50 cursor-pointer transition-colors ${
+                            industry === ind
+                              ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                              : "text-[#0F172A]"
+                          }`}
+                        >
+                          {ind}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2 (Team size) - Matches Screenshot 3 open state */}
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenTeamSizeDropdown(!openTeamSizeDropdown)}
+                    className="relative border border-[#2563EB] ring-1 ring-[#2563EB] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer"
+                  >
+                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#2563EB]">
+                      What are you currently working on?
+                    </label>
+                    <span className="text-xs sm:text-sm font-medium text-[#94A3B8]">
+                      Select team size
+                    </span>
+                    <ChevronUp className="w-4 h-4 text-[#2563EB]" />
+                  </div>
+
+                  {/* Dropdown menu */}
+                  {openTeamSizeDropdown && (
+                    <div className="mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg py-1 text-xs sm:text-sm font-medium">
+                      {[
+                        "1 Just me",
+                        "2–5 team members",
+                        "6–10 team members",
+                        "10+ team members",
+                      ].map((size) => {
+                        const isSelected = teamSize === size;
+                        return (
+                          <div
+                            key={size}
+                            onClick={() => setTeamSize(size)}
+                            className={`px-3.5 py-2.5 cursor-pointer transition-colors ${
+                              isSelected
+                                ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                                : "text-[#0F172A] hover:bg-slate-50"
+                            }`}
+                          >
+                            {size}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleFinishOnboarding}
+                  className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-medium rounded-[5px] flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer mt-6"
+                >
+                  Next
+                </button>
+              </div>
+
+              {/* Progress Bar (Step 3/3: 100%) */}
+              <div className="w-full bg-slate-200 h-1.5 rounded-[5px] mt-8 overflow-hidden">
+                <div className="bg-[#2563EB] h-1.5 rounded-[5px] w-full transition-all duration-300" />
               </div>
             </div>
           )}
@@ -701,7 +1200,7 @@ function AuthComponent() {
         </div>
       </div>
 
-      {/* ================= RIGHT COLUMN: BLUE CAROUSEL & PERSPECTIVE UI MOCKUP ================= */}
+      {/* ================= RIGHT COLUMN: BLUE CAROUSEL & PERSPECTIVE UI MOCKUPS ================= */}
       <div className="hidden lg:flex w-[52%] xl:w-[55%] p-4 sm:p-6">
         <div className="w-full bg-[#2563EB] rounded-[24px] flex flex-col justify-between p-8 xl:p-12 relative overflow-hidden text-white shadow-xl min-h-[750px]">
           {/* Organic wavy topography contour lines */}
@@ -742,42 +1241,40 @@ function AuthComponent() {
           {/* Top Carousel Quotes & Pagination */}
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl xl:text-[36px] font-bold font-poppins text-white leading-[1.2] mb-3">
-              {slides[activeSlide].title}
+              {slides[activeSlide]?.title || slides[0].title}
             </h2>
             <p className="text-xs sm:text-sm font-medium text-white/80 leading-relaxed mb-6 italic">
-              {slides[activeSlide].quote}
+              {slides[activeSlide]?.quote || slides[0].quote}
             </p>
 
             {/* Pagination Pill Dots */}
             <div className="flex items-center gap-1.5 mb-8">
               {[0, 1, 2, 3].map((i) => {
-                const targetIdx = i % 3;
-                const isActive = activeSlide === targetIdx;
+                const isActive = activeSlide === i;
                 return (
                   <button
                     key={i}
                     type="button"
-                    onClick={() => setActiveSlide(targetIdx)}
+                    onClick={() => setActiveSlide(i)}
                     className={`transition-all duration-300 rounded-full cursor-pointer ${
                       isActive ? "w-8 h-2 bg-white" : "w-2 h-2 bg-white/40 hover:bg-white/75"
                     }`}
-                    aria-label={`Go to slide ${targetIdx + 1}`}
+                    aria-label={`Go to slide ${i + 1}`}
                   />
                 );
               })}
             </div>
           </div>
 
-          {/* Bottom Perspective Floating Dashboard Mockup */}
+          {/* Bottom Perspective Floating Dashboard Mockups */}
           <div className="relative z-10 w-full flex items-center justify-center -mb-24 xl:-mb-28">
             <div className="w-full max-w-[640px] bg-white rounded-[14px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-white/60 p-4 text-[#0F172A] transform rotate-[-4deg] scale-[0.96] hover:rotate-0 hover:scale-[1.0] transition-all duration-500 origin-bottom-left">
-              {/* SLIDE 0: Overview Dashboard (Screenshot 1) */}
+              {/* SLIDE 0: Overview Dashboard (Screenshot 2 of Onboarding) */}
               {activeSlide === 0 && (
                 <div className="space-y-4">
                   {/* Top Header inside mockup */}
                   <div className="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
                     <div className="flex items-center gap-4">
-                      {/* Mini Logo */}
                       <div className="flex items-center gap-1">
                         <div className="w-5 h-5 rounded-full bg-[#0284C7] flex items-center justify-center text-white text-[9px] font-bold">
                           O
@@ -798,7 +1295,6 @@ function AuthComponent() {
                         <Search className="w-3 h-3 text-[#94A3B8]" />
                         <span>Search...</span>
                       </div>
-                      {/* Avatar stack */}
                       <div className="flex -space-x-1.5">
                         <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-[9px] font-bold flex items-center justify-center border border-white">
                           P
@@ -916,7 +1412,6 @@ function AuthComponent() {
                             Sept 13, 2025
                           </span>
                         </div>
-                        {/* Dual Curve Graph SVG */}
                         <svg className="w-full h-16" viewBox="0 0 300 60" fill="none">
                           <path
                             d="M0 45 C40 40 70 15 100 20 C130 25 160 5 190 10 C220 15 250 40 300 35"
@@ -938,7 +1433,7 @@ function AuthComponent() {
                 </div>
               )}
 
-              {/* SLIDE 1: Development Tasks Kanban Board (Screenshot 2) */}
+              {/* SLIDE 1: Development Tasks Kanban Board (Screenshot 3 of Onboarding) */}
               {activeSlide === 1 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
@@ -1033,7 +1528,7 @@ function AuthComponent() {
                 </div>
               )}
 
-              {/* SLIDE 2: Development Planner Table (Screenshot 3) */}
+              {/* SLIDE 2: Development Planner Table */}
               {activeSlide === 2 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
@@ -1056,7 +1551,6 @@ function AuthComponent() {
                     </div>
                   </div>
 
-                  {/* Table Rows */}
                   <div className="divide-y divide-[#F1F5F9] text-[10px] font-medium">
                     <div className="grid grid-cols-12 py-1.5 font-semibold text-[#94A3B8]">
                       <div className="col-span-6">Task</div>
@@ -1102,24 +1596,153 @@ function AuthComponent() {
                       </div>
                       <div className="col-span-2 text-right text-[#64748B]">Jun 22</div>
                     </div>
-                    <div className="grid grid-cols-12 py-1.5 items-center text-[#0F172A]">
-                      <div className="col-span-6 font-semibold flex items-center gap-1.5">
-                        <span className="w-4 h-4 rounded-full bg-slate-100 text-[9px] flex items-center justify-center text-[#64748B]">
-                          3
+                  </div>
+                </div>
+              )}
+
+              {/* SLIDE 3: Galaxy View (Screenshot 1 of Onboarding) */}
+              {activeSlide === 3 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#F1F5F9]">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded-full bg-[#0284C7] flex items-center justify-center text-white text-[9px] font-bold">
+                          O
+                        </div>
+                        <span className="text-xs font-bold font-poppins text-[#0F172A]">
+                          Development Tasks
                         </span>
-                        <span>Run Usability Testing</span>
                       </div>
-                      <div className="col-span-2 text-center">
-                        <span className="px-1.5 py-0.5 rounded bg-blue-50 text-[#2563EB] font-bold text-[9px]">
-                          P3
+                      <div className="flex items-center gap-2 text-[10px] font-medium text-[#64748B]">
+                        <span>Kanban</span>
+                        <span>Table</span>
+                        <span>Timeline</span>
+                        <span className="text-[#2563EB] border-b-2 border-[#2563EB] pb-0.5 font-semibold">
+                          Galaxy View
+                        </span>
+                        <span>Archive</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#64748B]">UI Team</span>
+                      <span className="text-[10px] text-[#64748B]">Ux Team</span>
+                      <div className="h-5 px-1.5 bg-blue-50 text-[#2563EB] rounded-[4px] text-[9px] font-semibold flex items-center gap-1">
+                        + Add Board
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Galaxy View Radar Diagram */}
+                  <div className="relative w-full h-56 bg-slate-50/40 rounded-[8px] flex items-center justify-center overflow-hidden border border-slate-100">
+                    <svg className="w-full h-full" viewBox="0 0 400 220">
+                      {/* Outer Orbit: Low Priority */}
+                      <circle
+                        cx="200"
+                        cy="110"
+                        r="95"
+                        fill="none"
+                        stroke="#E2E8F0"
+                        strokeWidth="1.5"
+                        strokeDasharray="4 4"
+                      />
+                      <text
+                        x="305"
+                        y="106"
+                        fill="#94A3B8"
+                        fontSize="8"
+                        fontWeight="600"
+                        fontFamily="sans-serif"
+                      >
+                        Low Priority
+                      </text>
+
+                      {/* Middle Orbit: Mid Priority */}
+                      <circle
+                        cx="200"
+                        cy="110"
+                        r="68"
+                        fill="none"
+                        stroke="#BFDBFE"
+                        strokeWidth="1.5"
+                      />
+                      <text
+                        x="272"
+                        y="106"
+                        fill="#3B82F6"
+                        fontSize="8"
+                        fontWeight="600"
+                        fontFamily="sans-serif"
+                      >
+                        Mid Priority
+                      </text>
+
+                      {/* Inner Orbit: High Priority */}
+                      <circle
+                        cx="200"
+                        cy="110"
+                        r="42"
+                        fill="none"
+                        stroke="#2563EB"
+                        strokeWidth="2"
+                      />
+                      <text
+                        x="245"
+                        y="106"
+                        fill="#1D4ED8"
+                        fontSize="8"
+                        fontWeight="700"
+                        fontFamily="sans-serif"
+                      >
+                        High Priority
+                      </text>
+
+                      {/* Connecting line from high-priority task node to callout */}
+                      <line
+                        x1="170"
+                        y1="82"
+                        x2="135"
+                        y2="55"
+                        stroke="#F43F5E"
+                        strokeWidth="1.5"
+                        strokeDasharray="2 2"
+                      />
+
+                      {/* Outer orbital nodes */}
+                      <circle cx="295" cy="110" r="4.5" fill="#10B981" stroke="white" strokeWidth="1.5" />
+                      <circle cx="105" cy="110" r="4.5" fill="#6366F1" stroke="white" strokeWidth="1.5" />
+
+                      {/* Middle orbital node */}
+                      <circle cx="200" cy="178" r="4.5" fill="#F59E0B" stroke="white" strokeWidth="1.5" />
+
+                      {/* High priority orbital node */}
+                      <circle cx="170" cy="82" r="5" fill="#E11D48" stroke="white" strokeWidth="2" />
+
+                      {/* Central Planet */}
+                      <circle cx="200" cy="110" r="16" fill="#2563EB" />
+                      <ellipse
+                        cx="200"
+                        cy="110"
+                        rx="22"
+                        ry="7"
+                        fill="none"
+                        stroke="white"
+                        strokeWidth="2"
+                        transform="rotate(-30 200 110)"
+                      />
+                    </svg>
+
+                    {/* Floating Task Callout Card */}
+                    <div className="absolute top-3 left-14 bg-white/95 backdrop-blur-sm border border-rose-200 rounded-[5px] p-2 shadow-lg text-[10px] space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-[#0F172A]">Task Name</span>
+                        <span className="px-1 py-0.2 bg-rose-50 text-rose-600 rounded text-[8px] font-bold">
+                          P1
                         </span>
                       </div>
-                      <div className="col-span-2 text-center">
-                        <span className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-semibold text-[9px]">
-                          Blocked
-                        </span>
+                      <div className="text-[9px] text-[#64748B] flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5 text-rose-500" />
+                        <span>Deadline: 2 Days Left</span>
                       </div>
-                      <div className="col-span-2 text-right text-[#64748B]">Jun 24</div>
                     </div>
                   </div>
                 </div>
