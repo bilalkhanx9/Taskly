@@ -79,13 +79,13 @@ function AuthComponent() {
   const [workType, setWorkType] = useState("Brand Strategy & Positioning");
   const [currentFocus, setCurrentFocus] = useState("Launching a Social Media Campaign");
   const [openWorkTypeDropdown, setOpenWorkTypeDropdown] = useState(false);
-  const [openFocusDropdown, setOpenFocusDropdown] = useState(true);
+  const [openFocusDropdown, setOpenFocusDropdown] = useState(false);
 
   // Onboarding Step 3 state
   const [industry, setIndustry] = useState("Select company industry");
   const [teamSize, setTeamSize] = useState("2–5 team members");
   const [openIndustryDropdown, setOpenIndustryDropdown] = useState(false);
-  const [openTeamSizeDropdown, setOpenTeamSizeDropdown] = useState(true);
+  const [openTeamSizeDropdown, setOpenTeamSizeDropdown] = useState(false);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -901,24 +901,34 @@ function AuthComponent() {
                   )}
                 </div>
 
-                {/* Dropdown 2 (What are you currently working on?) - Matches Screenshot 2 open state */}
+                {/* Dropdown 2 (What are you currently working on?) */}
                 <div className="relative">
                   <div
                     onClick={() => setOpenFocusDropdown(!openFocusDropdown)}
-                    className="relative border border-[#2563EB] ring-1 ring-[#2563EB] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer"
+                    className={`relative border rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer transition-colors ${
+                      openFocusDropdown
+                        ? "border-[#2563EB] ring-1 ring-[#2563EB]"
+                        : "border-[#CBD5E1] hover:border-slate-400"
+                    }`}
                   >
-                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#2563EB]">
+                    <label className={`absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium ${
+                      openFocusDropdown ? "text-[#2563EB]" : "text-[#334155]"
+                    }`}>
                       What are you currently working on?
                     </label>
                     <span className="text-xs sm:text-sm font-medium text-[#0F172A]">
                       {currentFocus}
                     </span>
-                    <ChevronUp className="w-4 h-4 text-[#2563EB]" />
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#2563EB] transition-transform duration-200 ${
+                        openFocusDropdown ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
 
-                  {/* Dropdown menu */}
+                  {/* Floating Absolute Dropdown menu (does not move button below) */}
                   {openFocusDropdown && (
-                    <div className="mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg py-1 text-xs sm:text-sm font-medium">
+                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#CBD5E1] rounded-[5px] shadow-xl z-40 py-1 text-xs sm:text-sm font-medium">
                       {[
                         "Creating an Email Marketing Workflow",
                         "Optimizing SEO and Website Content",
@@ -929,10 +939,13 @@ function AuthComponent() {
                         return (
                           <div
                             key={item}
-                            onClick={() => setCurrentFocus(item)}
+                            onClick={() => {
+                              setCurrentFocus(item);
+                              setOpenFocusDropdown(false);
+                            }}
                             className={`px-3.5 py-2.5 cursor-pointer transition-colors ${
                               isSelected
-                                ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                                ? "text-[#2563EB] font-semibold bg-blue-50/70"
                                 : "text-[#0F172A] hover:bg-slate-50"
                             }`}
                           >
@@ -1025,24 +1038,34 @@ function AuthComponent() {
                   )}
                 </div>
 
-                {/* Dropdown 2 (Team size) - Matches Screenshot 3 open state */}
+                {/* Dropdown 2 (Team size) */}
                 <div className="relative">
                   <div
                     onClick={() => setOpenTeamSizeDropdown(!openTeamSizeDropdown)}
-                    className="relative border border-[#2563EB] ring-1 ring-[#2563EB] rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer"
+                    className={`relative border rounded-[5px] px-3.5 pt-3 pb-2.5 flex items-center justify-between cursor-pointer transition-colors ${
+                      openTeamSizeDropdown
+                        ? "border-[#2563EB] ring-1 ring-[#2563EB]"
+                        : "border-[#CBD5E1] hover:border-slate-400"
+                    }`}
                   >
-                    <label className="absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium text-[#2563EB]">
+                    <label className={`absolute -top-2.5 left-3 bg-white px-1 text-[11px] font-medium ${
+                      openTeamSizeDropdown ? "text-[#2563EB]" : "text-[#334155]"
+                    }`}>
                       What are you currently working on?
                     </label>
-                    <span className="text-xs sm:text-sm font-medium text-[#94A3B8]">
-                      Select team size
+                    <span className="text-xs sm:text-sm font-medium text-[#0F172A]">
+                      {teamSize || "Select team size"}
                     </span>
-                    <ChevronUp className="w-4 h-4 text-[#2563EB]" />
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#2563EB] transition-transform duration-200 ${
+                        openTeamSizeDropdown ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
 
-                  {/* Dropdown menu */}
+                  {/* Floating Absolute Dropdown menu (does not move button below) */}
                   {openTeamSizeDropdown && (
-                    <div className="mt-1 bg-white border border-[#CBD5E1] rounded-[5px] shadow-lg py-1 text-xs sm:text-sm font-medium">
+                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#CBD5E1] rounded-[5px] shadow-xl z-40 py-1 text-xs sm:text-sm font-medium">
                       {[
                         "1 Just me",
                         "2–5 team members",
@@ -1053,10 +1076,13 @@ function AuthComponent() {
                         return (
                           <div
                             key={size}
-                            onClick={() => setTeamSize(size)}
+                            onClick={() => {
+                              setTeamSize(size);
+                              setOpenTeamSizeDropdown(false);
+                            }}
                             className={`px-3.5 py-2.5 cursor-pointer transition-colors ${
                               isSelected
-                                ? "text-[#2563EB] font-semibold bg-blue-50/60"
+                                ? "text-[#2563EB] font-semibold bg-blue-50/70"
                                 : "text-[#0F172A] hover:bg-slate-50"
                             }`}
                           >
