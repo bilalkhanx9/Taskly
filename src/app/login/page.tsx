@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { registerUser } from "@/actions/auth";
+import { registerUser, sendOtpAction } from "@/actions/auth";
 import {
   User,
   Mail,
@@ -87,6 +87,7 @@ function AuthComponent() {
   }, [authStep, timerSeconds]);
 
   // Handle Sign Up Submission -> transitions to Verification
+  // Handle Sign Up Submission -> sends real OTP via Resend & transitions to Verification
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -111,18 +112,25 @@ function AuthComponent() {
 
     setLoading(true);
 
-    // Simulate sending email verification code
-    setTimeout(() => {
-      setLoading(false);
-      // Generate 6-digit code (defaulting to 650444 as seen in screenshot)
-      const generated = "650444";
-      setVerificationCode(generated);
+    try {
+      // Send real OTP email via Resend
+      const otpRes = await sendOtpAction({ email, name: fullName });
+      setVerificationCode(otpRes.code);
       setOtpDigits(["", "", "", "", "", ""]);
       setTimerSeconds(28);
       setCanResend(false);
       setAuthStep("verify");
       setActiveSlide(1); // Advance carousel to slide 2 as in screenshot 2
-    }, 400);
+
+      if (otpRes.isEmailSent) {
+        setSuccess(`Verification code sent to ${email}! Please check your inbox.`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to dispatch verification code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // OTP Input handlers
@@ -171,15 +179,24 @@ function AuthComponent() {
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!canResend) return;
-    setVerificationCode("650444");
-    setTimerSeconds(28);
-    setCanResend(false);
-    setOtpDigits(["", "", "", "", "", ""]);
     setError(null);
-    setSuccess("A new 6-digit verification code has been sent!");
-    setTimeout(() => setSuccess(null), 3000);
+    try {
+      const otpRes = await sendOtpAction({ email, name: fullName });
+      setVerificationCode(otpRes.code);
+      setTimerSeconds(28);
+      setCanResend(false);
+      setOtpDigits(["", "", "", "", "", ""]);
+      if (otpRes.isEmailSent) {
+        setSuccess(`A new 6-digit verification code has been sent to ${email}!`);
+      } else {
+        setSuccess("A new 6-digit verification code has been generated!");
+      }
+      setTimeout(() => setSuccess(null), 4000);
+    } catch (err: any) {
+      setError("Failed to resend code. Please try again.");
+    }
   };
 
   // Verify and complete registration / login
@@ -259,9 +276,8 @@ function AuthComponent() {
   };
 
   const fillDemoVerification = () => {
-    const code = "650444";
-    setOtpDigits(code.split(""));
-    verifyAndComplete(code);
+    setOtpDigits(verificationCode.split(""));
+    verifyAndComplete(verificationCode);
   };
 
   // Slide content data matching screenshots
@@ -469,7 +485,7 @@ function AuthComponent() {
             <div className="animate-in fade-in duration-300">
               {/* Quick autofill helper for easy testing */}
               <div className="mb-4 flex items-center justify-between p-2.5 bg-blue-50/80 border border-blue-200 rounded-[5px] text-[11px] font-medium text-[#1E40AF]">
-                <span>Demo Code: <strong className="font-mono">650444</strong></span>
+                <span>Active OTP: <strong className="font-mono tracking-wider">{verificationCode}</strong></span>
                 <button
                   type="button"
                   onClick={fillDemoVerification}

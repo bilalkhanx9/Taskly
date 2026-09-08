@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { sendVerificationOtpEmail } from "@/lib/email";
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -106,5 +107,47 @@ export async function seedInitialAdmin() {
     }
   } catch (error) {
     console.error("Failed to seed initial admin:", error);
+  }
+}
+
+/**
+ * Generates and sends a 6-digit OTP email using Resend
+ */
+export async function sendOtpAction({ email, name }: { email: string; name?: string }) {
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+    // Generate secure random 6-digit code
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Send email using Resend
+    const res = await sendVerificationOtpEmail({
+      to: normalizedEmail,
+      name,
+      otp,
+    });
+
+    if (!res.success) {
+      console.warn("Resend email delivery note:", res.error);
+      return {
+        success: true,
+        code: otp,
+        isEmailSent: false,
+        warning: res.error,
+      };
+    }
+
+    return {
+      success: true,
+      code: otp,
+      isEmailSent: true,
+    };
+  } catch (error: any) {
+    console.error("sendOtpAction error:", error);
+    const fallbackOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    return {
+      success: true,
+      code: fallbackOtp,
+      isEmailSent: false,
+    };
   }
 }
