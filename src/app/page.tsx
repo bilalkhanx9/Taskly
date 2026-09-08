@@ -8,8 +8,8 @@ import {
   Settings,
   Star,
   MoreVertical,
-  Activity,
-  Share2,
+  Bell,
+  HelpCircle,
   Trash2,
   Copy,
   Edit2,
@@ -182,10 +182,32 @@ export default function OrbitaskHome() {
           </div>
         </div>
 
-        {/* Right: User Profile & Utility Buttons */}
+        {/* Right: Help, Notifications & Admin Profile */}
         <div className="flex items-center gap-4">
-          {/* User Profile */}
-          <div className="flex items-center gap-3">
+          {/* Action Icon Buttons (Help & Notifications) */}
+          <div className="flex items-center gap-2">
+            {/* Help / Question Mark Button */}
+            <button
+              type="button"
+              className="w-9 h-9 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
+              title="Help & Support"
+            >
+              <HelpCircle className="w-4 h-4 stroke-[1.75]" />
+            </button>
+
+            {/* Notifications Button */}
+            <button
+              type="button"
+              className="w-9 h-9 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors relative"
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4 stroke-[1.75]" />
+              <span className="w-2 h-2 bg-[#2563EB] rounded-full absolute top-2 right-2 border-2 border-white" />
+            </button>
+          </div>
+
+          {/* User Profile (Admin avatar on the right) */}
+          <div className="flex items-center gap-3 pl-1 border-l border-[#F1F5F9]">
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
@@ -203,24 +225,6 @@ export default function OrbitaskHome() {
                 Admin
               </span>
             </div>
-          </div>
-
-          {/* Action Icon Buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="w-9 h-9 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
-              title="Activity & Notifications"
-            >
-              <Activity className="w-4 h-4 stroke-[1.75]" />
-            </button>
-            <button
-              type="button"
-              className="w-9 h-9 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
-              title="Workspace Sync"
-            >
-              <Share2 className="w-4 h-4 stroke-[1.75]" />
-            </button>
           </div>
         </div>
       </header>
