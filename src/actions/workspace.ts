@@ -102,3 +102,54 @@ export async function updateWorkspaceName(id: string, name: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function createProject({
+  workspaceId,
+  name,
+  description,
+  bannerColor,
+}: {
+  workspaceId: string;
+  name: string;
+  description?: string;
+  bannerColor?: string;
+}) {
+  try {
+    const project = await prisma.project.create({
+      data: {
+        workspaceId,
+        name: name.trim(),
+        description: description?.trim() || null,
+        bannerColor: bannerColor || "#2563EB",
+      },
+    });
+    revalidatePath("/");
+    return { success: true, data: project };
+  } catch (error: any) {
+    console.error("createProject error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteProject(id: string) {
+  try {
+    await prisma.project.delete({ where: { id } });
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("deleteProject error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteWorkspace(id: string) {
+  try {
+    await prisma.workspace.delete({ where: { id } });
+    revalidatePath("/");
+    return { success: true };
+  } catch (error: any) {
+    console.error("deleteWorkspace error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
