@@ -42,7 +42,10 @@ import {
   Send,
   UploadCloud,
   CheckCircle2,
-  ListTodo,
+  TrendingUp,
+  TrendingDown,
+  UserPlus,
+  ExternalLink,
 } from "lucide-react";
 import {
   getWorkspaces as getWorkspacesAction,
@@ -53,58 +56,7 @@ import {
   deleteWorkspace as deleteWorkspaceAction,
 } from "@/actions/workspace";
 
-export interface SubtaskItem {
-  priority: string;
-  priorityColor: string;
-  title: string;
-  progress: string;
-  date: string;
-}
-
-export interface TaskCardItem {
-  id: string;
-  title: string;
-  description: string;
-  priority: "P1" | "P2" | "P3";
-  status: "todo" | "in_progress" | "in_review" | "done";
-  progress: string;
-  dueDate: string;
-  assignee: {
-    name: string;
-    initials: string;
-    bg: string;
-    img?: string;
-  };
-}
-
-export interface ProjectItem {
-  id: string;
-  name: string;
-  description: string;
-  bannerColor: string;
-  isFavorite: boolean;
-  tasksCompleted: number;
-  tasksTotal: number;
-  members: Array<{
-    initials?: string;
-    bg?: string;
-    img?: string;
-  }>;
-  subtasks: SubtaskItem[];
-  currentSubtaskIdx: number;
-  createdAt: string;
-}
-
-export interface WorkspaceItem {
-  id: string;
-  name: string;
-  logoType?: "airbnb" | "orbitask" | "amazon" | "custom";
-  customLogo?: string;
-  activeTab: "overview" | "settings";
-  projects: ProjectItem[];
-}
-
-// Brand Logo Component matching Figma
+// Brand Logo Component
 function WorkspaceBrandLogo({
   type,
   name,
@@ -142,7 +94,6 @@ function WorkspaceBrandLogo({
     );
   }
 
-  // Default Orbit Logo Icon
   return (
     <div className="w-6 h-6 rounded-[5px] bg-blue-50/70 border border-blue-100 flex items-center justify-center text-[#0284C7] shadow-2xs">
       <svg className="w-4 h-4 text-[#0284C7]" viewBox="0 0 32 32" fill="none">
@@ -162,12 +113,47 @@ function WorkspaceBrandLogo({
   );
 }
 
+export interface SubtaskItem {
+  priority: string;
+  priorityColor: string;
+  title: string;
+  progress: string;
+  date: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  name: string;
+  description: string;
+  bannerColor: string;
+  isFavorite: boolean;
+  tasksCompleted: number;
+  tasksTotal: number;
+  members: Array<{
+    initials?: string;
+    bg?: string;
+    img?: string;
+  }>;
+  subtasks: SubtaskItem[];
+  currentSubtaskIdx: number;
+  createdAt: string;
+}
+
+export interface WorkspaceItem {
+  id: string;
+  name: string;
+  logoType?: "airbnb" | "orbitask" | "amazon" | "custom";
+  customLogo?: string;
+  activeTab: "overview" | "settings";
+  projects: ProjectItem[];
+}
+
 export default function OrbitaskWorkspacePage() {
-  // Current view mode: "workspaces_grid" (Cards view) or "project_dashboard" (Sidebar detail view from screenshot)
+  // Navigation & View state
   const [currentView, setCurrentView] = useState<"workspaces_grid" | "project_dashboard">("workspaces_grid");
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string>("ws-amazon");
   const [activeProjectId, setActiveProjectId] = useState<string>("proj-amz-1");
-  const [sidebarActiveTab, setSidebarActiveTab] = useState<string>("tasks");
+  const [sidebarActiveTab, setSidebarActiveTab] = useState<string>("overview"); // Defaults to Overview matching screenshot!
 
   // Sidebar accordions & dropdowns
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
@@ -179,7 +165,7 @@ export default function OrbitaskWorkspacePage() {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Workspaces list seeded matching Figma
+  // Workspaces list matching Figma
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([
     {
       id: "ws-airbnb",
@@ -318,9 +304,7 @@ export default function OrbitaskWorkspacePage() {
           isFavorite: false,
           tasksCompleted: 28,
           tasksTotal: 30,
-          members: [
-            { initials: "S", bg: "bg-orange-100 text-orange-800" },
-          ],
+          members: [{ initials: "S", bg: "bg-orange-100 text-orange-800" }],
           subtasks: [
             {
               priority: "P3",
@@ -337,56 +321,12 @@ export default function OrbitaskWorkspacePage() {
     },
   ]);
 
-  // Sample tasks for Kanban board in active project view
-  const [boardTasks, setBoardTasks] = useState<TaskCardItem[]>([
-    {
-      id: "t-1",
-      title: "Design Onboarding Flow in Figma",
-      description: "Complete all 5 screens with pixel-perfect responsive layouts.",
-      priority: "P1",
-      status: "todo",
-      progress: "3/5",
-      dueDate: "Sep 12, 2026",
-      assignee: { name: "Bilal", initials: "B", bg: "bg-blue-100 text-blue-700" },
-    },
-    {
-      id: "t-2",
-      title: "Setup Resend & Cloudflare R2",
-      description: "Verify email deliverability and image assets storage bucket.",
-      priority: "P2",
-      status: "in_progress",
-      progress: "8/10",
-      dueDate: "Sep 14, 2026",
-      assignee: { name: "Moni Roy", initials: "M", bg: "bg-purple-100 text-purple-700" },
-    },
-    {
-      id: "t-3",
-      title: "Interactive 3-Dots Color Flyout",
-      description: "Support hover & click color change with clean z-indexing.",
-      priority: "P1",
-      status: "in_review",
-      progress: "5/5",
-      dueDate: "Sep 09, 2026",
-      assignee: { name: "Alex", initials: "A", bg: "bg-emerald-100 text-emerald-700" },
-    },
-    {
-      id: "t-4",
-      title: "Landing Page Architecture",
-      description: "Hero, Features, Pricing toggle, and FAQ accordion sections.",
-      priority: "P2",
-      status: "done",
-      progress: "12/12",
-      dueDate: "Sep 05, 2026",
-      assignee: { name: "Sarah", initials: "S", bg: "bg-amber-100 text-amber-700" },
-    },
-  ]);
-
-  // Modal states
+  // Modals state
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [targetWorkspaceId, setTargetWorkspaceId] = useState<string | null>(null);
   const [isCreateWorkspaceOpen, setIsCreateWorkspaceOpen] = useState(false);
 
-  // Project card menu & color submenu
+  // 3-Dots project card menu & color submenu
   const [activeMenuProjectId, setActiveMenuProjectId] = useState<string | null>(null);
   const [isColorSubmenuOpen, setIsColorSubmenuOpen] = useState<string | null>(null);
 
@@ -414,7 +354,15 @@ export default function OrbitaskWorkspacePage() {
   const [inviteEmailInput, setInviteEmailInput] = useState("");
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
 
-  // Close menus when clicking outside (strictly checks data-menu-container)
+  // Task reminders in Overview (My Tasks Card)
+  const [myReminders, setMyReminders] = useState([
+    { id: 1, text: "Release the latest newsletter and promo...", url: "qvik-www-bellman-hunters.com", checked: false },
+    { id: 2, text: "Release the latest newsletter and promo...", url: "qvik-www-bellman-hunters.com", checked: true },
+    { id: 3, text: "Release the latest newsletter and promo...", url: "qvik-www-bellman-hunters.com", checked: true },
+    { id: 4, text: "Release the latest newsletter and promo...", url: "qvik-www-bellman-hunters.com", checked: true },
+  ]);
+
+  // Click outside handler for dropdowns
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as HTMLElement | null;
@@ -436,14 +384,14 @@ export default function OrbitaskWorkspacePage() {
     if (ws && ws.projects.length > 0) {
       setActiveProjectId(ws.projects[0].id);
     }
-    setSidebarActiveTab("tasks");
+    setSidebarActiveTab("overview");
     setCurrentView("project_dashboard");
   };
 
   const handleOpenProjectView = (workspaceId: string, projectId: string) => {
     setActiveWorkspaceId(workspaceId);
     setActiveProjectId(projectId);
-    setSidebarActiveTab("tasks");
+    setSidebarActiveTab("overview");
     setCurrentView("project_dashboard");
   };
 
@@ -748,36 +696,12 @@ export default function OrbitaskWorkspacePage() {
         <>
           {/* TOP NAVBAR */}
           <header className="w-full px-8 md:px-12 py-4 flex items-center justify-between border-b border-[#F1F5F9] bg-white sticky top-0 z-30">
-            {/* Left: Brand Logo (Orbitask) */}
             <div className="flex items-center gap-2 select-none">
               <div className="relative flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-[#0284C7]"
-                  viewBox="0 0 36 36"
-                  fill="none"
-                >
+                <svg className="w-8 h-8 text-[#0284C7]" viewBox="0 0 36 36" fill="none">
                   <circle cx="18" cy="18" r="6" fill="#0284C7" />
-                  <ellipse
-                    cx="18"
-                    cy="18"
-                    rx="14"
-                    ry="5.5"
-                    stroke="#0284C7"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    transform="rotate(-38 18 18)"
-                  />
-                  <ellipse
-                    cx="18"
-                    cy="18"
-                    rx="14"
-                    ry="5.5"
-                    stroke="#38BDF8"
-                    strokeWidth="2.4"
-                    strokeDasharray="20 40"
-                    strokeLinecap="round"
-                    transform="rotate(-38 18 18)"
-                  />
+                  <ellipse cx="18" cy="18" rx="14" ry="5.5" stroke="#0284C7" strokeWidth="2.4" strokeLinecap="round" transform="rotate(-38 18 18)" />
+                  <ellipse cx="18" cy="18" rx="14" ry="5.5" stroke="#38BDF8" strokeWidth="2.4" strokeDasharray="20 40" strokeLinecap="round" transform="rotate(-38 18 18)" />
                 </svg>
               </div>
               <span className="text-[20px] font-bold tracking-tight text-[#0F172A] font-poppins lowercase">
@@ -785,7 +709,6 @@ export default function OrbitaskWorkspacePage() {
               </span>
             </div>
 
-            {/* Center: Search Field */}
             <div className="flex-1 max-w-[420px] mx-8">
               <div className="relative">
                 <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 stroke-[1.75]" />
@@ -799,7 +722,6 @@ export default function OrbitaskWorkspacePage() {
               </div>
             </div>
 
-            {/* Right: Moni Roy Profile, Notification Bell, Settings */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2.5 p-1 rounded-[5px]">
                 <img
@@ -843,9 +765,7 @@ export default function OrbitaskWorkspacePage() {
 
                 return (
                   <section key={ws.id} className="space-y-6">
-                    {/* Workspace Header Bar */}
                     <div className="flex items-center gap-8 flex-wrap">
-                      {/* Brand Icon & Title */}
                       <div
                         onClick={() => handleOpenWorkspaceView(ws.id)}
                         className="flex items-center gap-3 cursor-pointer group"
@@ -860,7 +780,6 @@ export default function OrbitaskWorkspacePage() {
                         </h2>
                       </div>
 
-                      {/* Inline Navigation Tabs */}
                       <div className="flex items-center gap-6 text-xs font-medium font-inter text-[#64748B]">
                         <button
                           type="button"
@@ -889,7 +808,6 @@ export default function OrbitaskWorkspacePage() {
                         </button>
                       </div>
 
-                      {/* Create Project Button */}
                       <div className="ml-auto">
                         <button
                           type="button"
@@ -902,7 +820,6 @@ export default function OrbitaskWorkspacePage() {
                       </div>
                     </div>
 
-                    {/* OVERVIEW CONTENT */}
                     {ws.activeTab === "overview" && (
                       <div className="space-y-6">
                         {ws.projects.length === 0 ? (
@@ -918,7 +835,6 @@ export default function OrbitaskWorkspacePage() {
                           </div>
                         ) : (
                           <>
-                            {/* 3-COLUMN PROJECTS GRID */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                               {filteredProjects.map((project) => {
                                 const activeSubtask =
@@ -936,94 +852,36 @@ export default function OrbitaskWorkspacePage() {
                                     }`}
                                   >
                                     <div>
-                                      {/* Topographic Wave Graphic Banner */}
                                       <div
                                         className="h-[76px] rounded-t-[5px] relative flex items-start justify-end p-2.5 gap-1 shrink-0"
                                         style={{ backgroundColor: project.bannerColor }}
                                       >
                                         <div className="absolute inset-0 overflow-hidden rounded-t-[5px] pointer-events-none">
-                                          <svg
-                                            className="w-full h-full opacity-40"
-                                            viewBox="0 0 320 76"
-                                            fill="none"
-                                            preserveAspectRatio="none"
-                                          >
-                                            <path
-                                              d="M-20 15 C50 0 110 35 180 10 C240 -8 290 25 350 12"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
-                                            <path
-                                              d="M-20 30 C40 18 130 50 200 25 C260 8 300 38 350 30"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
-                                            <path
-                                              d="M-20 48 C30 38 120 68 190 42 C270 20 300 55 350 48"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
-                                            <path
-                                              d="M-20 65 C60 52 140 82 220 60 C280 38 320 72 350 65"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
-                                            <ellipse
-                                              cx="260"
-                                              cy="30"
-                                              rx="35"
-                                              ry="15"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
-                                            <ellipse
-                                              cx="85"
-                                              cy="42"
-                                              rx="40"
-                                              ry="18"
-                                              stroke="white"
-                                              strokeWidth="1.25"
-                                              fill="none"
-                                            />
+                                          <svg className="w-full h-full opacity-40" viewBox="0 0 320 76" fill="none" preserveAspectRatio="none">
+                                            <path d="M-20 15 C50 0 110 35 180 10 C240 -8 290 25 350 12" stroke="white" strokeWidth="1.25" fill="none" />
+                                            <path d="M-20 30 C40 18 130 50 200 25 C260 8 300 38 350 30" stroke="white" strokeWidth="1.25" fill="none" />
+                                            <path d="M-20 48 C30 38 120 68 190 42 C270 20 300 55 350 48" stroke="white" strokeWidth="1.25" fill="none" />
+                                            <path d="M-20 65 C60 52 140 82 220 60 C280 38 320 72 350 65" stroke="white" strokeWidth="1.25" fill="none" />
+                                            <ellipse cx="260" cy="30" rx="35" ry="15" stroke="white" strokeWidth="1.25" fill="none" />
+                                            <ellipse cx="85" cy="42" rx="40" ry="18" stroke="white" strokeWidth="1.25" fill="none" />
                                           </svg>
                                         </div>
 
-                                        {/* Star Button */}
                                         <button
                                           type="button"
-                                          onClick={(e) =>
-                                            handleToggleFavorite(ws.id, project.id, e)
-                                          }
+                                          onClick={(e) => handleToggleFavorite(ws.id, project.id, e)}
                                           className="relative z-10 p-1 text-white/90 hover:text-white transition-colors cursor-pointer rounded-[5px]"
                                           title="Star project"
                                         >
-                                          <Star
-                                            className={`w-3.5 h-3.5 stroke-[1.75] ${
-                                              project.isFavorite
-                                                ? "fill-amber-300 text-amber-300"
-                                                : ""
-                                            }`}
-                                          />
+                                          <Star className={`w-3.5 h-3.5 stroke-[1.75] ${project.isFavorite ? "fill-amber-300 text-amber-300" : ""}`} />
                                         </button>
 
-                                        {/* 3-Dots Action Button */}
-                                        <div
-                                          className="relative"
-                                          data-menu-container="true"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
+                                        <div className="relative" data-menu-container="true" onClick={(e) => e.stopPropagation()}>
                                           <button
                                             type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              setActiveMenuProjectId((prev) =>
-                                                prev === project.id ? null : project.id
-                                              );
+                                              setActiveMenuProjectId((prev) => prev === project.id ? null : project.id);
                                               setIsColorSubmenuOpen(null);
                                             }}
                                             className="relative z-20 p-1.5 text-white hover:text-white/80 transition-colors cursor-pointer rounded-[5px]"
@@ -1032,12 +890,8 @@ export default function OrbitaskWorkspacePage() {
                                             <MoreVertical className="w-4 h-4 stroke-[2]" />
                                           </button>
 
-                                          {/* Dropdown Menu (Exact match to User's Screenshot) */}
                                           {activeMenuProjectId === project.id && (
-                                            <div
-                                              onClick={(e) => e.stopPropagation()}
-                                              className="absolute right-0 top-8 w-48 bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl z-50 py-2 px-1 text-[13px] font-inter animate-in fade-in zoom-in-95"
-                                            >
+                                            <div onClick={(e) => e.stopPropagation()} className="absolute right-0 top-8 w-48 bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl z-50 py-2 px-1 text-[13px] font-inter animate-in fade-in zoom-in-95">
                                               <button
                                                 type="button"
                                                 onClick={() => {
@@ -1052,15 +906,7 @@ export default function OrbitaskWorkspacePage() {
                                                 }}
                                                 className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                               >
-                                                <svg
-                                                  className="w-4 h-4 text-[#475569] shrink-0"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="1.75"
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                >
+                                                <svg className="w-4 h-4 text-[#475569] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                                 </svg>
@@ -1081,47 +927,23 @@ export default function OrbitaskWorkspacePage() {
                                                 }}
                                                 className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                               >
-                                                <svg
-                                                  className="w-4 h-4 text-[#475569] shrink-0"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="1.75"
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                >
+                                                <svg className="w-4 h-4 text-[#475569] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                                   <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
                                                 </svg>
                                                 <span>Edit description</span>
                                               </button>
 
-                                              {/* change color > */}
-                                              <div
-                                                className="relative"
-                                                onMouseEnter={() =>
-                                                  setIsColorSubmenuOpen(project.id)
-                                                }
-                                              >
+                                              <div className="relative" onMouseEnter={() => setIsColorSubmenuOpen(project.id)}>
                                                 <button
                                                   type="button"
                                                   onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setIsColorSubmenuOpen((prev) =>
-                                                      prev === project.id ? null : project.id
-                                                    );
+                                                    setIsColorSubmenuOpen((prev) => prev === project.id ? null : project.id);
                                                   }}
                                                   className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between rounded-[5px] text-[#334155] cursor-pointer transition-colors"
                                                 >
                                                   <div className="flex items-center gap-3">
-                                                    <svg
-                                                      className="w-4 h-4 text-[#475569] shrink-0"
-                                                      viewBox="0 0 24 24"
-                                                      fill="none"
-                                                      stroke="currentColor"
-                                                      strokeWidth="1.75"
-                                                      strokeLinecap="round"
-                                                      strokeLinejoin="round"
-                                                    >
+                                                    <svg className="w-4 h-4 text-[#475569] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                                       <rect x="2" y="3" width="16" height="5" rx="1" />
                                                       <path d="M10 8v3a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v4" />
                                                     </svg>
@@ -1131,10 +953,7 @@ export default function OrbitaskWorkspacePage() {
                                                 </button>
 
                                                 {isColorSubmenuOpen === project.id && (
-                                                  <div
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="absolute left-full top-0 ml-1.5 min-w-[125px] bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl p-2 z-50 animate-in fade-in"
-                                                  >
+                                                  <div onClick={(e) => e.stopPropagation()} className="absolute left-full top-0 ml-1.5 min-w-[125px] bg-white rounded-[8px] border border-[#F1F5F9] shadow-2xl p-2 z-50 animate-in fade-in">
                                                     {[
                                                       { label: "Blue", color: "#2563EB" },
                                                       { label: "Teal", color: "#00A3A6" },
@@ -1145,22 +964,10 @@ export default function OrbitaskWorkspacePage() {
                                                       <button
                                                         key={c.color}
                                                         type="button"
-                                                        onClick={(e) =>
-                                                          handleChangeColor(
-                                                            ws.id,
-                                                            project.id,
-                                                            c.color,
-                                                            e
-                                                          )
-                                                        }
+                                                        onClick={(e) => handleChangeColor(ws.id, project.id, c.color, e)}
                                                         className="w-full px-2.5 py-1.5 text-left hover:bg-[#F8FAFC] flex items-center gap-3 rounded-[4px] cursor-pointer transition-colors text-[13px] font-normal text-[#334155]"
                                                       >
-                                                        <span
-                                                          className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs"
-                                                          style={{
-                                                            backgroundColor: c.color,
-                                                          }}
-                                                        />
+                                                        <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs" style={{ backgroundColor: c.color }} />
                                                         <span>{c.label}</span>
                                                       </button>
                                                     ))}
@@ -1170,13 +977,7 @@ export default function OrbitaskWorkspacePage() {
 
                                               <button
                                                 type="button"
-                                                onClick={(e) =>
-                                                  handleDeleteProject(
-                                                    ws.id,
-                                                    project.id,
-                                                    e
-                                                  )
-                                                }
+                                                onClick={(e) => handleDeleteProject(ws.id, project.id, e)}
                                                 className="w-full px-3 py-2 text-left hover:bg-red-50/70 text-[#EF4444] flex items-center gap-3 rounded-[5px] cursor-pointer transition-colors mt-0.5"
                                               >
                                                 <Trash2 className="w-4 h-4 text-[#EF4444] shrink-0 stroke-[1.75]" />
@@ -1187,7 +988,6 @@ export default function OrbitaskWorkspacePage() {
                                         </div>
                                       </div>
 
-                                      {/* Card Body */}
                                       <div className="p-4 pb-2">
                                         <div className="flex items-start justify-between gap-2">
                                           <div className="flex-1 min-w-0">
@@ -1203,47 +1003,26 @@ export default function OrbitaskWorkspacePage() {
                                             {project.members.map((m, idx) => (
                                               <div
                                                 key={idx}
-                                                className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-2xs ${
-                                                  m.bg || "bg-slate-100"
-                                                }`}
+                                                className={`w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-2xs ${m.bg || "bg-slate-100"}`}
                                               >
-                                                {m.img ? (
-                                                  <img
-                                                    src={m.img}
-                                                    alt="Member"
-                                                    className="w-full h-full object-cover"
-                                                  />
-                                                ) : (
-                                                  m.initials
-                                                )}
+                                                {m.img ? <img src={m.img} alt="Member" className="w-full h-full object-cover" /> : m.initials}
                                               </div>
                                             ))}
-                                            <span className="text-[11px] font-medium font-inter text-[#64748B] pl-2.5">
-                                              12+
-                                            </span>
+                                            <span className="text-[11px] font-medium font-inter text-[#64748B] pl-2.5">12+</span>
                                           </div>
                                         </div>
 
                                         <div className="flex items-center gap-1.5 text-xs font-medium font-inter text-[#64748B] mt-3">
                                           <CheckSquare className="w-3.5 h-3.5 text-[#64748B] stroke-[1.75]" />
-                                          <span>
-                                            Tasks: {project.tasksCompleted}/
-                                            {project.tasksTotal}
-                                          </span>
+                                          <span>Tasks: {project.tasksCompleted}/{project.tasksTotal}</span>
                                         </div>
                                       </div>
                                     </div>
 
-                                    {/* Subtask Carousel Bar */}
-                                    <div
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="px-4 py-3 border-t border-[#F1F5F9] flex items-center justify-between gap-2"
-                                    >
+                                    <div onClick={(e) => e.stopPropagation()} className="px-4 py-3 border-t border-[#F1F5F9] flex items-center justify-between gap-2">
                                       <button
                                         type="button"
-                                        onClick={(e) =>
-                                          handleSubtaskPrev(ws.id, project.id, e)
-                                        }
+                                        onClick={(e) => handleSubtaskPrev(ws.id, project.id, e)}
                                         className="p-1 text-[#94A3B8] hover:text-[#0F172A] transition-colors cursor-pointer rounded"
                                         title="Previous milestone"
                                       >
@@ -1252,14 +1031,10 @@ export default function OrbitaskWorkspacePage() {
 
                                       {activeSubtask ? (
                                         <div className="flex items-center gap-3 text-xs font-medium font-inter text-[#64748B] flex-1 justify-center truncate">
-                                          <span
-                                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${activeSubtask.priorityColor}`}
-                                          >
+                                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${activeSubtask.priorityColor}`}>
                                             {activeSubtask.priority}
                                           </span>
-                                          <span className="font-bold text-[#0F172A] truncate">
-                                            {activeSubtask.title}
-                                          </span>
+                                          <span className="font-bold text-[#0F172A] truncate">{activeSubtask.title}</span>
                                           <div className="flex items-center gap-1 shrink-0">
                                             <CheckSquare className="w-3 h-3 text-[#94A3B8]" />
                                             <span>{activeSubtask.progress}</span>
@@ -1270,16 +1045,12 @@ export default function OrbitaskWorkspacePage() {
                                           </div>
                                         </div>
                                       ) : (
-                                        <span className="text-xs text-[#94A3B8]">
-                                          No subtasks
-                                        </span>
+                                        <span className="text-xs text-[#94A3B8]">No subtasks</span>
                                       )}
 
                                       <button
                                         type="button"
-                                        onClick={(e) =>
-                                          handleSubtaskNext(ws.id, project.id, e)
-                                        }
+                                        onClick={(e) => handleSubtaskNext(ws.id, project.id, e)}
                                         className="p-1 text-[#94A3B8] hover:text-[#0F172A] transition-colors cursor-pointer rounded"
                                         title="Next milestone"
                                       >
@@ -1290,7 +1061,6 @@ export default function OrbitaskWorkspacePage() {
                                 );
                               })}
 
-                              {/* Add New Projects Dotted Card */}
                               <button
                                 type="button"
                                 onClick={() => openCreateProjectModal(ws.id)}
@@ -1303,7 +1073,6 @@ export default function OrbitaskWorkspacePage() {
                               </button>
                             </div>
 
-                            {/* View All Projects Button (Clicking opens Project Dashboard View!) */}
                             <div className="flex justify-center pt-2">
                               <button
                                 type="button"
@@ -1319,16 +1088,11 @@ export default function OrbitaskWorkspacePage() {
                       </div>
                     )}
 
-                    {/* SETTINGS TAB VIEW */}
                     {ws.activeTab === "settings" && (
                       <div className="max-w-xl bg-white p-6 rounded-[5px] border border-[#E2E8F0] shadow-xs space-y-6">
                         <div>
-                          <h3 className="text-base font-bold text-[#0F172A] font-poppins">
-                            Workspace Settings
-                          </h3>
-                          <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                            Manage your workspace identity and preferences.
-                          </p>
+                          <h3 className="text-base font-bold text-[#0F172A] font-poppins">Workspace Settings</h3>
+                          <p className="text-xs font-medium font-inter text-[#64748B] mt-1">Manage your workspace identity and preferences.</p>
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-[#F1F5F9]">
@@ -1339,9 +1103,7 @@ export default function OrbitaskWorkspacePage() {
                             <input
                               type="text"
                               value={ws.name}
-                              onChange={(e) =>
-                                handleUpdateWorkspaceName(ws.id, e.target.value)
-                              }
+                              onChange={(e) => handleUpdateWorkspaceName(ws.id, e.target.value)}
                               className="w-full bg-transparent text-xs font-medium font-inter text-[#0F172A] focus:outline-none"
                             />
                           </div>
@@ -1357,9 +1119,7 @@ export default function OrbitaskWorkspacePage() {
                                 <span>Delete this workspace</span>
                               </button>
                             ) : (
-                              <span className="text-xs font-medium font-inter text-[#64748B]">
-                                Changes are saved automatically.
-                              </span>
+                              <span className="text-xs font-medium font-inter text-[#64748B]">Changes are saved automatically.</span>
                             )}
 
                             <button
@@ -1377,7 +1137,6 @@ export default function OrbitaskWorkspacePage() {
                 );
               })}
 
-              {/* CREATE WORKSPACE BUTTON (BOTTOM LEFT) */}
               <div className="pt-2">
                 <button
                   type="button"
@@ -1401,11 +1160,11 @@ export default function OrbitaskWorkspacePage() {
           {/* ================= LEFT SIDEBAR (EXACT MATCH TO SCREENSHOT) ================= */}
           <aside
             className={`${
-              isSidebarCollapsed ? "w-18" : "w-[260px]"
+              isSidebarCollapsed ? "w-18" : "w-[245px]"
             } bg-white border-r border-[#F1F5F9] flex flex-col justify-between transition-all duration-300 shrink-0 select-none z-30`}
           >
             <div className="p-4 flex flex-col gap-4 overflow-y-auto max-h-screen">
-              {/* 1. Header: Orbitask Logo + Collapse button */}
+              {/* 1. Brand Header */}
               <div className="flex items-center justify-between">
                 <div
                   onClick={() => setCurrentView("workspaces_grid")}
@@ -1413,33 +1172,10 @@ export default function OrbitaskWorkspacePage() {
                   title="Return to workspaces overview"
                 >
                   <div className="relative flex items-center justify-center">
-                    <svg
-                      className="w-7 h-7 text-[#0284C7]"
-                      viewBox="0 0 36 36"
-                      fill="none"
-                    >
+                    <svg className="w-7 h-7 text-[#0284C7]" viewBox="0 0 36 36" fill="none">
                       <circle cx="18" cy="18" r="6" fill="#0284C7" />
-                      <ellipse
-                        cx="18"
-                        cy="18"
-                        rx="14"
-                        ry="5.5"
-                        stroke="#0284C7"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        transform="rotate(-38 18 18)"
-                      />
-                      <ellipse
-                        cx="18"
-                        cy="18"
-                        rx="14"
-                        ry="5.5"
-                        stroke="#38BDF8"
-                        strokeWidth="2.4"
-                        strokeDasharray="20 40"
-                        strokeLinecap="round"
-                        transform="rotate(-38 18 18)"
-                      />
+                      <ellipse cx="18" cy="18" rx="14" ry="5.5" stroke="#0284C7" strokeWidth="2.4" strokeLinecap="round" transform="rotate(-38 18 18)" />
+                      <ellipse cx="18" cy="18" rx="14" ry="5.5" stroke="#38BDF8" strokeWidth="2.4" strokeDasharray="20 40" strokeLinecap="round" transform="rotate(-38 18 18)" />
                     </svg>
                   </div>
                   {!isSidebarCollapsed && (
@@ -1455,20 +1191,20 @@ export default function OrbitaskWorkspacePage() {
                   className="p-1.5 rounded-[5px] text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
                   title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 >
-                  {isSidebarCollapsed ? (
-                    <PanelLeft className="w-4 h-4" />
-                  ) : (
-                    <PanelLeftClose className="w-4 h-4" />
-                  )}
+                  {isSidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
                 </button>
               </div>
 
-              {/* 2. Workspace Selector Dropdown (e.g. Amazon / Orbitask / Airbnb) */}
+              {/* 2. Workspace Selector Button with Dropdown */}
               {!isSidebarCollapsed && (
                 <div className="relative" data-menu-container="true">
-                  <div
-                    onClick={() => setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen)}
-                    className="h-11 px-3 border border-[#E2E8F0] rounded-[8px] flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors shadow-2xs"
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen);
+                    }}
+                    className="w-full h-11 px-3 border border-[#E2E8F0] rounded-[8px] flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors shadow-2xs"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <WorkspaceBrandLogo
@@ -1486,11 +1222,13 @@ export default function OrbitaskWorkspacePage() {
                         isWorkspaceDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
-                  </div>
+                  </button>
 
-                  {/* Switcher Popup */}
                   {isWorkspaceDropdownOpen && (
-                    <div className="absolute top-12 left-0 right-0 bg-white rounded-[8px] border border-[#E2E8F0] shadow-xl py-1 z-50 text-xs font-inter animate-in fade-in zoom-in-95">
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute top-12 left-0 right-0 bg-white rounded-[8px] border border-[#E2E8F0] shadow-xl py-1 z-50 text-xs font-inter animate-in fade-in zoom-in-95"
+                    >
                       <div className="px-3 py-1.5 text-[10px] font-semibold text-[#94A3B8] uppercase tracking-wider">
                         Switch Workspace
                       </div>
@@ -1506,9 +1244,7 @@ export default function OrbitaskWorkspacePage() {
                             setIsWorkspaceDropdownOpen(false);
                           }}
                           className={`w-full px-3 py-2 text-left hover:bg-slate-50 flex items-center justify-between cursor-pointer ${
-                            ws.id === activeWorkspaceId
-                              ? "bg-blue-50/50 text-[#2563EB] font-medium"
-                              : "text-[#334155]"
+                            ws.id === activeWorkspaceId ? "bg-blue-50/60 text-[#2563EB] font-medium" : "text-[#334155]"
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
@@ -1520,9 +1256,7 @@ export default function OrbitaskWorkspacePage() {
                             />
                             <span>{ws.name}</span>
                           </div>
-                          {ws.id === activeWorkspaceId && (
-                            <Check className="w-3.5 h-3.5 text-[#2563EB]" />
-                          )}
+                          {ws.id === activeWorkspaceId && <Check className="w-3.5 h-3.5 text-[#2563EB]" />}
                         </button>
                       ))}
 
@@ -1543,15 +1277,13 @@ export default function OrbitaskWorkspacePage() {
                 </div>
               )}
 
-              {/* 3. Section: Main menu */}
+              {/* 3. Main menu Section */}
               <div className="space-y-1">
                 {!isSidebarCollapsed && (
-                  <span className="text-xs font-medium text-[#94A3B8] font-inter px-2">
-                    Main menu
-                  </span>
+                  <span className="text-xs font-medium text-[#94A3B8] font-inter px-2">Main menu</span>
                 )}
 
-                {/* Overview */}
+                {/* Overview button (Active rounded pill in screenshot) */}
                 <button
                   type="button"
                   onClick={() => setSidebarActiveTab("overview")}
@@ -1565,12 +1297,10 @@ export default function OrbitaskWorkspacePage() {
                   <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                     <Compass className="w-4 h-4 stroke-[1.75]" />
                   </div>
-                  {!isSidebarCollapsed && (
-                    <span className="text-sm font-medium font-inter">Overview</span>
-                  )}
+                  {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Overview</span>}
                 </button>
 
-                {/* Projects (Collapsible Section with Sub-items) */}
+                {/* Projects accordion */}
                 <div className="space-y-1">
                   <div
                     onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
@@ -1581,54 +1311,38 @@ export default function OrbitaskWorkspacePage() {
                       <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                         <Layers className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && (
-                        <span className="text-sm font-medium font-inter text-[#0F172A]">
-                          Projects
-                        </span>
-                      )}
+                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter text-[#0F172A]">Projects</span>}
                     </div>
                     {!isSidebarCollapsed && (
-                      <ChevronUp
-                        className={`w-4 h-4 text-[#94A3B8] transition-transform ${
-                          isProjectsExpanded ? "" : "rotate-180"
-                        }`}
-                      />
+                      <ChevronUp className={`w-4 h-4 text-[#94A3B8] transition-transform ${isProjectsExpanded ? "" : "rotate-180"}`} />
                     )}
                   </div>
 
-                  {/* Sub-projects list with left border line (Exact match to screenshot!) */}
                   {!isSidebarCollapsed && isProjectsExpanded && (
                     <div className="border-l-2 border-[#E2E8F0] ml-6 pl-4 space-y-2.5 pt-1 pb-1 text-sm font-inter">
                       {activeWorkspace?.projects.map((proj) => (
                         <div
                           key={proj.id}
-                          onClick={() => setActiveProjectId(proj.id)}
+                          onClick={() => {
+                            setActiveProjectId(proj.id);
+                            setSidebarActiveTab("overview");
+                          }}
                           className={`cursor-pointer transition-colors ${
-                            proj.id === activeProjectId
-                              ? "text-[#2563EB] font-semibold"
-                              : "text-[#64748B] hover:text-[#0F172A]"
+                            proj.id === activeProjectId ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"
                           }`}
                         >
                           {proj.name}
                         </div>
                       ))}
 
-                      {/* Fallback default list if no projects yet */}
                       {(!activeWorkspace?.projects || activeWorkspace.projects.length === 0) && (
                         <>
-                          <div className="text-[#2563EB] font-semibold cursor-pointer">
-                            Marketing
-                          </div>
-                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">
-                            Development
-                          </div>
-                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">
-                            Support
-                          </div>
+                          <div className="text-[#2563EB] font-semibold cursor-pointer">Marketing</div>
+                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">Development</div>
+                          <div className="text-[#64748B] hover:text-[#0F172A] cursor-pointer">Support</div>
                         </>
                       )}
 
-                      {/* + Add project link in blue */}
                       <button
                         type="button"
                         onClick={() => openCreateProjectModal(activeWorkspace.id)}
@@ -1642,7 +1356,7 @@ export default function OrbitaskWorkspacePage() {
                 </div>
               </div>
 
-              {/* 4. Section: Project view */}
+              {/* 4. Project view Section */}
               <div className="space-y-1 pt-2">
                 {!isSidebarCollapsed && (
                   <div
@@ -1650,95 +1364,68 @@ export default function OrbitaskWorkspacePage() {
                     className="flex items-center justify-between text-xs font-medium text-[#94A3B8] font-inter px-2 pb-1 cursor-pointer"
                   >
                     <span>Project view</span>
-                    <ChevronUp
-                      className={`w-3.5 h-3.5 transition-transform ${
-                        isProjectViewExpanded ? "" : "rotate-180"
-                      }`}
-                    />
+                    <ChevronUp className={`w-3.5 h-3.5 transition-transform ${isProjectViewExpanded ? "" : "rotate-180"}`} />
                   </div>
                 )}
 
                 {isProjectViewExpanded && (
                   <div className="space-y-1">
-                    {/* Tasks */}
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("tasks")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "tasks"
-                          ? "bg-slate-100 text-[#0F172A] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "tasks" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Tasks"
                     >
                       <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                         <CheckSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && (
-                        <span className="text-sm font-medium font-inter">Tasks</span>
-                      )}
+                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Tasks</span>}
                     </button>
 
-                    {/* Planner */}
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("planner")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "planner"
-                          ? "bg-slate-100 text-[#0F172A] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "planner" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Planner"
                     >
                       <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                         <Timer className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && (
-                        <span className="text-sm font-medium font-inter">Planner</span>
-                      )}
+                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Planner</span>}
                     </button>
 
-                    {/* AI Assistant */}
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("ai_assistant")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "ai_assistant"
-                          ? "bg-slate-100 text-[#0F172A] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "ai_assistant" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="AI Assistant"
                     >
                       <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                         <Sparkles className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && (
-                        <span className="text-sm font-medium font-inter">
-                          AI Assistant
-                        </span>
-                      )}
+                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">AI Assistant</span>}
                     </button>
 
-                    {/* Chat */}
                     <button
                       type="button"
                       onClick={() => setSidebarActiveTab("chat")}
                       className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                        sidebarActiveTab === "chat"
-                          ? "bg-slate-100 text-[#0F172A] font-semibold"
-                          : "text-[#334155] hover:bg-slate-50"
+                        sidebarActiveTab === "chat" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
                       }`}
                       title="Chat"
                     >
                       <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                         <MessageSquare className="w-4 h-4 stroke-[1.75]" />
                       </div>
-                      {!isSidebarCollapsed && (
-                        <span className="text-sm font-medium font-inter">Chat</span>
-                      )}
+                      {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Chat</span>}
                     </button>
 
-                    {/* Project Management (Collapsible with Team, Files, Automation, Settings) */}
                     <div className="space-y-1">
                       <div
                         onClick={() => setIsProjectMgmtExpanded(!isProjectMgmtExpanded)}
@@ -1757,47 +1444,18 @@ export default function OrbitaskWorkspacePage() {
                         </div>
                       </div>
 
-                      {/* Sub-items: Team, Files, Automation, Settings */}
                       {!isSidebarCollapsed && isProjectMgmtExpanded && (
                         <div className="border-l-2 border-[#E2E8F0] ml-6 pl-4 space-y-2.5 pt-1 pb-1 text-sm font-inter">
-                          <div
-                            onClick={() => setSidebarActiveTab("team")}
-                            className={`cursor-pointer transition-colors ${
-                              sidebarActiveTab === "team"
-                                ? "text-[#2563EB] font-semibold"
-                                : "text-[#64748B] hover:text-[#0F172A]"
-                            }`}
-                          >
+                          <div onClick={() => setSidebarActiveTab("team")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "team" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
                             Team
                           </div>
-                          <div
-                            onClick={() => setSidebarActiveTab("files")}
-                            className={`cursor-pointer transition-colors ${
-                              sidebarActiveTab === "files"
-                                ? "text-[#2563EB] font-semibold"
-                                : "text-[#64748B] hover:text-[#0F172A]"
-                            }`}
-                          >
+                          <div onClick={() => setSidebarActiveTab("files")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "files" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
                             Files
                           </div>
-                          <div
-                            onClick={() => setSidebarActiveTab("automation")}
-                            className={`cursor-pointer transition-colors ${
-                              sidebarActiveTab === "automation"
-                                ? "text-[#2563EB] font-semibold"
-                                : "text-[#64748B] hover:text-[#0F172A]"
-                            }`}
-                          >
+                          <div onClick={() => setSidebarActiveTab("automation")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "automation" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
                             Automation
                           </div>
-                          <div
-                            onClick={() => setSidebarActiveTab("settings")}
-                            className={`cursor-pointer transition-colors ${
-                              sidebarActiveTab === "settings"
-                                ? "text-[#2563EB] font-semibold"
-                                : "text-[#64748B] hover:text-[#0F172A]"
-                            }`}
-                          >
+                          <div onClick={() => setSidebarActiveTab("settings")} className={`cursor-pointer transition-colors ${sidebarActiveTab === "settings" ? "text-[#2563EB] font-semibold" : "text-[#64748B] hover:text-[#0F172A]"}`}>
                             Settings
                           </div>
                         </div>
@@ -1808,434 +1466,563 @@ export default function OrbitaskWorkspacePage() {
               </div>
             </div>
 
-            {/* 5. Bottom: Help & Support */}
             <div className="p-4 border-t border-[#F1F5F9]">
               <button
                 type="button"
                 onClick={() => setSidebarActiveTab("help")}
                 className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-[8px] transition-colors cursor-pointer ${
-                  sidebarActiveTab === "help"
-                    ? "bg-slate-100 text-[#0F172A] font-semibold"
-                    : "text-[#334155] hover:bg-slate-50"
+                  sidebarActiveTab === "help" ? "bg-slate-100 text-[#0F172A] font-semibold" : "text-[#334155] hover:bg-slate-50"
                 }`}
                 title="Help & Support"
               >
                 <div className="w-8 h-8 rounded-[8px] bg-slate-50 border border-slate-100 flex items-center justify-center text-[#64748B] shrink-0">
                   <HelpCircle className="w-4 h-4 stroke-[1.75]" />
                 </div>
-                {!isSidebarCollapsed && (
-                  <span className="text-sm font-medium font-inter">
-                    Help & Support
-                  </span>
-                )}
+                {!isSidebarCollapsed && <span className="text-sm font-medium font-inter">Help & Support</span>}
               </button>
             </div>
           </aside>
 
-          {/* ================= MAIN CONTENT CANVAS ================= */}
+          {/* ================= MAIN DASHBOARD CANVAS ================= */}
           <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-            {/* Top Bar inside Project Dashboard */}
+            {/* Top Bar */}
             <header className="h-16 px-8 border-b border-[#E2E8F0] bg-white flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <button
-                  type="button"
-                  onClick={() => setCurrentView("workspaces_grid")}
-                  className="h-8 px-2.5 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#475569] hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Workspaces</span>
-                </button>
-
-                <div className="h-4 w-px bg-[#E2E8F0]" />
-
-                <div className="flex items-center gap-2 text-xs font-inter text-[#64748B] truncate">
-                  <span className="font-semibold text-[#0F172A]">
-                    {activeWorkspace?.name}
-                  </span>
-                  <span>/</span>
-                  <span className="text-[#2563EB] font-medium truncate">
-                    {activeProject?.name || "Project"}
-                  </span>
+              <div>
+                <h1 className="text-xl font-bold text-[#0F172A] font-poppins">Overview</h1>
+                <div className="flex items-center gap-1.5 text-[11px] font-medium font-inter text-[#64748B]">
+                  <span>{activeWorkspace?.name || "Amazon"}</span>
+                  <ChevronRight className="w-3 h-3 text-[#94A3B8]" />
+                  <span className="text-[#0F172A]">Overview</span>
                 </div>
               </div>
 
-              {/* Right Side: Profile & Actions */}
-              <div className="flex items-center gap-3">
-                <div className="relative w-64 hidden md:block">
+              <div className="flex items-center gap-4">
+                <div className="relative w-56 hidden md:block">
                   <Search className="w-3.5 h-3.5 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2 stroke-[1.75]" />
                   <input
                     type="text"
-                    placeholder="Search tasks, docs..."
-                    className="w-full h-8 pl-8 pr-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-[5px] text-xs font-inter text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]"
+                    placeholder="Search..."
+                    className="w-full h-8 pl-8 pr-3 bg-white border border-[#E2E8F0] rounded-[5px] text-xs font-inter text-[#1E293B] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
 
-                <button
-                  type="button"
-                  className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors"
-                >
-                  <Bell className="w-4 h-4 stroke-[1.75]" />
-                </button>
-
-                <div className="flex items-center gap-2 p-1">
+                <div className="flex items-center gap-2">
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
                     alt="Moni Roy"
                     className="w-8 h-8 rounded-[5px] object-cover"
                   />
                   <div className="hidden lg:flex flex-col text-left">
-                    <span className="text-xs font-semibold font-inter text-[#0F172A] leading-tight">
-                      Moni Roy
-                    </span>
-                    <span className="text-[10px] font-medium font-inter text-[#94A3B8] leading-tight">
-                      Admin
-                    </span>
+                    <span className="text-xs font-semibold font-inter text-[#0F172A] leading-tight">Moni Roy</span>
+                    <span className="text-[10px] font-medium font-inter text-[#94A3B8] leading-tight">Admin</span>
                   </div>
                 </div>
+
+                <button type="button" className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors">
+                  <Bell className="w-4 h-4 stroke-[1.75]" />
+                </button>
+
+                <button type="button" className="w-8 h-8 rounded-[5px] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors">
+                  <Settings className="w-4 h-4 stroke-[1.75]" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentView("workspaces_grid")}
+                  className="h-8 px-2.5 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#475569] hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer transition-colors ml-1"
+                  title="Back to All Workspaces"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Workspaces</span>
+                </button>
               </div>
             </header>
 
-            {/* Dashboard Content Views */}
-            <main className="flex-1 overflow-y-auto p-6 md:p-8">
-              {/* TAB 1: TASKS (Kanban Board) */}
-              {sidebarActiveTab === "tasks" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between flex-wrap gap-4">
+            {/* Dashboard Scrollable Body */}
+            <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+              {/* Top Sub-bar with Avatars & Add Member */}
+              <div className="flex items-center justify-end gap-3 -mt-2">
+                <div className="flex items-center -space-x-1.5">
+                  <div className="w-7 h-7 rounded-full border-2 border-white overflow-hidden shadow-2xs">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="Moni" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="w-7 h-7 rounded-full border-2 border-white overflow-hidden shadow-2xs">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="Alex" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="w-7 h-7 rounded-full border-2 border-white bg-blue-100 text-blue-700 font-bold text-[10px] flex items-center justify-center shadow-2xs">
+                    P
+                  </div>
+                  <div className="w-7 h-7 rounded-full border-2 border-white bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center shadow-2xs">
+                    H
+                  </div>
+                  <span className="text-[11px] font-medium font-inter text-[#64748B] pl-2.5">+12</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openCreateProjectModal(activeWorkspace.id)}
+                  className="h-8 px-3 rounded-[5px] border border-[#CBD5E1] text-xs font-medium font-inter text-[#334155] hover:bg-slate-50 flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 stroke-[2]" />
+                  <span>Add Member</span>
+                </button>
+              </div>
+
+              {/* ================= SECTION 1: TASK SUMMARY (4 COLOR METRICS) ================= */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-bold text-[#0F172A] font-poppins">Task Summary</h2>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 px-2.5 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-2 bg-white cursor-pointer">
+                      <span>Marketing project</span>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />
+                    </div>
+                    <div className="h-8 px-2.5 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-2 bg-white cursor-pointer">
+                      <span>Monthly</span>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4 Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {/* Card 1: Completed Tasks (Green) */}
+                  <div className="bg-[#ECFDF5]/80 border border-emerald-100 rounded-[10px] p-5 space-y-3 shadow-2xs">
+                    <div className="w-9 h-9 rounded-full bg-[#10B981] text-white flex items-center justify-center shadow-xs">
+                      <Check className="w-5 h-5 stroke-[2.5]" />
+                    </div>
                     <div>
-                      <h1 className="text-2xl font-bold text-[#0F172A] font-poppins">
-                        {activeProject?.name || "Marketing Team"} Tasks
-                      </h1>
-                      <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                        Track progress, assign teammates, and manage project deliverables.
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const title = prompt("New Task Title:");
-                          if (title?.trim()) {
-                            setBoardTasks((prev) => [
-                              ...prev,
-                              {
-                                id: `t-${Date.now()}`,
-                                title: title.trim(),
-                                description: "New task item added to board.",
-                                priority: "P2",
-                                status: "todo",
-                                progress: "0/5",
-                                dueDate: "Sep 20, 2026",
-                                assignee: {
-                                  name: "Moni",
-                                  initials: "M",
-                                  bg: "bg-purple-100 text-purple-700",
-                                },
-                              },
-                            ]);
-                          }
-                        }}
-                        className="h-9 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Add Task</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Kanban Columns */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {[
-                      { status: "todo", label: "To Do", count: boardTasks.filter((t) => t.status === "todo").length, color: "bg-slate-200" },
-                      { status: "in_progress", label: "In Progress", count: boardTasks.filter((t) => t.status === "in_progress").length, color: "bg-blue-500" },
-                      { status: "in_review", label: "In Review", count: boardTasks.filter((t) => t.status === "in_review").length, color: "bg-amber-500" },
-                      { status: "done", label: "Completed", count: boardTasks.filter((t) => t.status === "done").length, color: "bg-emerald-500" },
-                    ].map((col) => (
-                      <div
-                        key={col.status}
-                        className="bg-[#F1F5F9]/50 rounded-[8px] p-3 border border-[#E2E8F0]/70 flex flex-col gap-3 min-h-[420px]"
-                      >
-                        <div className="flex items-center justify-between pb-1 px-1">
-                          <div className="flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full ${col.color}`} />
-                            <span className="text-xs font-bold text-[#0F172A] font-inter">
-                              {col.label}
-                            </span>
-                            <span className="text-[11px] font-semibold text-[#64748B] bg-white px-1.5 py-0.5 rounded-[4px] border border-[#E2E8F0]">
-                              {col.count}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Tasks in Column */}
-                        <div className="space-y-3 flex-1">
-                          {boardTasks
-                            .filter((t) => t.status === col.status)
-                            .map((task) => (
-                              <div
-                                key={task.id}
-                                className="bg-white rounded-[6px] border border-[#E2E8F0] p-3.5 shadow-2xs hover:shadow-md transition-all space-y-2.5 group"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span
-                                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                      task.priority === "P1"
-                                        ? "bg-rose-100 text-rose-800"
-                                        : task.priority === "P2"
-                                        ? "bg-amber-100 text-amber-800"
-                                        : "bg-blue-100 text-blue-800"
-                                    }`}
-                                  >
-                                    {task.priority}
-                                  </span>
-
-                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const nextStatus: Record<string, any> = {
-                                          todo: "in_progress",
-                                          in_progress: "in_review",
-                                          in_review: "done",
-                                          done: "todo",
-                                        };
-                                        setBoardTasks((prev) =>
-                                          prev.map((t) =>
-                                            t.id === task.id
-                                              ? { ...t, status: nextStatus[t.status] }
-                                              : t
-                                          )
-                                        );
-                                      }}
-                                      className="text-[10px] font-medium text-[#2563EB] hover:underline"
-                                    >
-                                      Move
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <h4 className="text-xs font-bold text-[#0F172A] leading-snug font-inter">
-                                  {task.title}
-                                </h4>
-                                <p className="text-[11px] text-[#64748B] line-clamp-2 leading-relaxed">
-                                  {task.description}
-                                </p>
-
-                                <div className="pt-2 border-t border-[#F1F5F9] flex items-center justify-between text-[11px] text-[#64748B]">
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3 text-[#94A3B8]" />
-                                    <span>{task.dueDate}</span>
-                                  </div>
-
-                                  <div
-                                    className={`w-5 h-5 rounded-full ${task.assignee.bg} flex items-center justify-center text-[10px] font-bold`}
-                                    title={task.assignee.name}
-                                  >
-                                    {task.assignee.initials}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
+                      <span className="text-xs font-semibold text-[#374151] font-inter">Completed Tasks</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-bold text-[#111827] font-poppins">12</span>
+                        <span className="text-xs font-medium text-[#6B7280]">/35</span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 2: OVERVIEW */}
-              {sidebarActiveTab === "overview" && (
-                <div className="space-y-6 max-w-4xl">
-                  <div>
-                    <h1 className="text-2xl font-bold text-[#0F172A] font-poppins">
-                      {activeWorkspace?.name} Overview
-                    </h1>
-                    <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                      High level workspace telemetry, project health, and activity logs.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-5 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-1">
-                      <span className="text-xs text-[#64748B]">Total Projects</span>
-                      <p className="text-2xl font-bold text-[#0F172A]">
-                        {activeWorkspace?.projects.length || 0}
-                      </p>
                     </div>
-                    <div className="bg-white p-5 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-1">
-                      <span className="text-xs text-[#64748B]">Completed Tasks</span>
-                      <p className="text-2xl font-bold text-emerald-600">50 / 64</p>
-                    </div>
-                    <div className="bg-white p-5 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-1">
-                      <span className="text-xs text-[#64748B]">Active Members</span>
-                      <p className="text-2xl font-bold text-[#2563EB]">14 Teammates</p>
+                    <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 font-inter">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>12% increase from last month</span>
                     </div>
                   </div>
 
-                  <div className="bg-white p-6 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-4">
-                    <h3 className="text-sm font-bold text-[#0F172A]">Projects In This Workspace</h3>
-                    <div className="divide-y divide-[#F1F5F9]">
-                      {activeWorkspace?.projects.map((p) => (
-                        <div
-                          key={p.id}
-                          onClick={() => {
-                            setActiveProjectId(p.id);
-                            setSidebarActiveTab("tasks");
-                          }}
-                          className="py-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 px-2 rounded transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span
-                              className="w-3 h-3 rounded-full shrink-0"
-                              style={{ backgroundColor: p.bannerColor }}
-                            />
-                            <div>
-                              <h4 className="text-xs font-semibold text-[#0F172A]">
-                                {p.name}
-                              </h4>
-                              <p className="text-[11px] text-[#64748B]">{p.description}</p>
-                            </div>
-                          </div>
-                          <span className="text-xs text-[#2563EB] font-medium flex items-center gap-1">
-                            Open Tasks <ChevronRight className="w-3.5 h-3.5" />
-                          </span>
-                        </div>
-                      ))}
+                  {/* Card 2: In Progress Tasks (Indigo) */}
+                  <div className="bg-[#EEF2FF]/80 border border-indigo-100 rounded-[10px] p-5 space-y-3 shadow-2xs">
+                    <div className="w-9 h-9 rounded-full bg-[#6366F1] text-white flex items-center justify-center shadow-xs">
+                      <Clock className="w-5 h-5 stroke-[2]" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-[#374151] font-inter">In Progress Tasks</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-bold text-[#111827] font-poppins">12</span>
+                        <span className="text-xs font-medium text-[#6B7280]">/35</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-medium text-indigo-600 font-inter">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>12% increase from last month</span>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Tasks Pending Approval (Amber) */}
+                  <div className="bg-[#FFFBEB]/90 border border-amber-100 rounded-[10px] p-5 space-y-3 shadow-2xs">
+                    <div className="w-9 h-9 rounded-full bg-[#F59E0B] text-white flex items-center justify-center shadow-xs">
+                      <Timer className="w-5 h-5 stroke-[2]" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-[#374151] font-inter">Tasks Pending Approval</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-bold text-[#111827] font-poppins">12</span>
+                        <span className="text-xs font-medium text-[#6B7280]">/35</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-medium text-amber-600 font-inter">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>2% increase from last month</span>
+                    </div>
+                  </div>
+
+                  {/* Card 4: Upcoming Tasks (Rose) */}
+                  <div className="bg-[#FFF1F2]/80 border border-rose-100 rounded-[10px] p-5 space-y-3 shadow-2xs">
+                    <div className="w-9 h-9 rounded-full bg-[#F43F5E] text-white flex items-center justify-center shadow-xs">
+                      <Calendar className="w-5 h-5 stroke-[2]" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-[#374151] font-inter">Upcoming Tasks</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-bold text-[#111827] font-poppins">12</span>
+                        <span className="text-xs font-medium text-[#6B7280]">/35</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 font-inter">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>2% increase from last month</span>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {/* TAB 3: PLANNER */}
-              {sidebarActiveTab === "planner" && (
-                <div className="space-y-6 max-w-4xl">
+              {/* ================= SECTION 2: 2 LINE CHARTS ================= */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Chart 1: Weekly Task Load */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
                   <div>
-                    <h1 className="text-2xl font-bold text-[#0F172A] font-poppins">
-                      Release Planner & Timeline
-                    </h1>
-                    <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                      Sprint roadmap and milestone scheduling.
-                    </p>
+                    <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Weekly Task Load</h3>
+                    <p className="text-[11px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
                   </div>
 
-                  <div className="bg-white p-6 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-4">
-                    {[
-                      { title: "Sprint 1: UI Foundations & Figma Sync", date: "Sep 01 - Sep 10", status: "Done", color: "text-emerald-600 bg-emerald-50" },
-                      { title: "Sprint 2: Authentication & Multi-Workspace Engine", date: "Sep 11 - Sep 18", status: "In Progress", color: "text-blue-600 bg-blue-50" },
-                      { title: "Sprint 3: Realtime Collaborative Canvas & R2", date: "Sep 19 - Sep 28", status: "Upcoming", color: "text-amber-600 bg-amber-50" },
-                    ].map((s, idx) => (
-                      <div
-                        key={idx}
-                        className="p-4 rounded-[6px] border border-[#F1F5F9] flex items-center justify-between"
-                      >
-                        <div className="space-y-1">
-                          <h4 className="text-xs font-bold text-[#0F172A]">{s.title}</h4>
-                          <span className="text-[11px] text-[#64748B] flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-[#94A3B8]" />
-                            {s.date}
-                          </span>
-                        </div>
-                        <span className={`text-[11px] font-semibold px-2 py-1 rounded-[4px] ${s.color}`}>
-                          {s.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                  {/* SVG Spline Chart */}
+                  <div className="relative h-[200px] w-full">
+                    <svg className="w-full h-full" viewBox="0 0 500 180" fill="none">
+                      {/* Grid lines */}
+                      <line x1="35" y1="20" x2="490" y2="20" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="55" x2="490" y2="55" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="90" x2="490" y2="90" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="125" x2="490" y2="125" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="160" x2="490" y2="160" stroke="#E2E8F0" />
 
-              {/* TAB 4: AI ASSISTANT */}
-              {sidebarActiveTab === "ai_assistant" && (
-                <div className="space-y-6 max-w-3xl">
-                  <div>
-                    <h1 className="text-2xl font-bold text-[#0F172A] font-poppins flex items-center gap-2">
-                      <Sparkles className="w-6 h-6 text-[#2563EB]" />
-                      Orbitask AI Copilot
-                    </h1>
-                    <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                      Ask Orbitask AI to summarize progress, auto-generate subtasks, or draft client updates.
-                    </p>
-                  </div>
+                      {/* Y-axis values */}
+                      <text x="15" y="24" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">25</text>
+                      <text x="15" y="59" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">20</text>
+                      <text x="15" y="94" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">15</text>
+                      <text x="15" y="129" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">10</text>
+                      <text x="15" y="163" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">0</text>
 
-                  <div className="bg-white rounded-[8px] border border-[#E2E8F0] shadow-2xs overflow-hidden flex flex-col h-[480px]">
-                    <div className="flex-1 p-5 overflow-y-auto space-y-4 text-xs font-inter">
-                      <div className="flex gap-3">
-                        <div className="w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#2563EB] shrink-0">
-                          <Sparkles className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="bg-[#F8FAFC] border border-[#E2E8F0] p-3.5 rounded-[8px] max-w-lg text-[#334155] leading-relaxed">
-                          Hello Moni! I am your Orbitask project assistant for{" "}
-                          <strong>{activeWorkspace?.name}</strong>. I can break down requirements into Jira/Kanban tasks, optimize deadlines, or review deliverables. How can I help today?
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-3 border-t border-[#F1F5F9] bg-white flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="Ask Orbitask AI to generate tasks or draft updates..."
-                        className="flex-1 h-10 px-3.5 border border-[#CBD5E1] rounded-[5px] text-xs font-inter focus:outline-none focus:border-[#2563EB]"
+                      {/* Curve 1: Completed Tasks (Blue) */}
+                      <path
+                        d="M 50 145 C 90 150, 120 100, 160 85 C 200 70, 230 115, 270 110 C 310 105, 340 140, 380 135 C 420 130, 450 95, 485 100"
+                        stroke="#2563EB"
+                        strokeWidth="2.5"
+                        fill="none"
                       />
-                      <button
-                        type="button"
-                        className="h-10 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[5px] text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Send</span>
-                      </button>
+
+                      {/* Curve 2: New Tasks (Amber) */}
+                      <path
+                        d="M 50 125 C 90 115, 120 145, 170 65 C 210 15, 240 135, 280 120 C 320 105, 350 45, 390 38 C 430 30, 460 105, 485 115"
+                        stroke="#F59E0B"
+                        strokeWidth="2.5"
+                        fill="none"
+                      />
+
+                      {/* Tooltip on Sept 12, 2026 */}
+                      <line x1="200" y1="15" x2="200" y2="160" stroke="#94A3B8" strokeWidth="1" strokeDasharray="3 3" />
+                      <circle cx="200" cy="74" r="4" fill="#2563EB" stroke="white" strokeWidth="2" />
+                      <g transform="translate(170, 40)">
+                        <rect width="78" height="24" rx="4" fill="#0F172A" />
+                        <text x="39" y="15" fill="white" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">Sept 12, 2026</text>
+                      </g>
+                    </svg>
+
+                    {/* X-axis labels */}
+                    <div className="flex justify-between pl-9 pr-3 text-[10px] text-[#94A3B8] font-inter mt-1">
+                      <span>Mon</span>
+                      <span>Tue</span>
+                      <span>Wed</span>
+                      <span>Thu</span>
+                      <span>Fri</span>
+                      <span>Sat</span>
+                      <span>Sun</span>
+                    </div>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex items-center justify-center gap-6 text-xs font-medium font-inter pt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                      <span className="text-[#334155]">Completed Tasks</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                      <span className="text-[#334155]">New Tasks</span>
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* TAB 5: TEAM */}
-              {sidebarActiveTab === "team" && (
-                <div className="space-y-6 max-w-4xl">
+                {/* Chart 2: Project Progress */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h1 className="text-2xl font-bold text-[#0F172A] font-poppins">
-                        Project Team & Access
-                      </h1>
-                      <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                        Manage contributors, assign roles, and revoke workspace permissions.
-                      </p>
+                      <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Project Progress</h3>
+                      <p className="text-[11px] text-[#64748B] font-inter">3 Projects &bull; 32 Tasks</p>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => openCreateProjectModal(activeWorkspace.id)}
-                      className="h-9 px-4 bg-[#2563EB] text-white rounded-[5px] text-xs font-medium flex items-center gap-1.5 shadow-xs"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Invite Teammate</span>
-                    </button>
+                    <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1.5 bg-white cursor-pointer">
+                      <span>Monthly</span>
+                      <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+                    </div>
                   </div>
 
-                  <div className="bg-white rounded-[8px] border border-[#E2E8F0] shadow-2xs overflow-hidden">
+                  {/* SVG Multi-curve */}
+                  <div className="relative h-[200px] w-full">
+                    <svg className="w-full h-full" viewBox="0 0 500 180" fill="none">
+                      <line x1="35" y1="20" x2="490" y2="20" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="55" x2="490" y2="55" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="90" x2="490" y2="90" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="125" x2="490" y2="125" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="35" y1="160" x2="490" y2="160" stroke="#E2E8F0" />
+
+                      <text x="10" y="24" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">8k</text>
+                      <text x="10" y="59" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">6k</text>
+                      <text x="10" y="94" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">4k</text>
+                      <text x="10" y="129" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">2k</text>
+                      <text x="10" y="163" fill="#94A3B8" fontSize="10" fontFamily="sans-serif">0k</text>
+
+                      {/* Cyan curve (Marketing) */}
+                      <path
+                        d="M 50 110 C 100 125, 140 30, 200 45 C 260 60, 310 140, 370 120 C 420 100, 450 40, 485 55"
+                        stroke="#00A3A6"
+                        strokeWidth="2.5"
+                        fill="none"
+                      />
+
+                      {/* Blue curve (Support) */}
+                      <path
+                        d="M 50 80 C 100 60, 140 110, 200 100 C 260 90, 310 30, 370 70 C 420 110, 460 75, 485 85"
+                        stroke="#2563EB"
+                        strokeWidth="2.5"
+                        fill="none"
+                      />
+
+                      {/* Amber curve (Development) */}
+                      <path
+                        d="M 50 145 C 90 140, 130 90, 180 120 C 230 145, 270 90, 320 60 C 370 40, 420 135, 485 105"
+                        stroke="#F59E0B"
+                        strokeWidth="2.5"
+                        fill="none"
+                      />
+
+                      {/* Tooltip */}
+                      <line x1="280" y1="20" x2="280" y2="160" stroke="#94A3B8" strokeWidth="1" strokeDasharray="3 3" />
+                      <circle cx="280" cy="84" r="4" fill="#00A3A6" stroke="white" strokeWidth="2" />
+                      <g transform="translate(245, 30)">
+                        <rect width="75" height="22" rx="4" fill="#0F172A" />
+                        <text x="37.5" y="14" fill="white" fontSize="9" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">Sept 12, 2026</text>
+                      </g>
+                    </svg>
+
+                    <div className="flex justify-between pl-8 pr-2 text-[10px] text-[#94A3B8] font-inter mt-1">
+                      <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span>
+                    </div>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex items-center justify-center gap-6 text-xs font-medium font-inter pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#00A3A6]" />
+                      <span className="text-[#334155]">Marketing project</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                      <span className="text-[#334155]">Support</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                      <span className="text-[#334155]">Development</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= SECTION 3: WORKLOAD BAR CHART & RADIAL GAUGE ================= */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* 12-Month Grouped Bar Chart */}
+                <div className="lg:col-span-2 bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
+                  <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Project Workload</h3>
+
+                  <div className="relative h-[220px] w-full">
+                    <svg className="w-full h-full" viewBox="0 0 600 200" fill="none">
+                      <line x1="30" y1="20" x2="590" y2="20" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="30" y1="60" x2="590" y2="60" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="30" y1="100" x2="590" y2="100" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="30" y1="140" x2="590" y2="140" stroke="#F1F5F9" strokeDasharray="3 3" />
+                      <line x1="30" y1="180" x2="590" y2="180" stroke="#E2E8F0" />
+
+                      <text x="10" y="24" fill="#94A3B8" fontSize="10">100</text>
+                      <text x="10" y="64" fill="#94A3B8" fontSize="10">75</text>
+                      <text x="10" y="104" fill="#94A3B8" fontSize="10">50</text>
+                      <text x="10" y="144" fill="#94A3B8" fontSize="10">25</text>
+                      <text x="10" y="183" fill="#94A3B8" fontSize="10">0</text>
+
+                      {/* 12 Month Bar Groups */}
+                      {[
+                        { m: "Jan", b1: 40, b2: 25, b3: 60 },
+                        { m: "Feb", b1: 30, b2: 50, b3: 45 },
+                        { m: "Mar", b1: 55, b2: 35, b3: 70 },
+                        { m: "Apr", b1: 85, b2: 60, b3: 40 },
+                        { m: "May", b1: 60, b2: 45, b3: 65 },
+                        { m: "Jun", b1: 80, b2: 70, b3: 50 },
+                        { m: "Jul", b1: 45, b2: 65, b3: 75 },
+                        { m: "Aug", b1: 85, b2: 70, b3: 40 },
+                        { m: "Sep", b1: 70, b2: 55, b3: 85 },
+                        { m: "Oct", b1: 30, b2: 40, b3: 65 },
+                        { m: "Nov", b1: 50, b2: 75, b3: 60 },
+                        { m: "Dec", b1: 75, b2: 65, b3: 45 },
+                      ].map((grp, i) => {
+                        const xBase = 50 + i * 45;
+                        return (
+                          <g key={grp.m}>
+                            <rect x={xBase} y={180 - grp.b1 * 1.5} width="6" height={grp.b1 * 1.5} rx="2" fill="#00A3A6" />
+                            <rect x={xBase + 8} y={180 - grp.b2 * 1.5} width="6" height={grp.b2 * 1.5} rx="2" fill="#2563EB" />
+                            <rect x={xBase + 16} y={180 - grp.b3 * 1.5} width="6" height={grp.b3 * 1.5} rx="2" fill="#F59E0B" />
+                          </g>
+                        );
+                      })}
+
+                      {/* Tooltip Badge on April */}
+                      <g transform="translate(160, 25)">
+                        <rect width="115" height="28" rx="5" fill="#0F172A" />
+                        <text x="57" y="17" fill="white" fontSize="9" fontWeight="bold" textAnchor="middle">
+                          M: 26 &bull; S: 18 &bull; D: 12
+                        </text>
+                      </g>
+                    </svg>
+
+                    <div className="flex justify-between pl-11 pr-4 text-[10px] text-[#94A3B8] font-inter">
+                      <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-6 text-xs font-medium font-inter pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#00A3A6]" />
+                      <span className="text-[#334155]">Marketing project</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                      <span className="text-[#334155]">Support</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                      <span className="text-[#334155]">Development</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Semi-Circle Gauge Radial Meter (Task Completion Rate) */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Task Completion Rate</h3>
+                    <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1 bg-white cursor-pointer">
+                      <span>All</span>
+                      <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+                    </div>
+                  </div>
+
+                  {/* Radial Gauge SVG */}
+                  <div className="flex flex-col items-center justify-center pt-2">
+                    <div className="relative w-48 h-28 flex items-end justify-center">
+                      <svg className="w-48 h-28" viewBox="0 0 160 90">
+                        {/* Background Arch */}
+                        <path
+                          d="M 15 85 A 65 65 0 0 1 145 85"
+                          stroke="#E2E8F0"
+                          strokeWidth="10"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        {/* Dotted rainbow outer ring */}
+                        <path
+                          d="M 10 85 A 72 72 0 0 1 150 85"
+                          stroke="#CBD5E1"
+                          strokeWidth="3"
+                          strokeDasharray="2 6"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        {/* Active Progress Arch (Cyan -> Blue -> Amber gradient) */}
+                        <path
+                          d="M 15 85 A 65 65 0 0 1 125 35"
+                          stroke="#00A3A6"
+                          strokeWidth="10"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                      <div className="absolute bottom-1 text-center">
+                        <span className="text-2xl font-bold text-[#00A3A6] font-poppins">72%</span>
+                        <p className="text-[10px] font-medium text-[#64748B]">Completed</p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Stats Breakdown */}
+                    <div className="grid grid-cols-4 gap-2 w-full pt-4 border-t border-[#F1F5F9] text-center">
+                      <div>
+                        <span className="text-base font-bold text-[#0F172A]">62</span>
+                        <p className="text-[10px] text-[#94A3B8] font-inter">Total Task</p>
+                      </div>
+                      <div>
+                        <span className="text-base font-bold text-[#00A3A6]">15</span>
+                        <p className="text-[10px] text-[#94A3B8] font-inter">Completed</p>
+                      </div>
+                      <div>
+                        <span className="text-base font-bold text-[#F59E0B]">35</span>
+                        <p className="text-[10px] text-[#94A3B8] font-inter">Pending</p>
+                      </div>
+                      <div>
+                        <span className="text-base font-bold text-[#EF4444]">12</span>
+                        <p className="text-[10px] text-[#94A3B8] font-inter">Upcoming</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= SECTION 4: TABLE & DONUT CHART ================= */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Project Overview Table */}
+                <div className="lg:col-span-2 bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Project Overview</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1 bg-white cursor-pointer">
+                        <span>Project</span>
+                        <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+                      </div>
+                      <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1 bg-white cursor-pointer">
+                        <span>Status</span>
+                        <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-inter">
-                      <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                      <thead className="text-[#94A3B8] font-medium border-b border-[#F1F5F9]">
                         <tr>
-                          <th className="p-3.5">Name</th>
-                          <th className="p-3.5">Email</th>
-                          <th className="p-3.5">Role</th>
-                          <th className="p-3.5">Status</th>
+                          <th className="pb-3">Project Name</th>
+                          <th className="pb-3">Team</th>
+                          <th className="pb-3">Deadline</th>
+                          <th className="pb-3">Status</th>
+                          <th className="pb-3">Progress</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#F1F5F9]">
                         {[
-                          { name: "Moni Roy", email: "moni.roy@orbitask.com", role: "Owner / Admin", status: "Active" },
-                          { name: "Bilal Khan", email: "bilalrauf.ds@gmail.com", role: "Platform Lead", status: "Active" },
-                          { name: "Alex Chen", email: "alex@team.io", role: "UI Designer", status: "Active" },
-                          { name: "Sarah Connor", email: "sarah@cyber.org", role: "QA Engineer", status: "Invited" },
-                        ].map((m, idx) => (
+                          { name: "Support", deadline: "Jun 20, 2023", status: "Completed", statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200", pct: 100 },
+                          { name: "Marketing project", deadline: "Jun 20, 2023", status: "In Progress", statusColor: "bg-blue-50 text-blue-700 border-blue-200", pct: 65 },
+                          { name: "Curtex iOS app developm...", deadline: "Jun 20, 2023", status: "In Progress", statusColor: "bg-blue-50 text-blue-700 border-blue-200", pct: 40 },
+                          { name: "Website builder developm...", deadline: "Jun 20, 2023", status: "Upcoming", statusColor: "bg-rose-50 text-rose-700 border-rose-200", pct: 10 },
+                          { name: "Development", deadline: "Jun 20, 2023", status: "Upcoming", statusColor: "bg-rose-50 text-rose-700 border-rose-200", pct: 10 },
+                        ].map((row, idx) => (
                           <tr key={idx} className="hover:bg-slate-50/50">
-                            <td className="p-3.5 font-bold text-[#0F172A]">{m.name}</td>
-                            <td className="p-3.5 text-[#64748B]">{m.email}</td>
-                            <td className="p-3.5 text-[#334155]">{m.role}</td>
-                            <td className="p-3.5">
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                {m.status}
+                            <td className="py-3 font-semibold text-[#0F172A]">{row.name}</td>
+                            <td className="py-3">
+                              <div className="flex items-center -space-x-1.5">
+                                <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[9px] font-bold flex items-center justify-center border border-white">P</div>
+                                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[9px] font-bold flex items-center justify-center border border-white">H</div>
+                                <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-[9px] font-bold flex items-center justify-center border border-white">Z</div>
+                              </div>
+                            </td>
+                            <td className="py-3 text-[#64748B]">{row.deadline}</td>
+                            <td className="py-3">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${row.statusColor}`}>
+                                {row.status}
                               </span>
+                            </td>
+                            <td className="py-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-24 h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+                                  <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${row.pct}%` }} />
+                                </div>
+                                <span className="text-[10px] font-semibold text-[#64748B]">{row.pct}%</span>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -2243,88 +2030,326 @@ export default function OrbitaskWorkspacePage() {
                     </table>
                   </div>
                 </div>
-              )}
 
-              {/* TAB 6: FILES */}
-              {sidebarActiveTab === "files" && (
-                <div className="space-y-6 max-w-4xl">
-                  <div>
-                    <h1 className="text-2xl font-bold text-[#0F172A] font-poppins">
-                      Project Files & Cloud Assets
-                    </h1>
-                    <p className="text-xs font-medium font-inter text-[#64748B] mt-1">
-                      Uploaded project assets backed by Cloudflare R2 enterprise storage.
-                    </p>
+                {/* Projects Allocation Donut Chart */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Projects Allocation</h3>
+                      <p className="text-[11px] text-[#64748B]">3 Projects &bull; 32 Tasks</p>
+                    </div>
+                    <div className="h-7 px-2 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1 bg-white cursor-pointer">
+                      <span>Monthly</span>
+                      <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+                    </div>
                   </div>
 
-                  <div className="border-2 border-dashed border-[#CBD5E1] rounded-[8px] p-8 text-center bg-slate-50/40 hover:bg-blue-50/20 hover:border-[#2563EB] transition-colors cursor-pointer space-y-2">
-                    <UploadCloud className="w-8 h-8 text-[#2563EB] mx-auto" />
-                    <p className="text-xs font-semibold text-[#0F172A]">Click or drag files here to upload</p>
-                    <p className="text-[11px] text-[#64748B]">Supports PDF, PNG, JPG, Figma (.fig), up to 50MB</p>
+                  <div className="flex items-center justify-center gap-6 py-4">
+                    {/* SVG Donut */}
+                    <div className="relative w-32 h-32">
+                      <svg className="w-32 h-32 -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="38" stroke="#E2E8F0" strokeWidth="12" fill="none" />
+                        <circle cx="50" cy="50" r="38" stroke="#00A3A6" strokeWidth="12" strokeDasharray="100 150" strokeDashoffset="0" fill="none" />
+                        <circle cx="50" cy="50" r="38" stroke="#2563EB" strokeWidth="12" strokeDasharray="75 165" strokeDashoffset="-100" fill="none" />
+                        <circle cx="50" cy="50" r="38" stroke="#F59E0B" strokeWidth="12" strokeDasharray="45 195" strokeDashoffset="-175" fill="none" />
+                      </svg>
+                    </div>
+
+                    {/* Donut Legend */}
+                    <div className="space-y-2 text-xs font-medium font-inter">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#00A3A6]" />
+                        <span className="text-[#334155]">Marketing project</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                        <span className="text-[#334155]">Support</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                        <span className="text-[#334155]">Development</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {/* TAB 7: CHAT / SETTINGS / HELP */}
-              {["chat", "automation", "settings", "help"].includes(sidebarActiveTab) && (
-                <div className="max-w-2xl bg-white p-6 rounded-[8px] border border-[#E2E8F0] shadow-2xs space-y-4">
-                  <h2 className="text-lg font-bold text-[#0F172A] capitalize font-poppins">
-                    {sidebarActiveTab.replace("_", " ")}
-                  </h2>
-                  <p className="text-xs text-[#64748B]">
-                    This module is active and synced with your active project{" "}
-                    <strong>{activeProject?.name || "Marketing"}</strong>.
-                  </p>
+              {/* ================= SECTION 5: 3 CARDS (MY TASKS, OVERALL PROGRESS, MESSAGES) ================= */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Card 1: My Tasks */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-[#0F172A] font-poppins">My Tasks</h3>
+                    <MoreHorizontal className="w-4 h-4 text-[#94A3B8] cursor-pointer" />
+                  </div>
+                  <span className="text-[11px] font-semibold text-[#64748B]">September 2026</span>
+
+                  <div className="space-y-3">
+                    {myReminders.map((rem) => (
+                      <div key={rem.id} className="flex items-center justify-between gap-2 text-xs font-inter">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setMyReminders((prev) =>
+                                prev.map((r) => (r.id === rem.id ? { ...r, checked: !r.checked } : r))
+                              )
+                            }
+                            className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 border ${
+                              rem.checked ? "bg-[#2563EB] border-[#2563EB] text-white" : "border-[#CBD5E1]"
+                            }`}
+                          >
+                            {rem.checked && <Check className="w-3 h-3 stroke-[3]" />}
+                          </button>
+                          <div className="min-w-0">
+                            <p className={`truncate font-medium ${rem.checked ? "text-[#94A3B8] line-through" : "text-[#0F172A]"}`}>
+                              {rem.text}
+                            </p>
+                            <span className="text-[10px] text-[#94A3B8] truncate block">{rem.url}</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setMyReminders((prev) => prev.filter((r) => r.id !== rem.id))}
+                          className="text-[11px] text-[#94A3B8] hover:text-red-600 shrink-0 cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const text = prompt("New reminder text:");
+                      if (text?.trim()) {
+                        setMyReminders((prev) => [
+                          ...prev,
+                          { id: Date.now(), text: text.trim(), url: "orbitask-workspace.io", checked: false },
+                        ]);
+                      }
+                    }}
+                    className="w-full h-9 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 stroke-[2]" />
+                    <span>Add new Reminder</span>
+                  </button>
                 </div>
-              )}
+
+                {/* Card 2: Overall Progress (Concentric Rings) */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Overall Progress</h3>
+                    <MoreHorizontal className="w-4 h-4 text-[#94A3B8] cursor-pointer" />
+                  </div>
+
+                  {/* Concentric 3-Ring SVG */}
+                  <div className="flex flex-col items-center justify-center py-1">
+                    <div className="relative w-36 h-36 flex items-center justify-center">
+                      <svg className="w-36 h-36 -rotate-90" viewBox="0 0 100 100">
+                        {/* Ring 1 (Outer Cyan) */}
+                        <circle cx="50" cy="50" r="42" stroke="#F1F5F9" strokeWidth="6" fill="none" />
+                        <circle cx="50" cy="50" r="42" stroke="#00A3A6" strokeWidth="6" strokeDasharray="165 264" strokeLinecap="round" fill="none" />
+                        {/* Ring 2 (Middle Blue) */}
+                        <circle cx="50" cy="50" r="33" stroke="#F1F5F9" strokeWidth="6" fill="none" />
+                        <circle cx="50" cy="50" r="33" stroke="#2563EB" strokeWidth="6" strokeDasharray="130 207" strokeLinecap="round" fill="none" />
+                        {/* Ring 3 (Inner Orange) */}
+                        <circle cx="50" cy="50" r="24" stroke="#F1F5F9" strokeWidth="6" fill="none" />
+                        <circle cx="50" cy="50" r="24" stroke="#F59E0B" strokeWidth="6" strokeDasharray="95 150" strokeLinecap="round" fill="none" />
+                      </svg>
+                      <div className="absolute text-center px-1">
+                        <span className="text-[10px] font-bold text-[#0F172A] block leading-tight">All Tasks Progress</span>
+                        <span className="text-[9px] text-[#94A3B8]">52 Total Task</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Legend list */}
+                  <div className="space-y-2 pt-2 border-t border-[#F1F5F9] text-xs font-inter">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+                        <span className="text-[#334155] font-medium">Support</span>
+                      </div>
+                      <span className="text-[#64748B]">28 Tasks</span>
+                      <span className="font-bold text-[#0F172A]">62.5%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#00A3A6]" />
+                        <span className="text-[#334155] font-medium">Marketing pr...</span>
+                      </div>
+                      <span className="text-[#64748B]">28 Tasks</span>
+                      <span className="font-bold text-[#0F172A]">62.5%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                        <span className="text-[#334155] font-medium">Development</span>
+                      </div>
+                      <span className="text-[#64748B]">28 Tasks</span>
+                      <span className="font-bold text-[#0F172A]">62.5%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 3: New Messages */}
+                <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="text-sm font-bold text-[#0F172A] font-poppins">New Messages</h3>
+                      <span className="w-2 h-2 rounded-full bg-red-500" />
+                    </div>
+                    <MoreHorizontal className="w-4 h-4 text-[#94A3B8] cursor-pointer" />
+                  </div>
+
+                  <div className="space-y-3.5 text-xs font-inter">
+                    {[
+                      { name: "Henry Mason", text: "is typing...", time: "9:00 AM", unread: 1, img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" },
+                      { name: "Moni Roy", text: "Online", time: "9:00 AM", unread: 0, img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" },
+                      { name: "Liam Parker", text: "Hey, are we still on track for to...", time: "9:00 AM", unread: 1, img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80" },
+                      { name: "Emma Collins", text: "Online", time: "9:00 AM", unread: 0, img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" },
+                      { name: "Moni Roy", text: "Online", time: "9:00 AM", unread: 0, img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" },
+                    ].map((msg, i) => (
+                      <div key={i} className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <img src={msg.img} alt={msg.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                          <div className="min-w-0">
+                            <span className="font-bold text-[#0F172A] block leading-tight">{msg.name}</span>
+                            <span className="text-[11px] text-[#64748B] truncate block">{msg.text}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          {msg.unread > 0 ? (
+                            <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                              {msg.unread}
+                            </span>
+                          ) : (
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          )}
+                          <span className="text-[10px] text-[#94A3B8]">{msg.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* ================= SECTION 6: ALL MEMBERS TABLE ================= */}
+              <div className="bg-white rounded-[10px] border border-[#E2E8F0] p-5 shadow-2xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-[#0F172A] font-poppins">All Members</h3>
+                  <button type="button" className="h-8 px-3 rounded-[5px] border border-[#E2E8F0] text-xs font-medium font-inter text-[#334155] flex items-center gap-1.5 bg-white cursor-pointer hover:bg-slate-50">
+                    <Filter className="w-3.5 h-3.5 text-[#64748B]" />
+                    <span>Filter</span>
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs font-inter">
+                    <thead className="text-[#94A3B8] font-semibold border-b border-[#F1F5F9]">
+                      <tr>
+                        <th className="pb-3.5">Name</th>
+                        <th className="pb-3.5">Project Name</th>
+                        <th className="pb-3.5">Role</th>
+                        <th className="pb-3.5">Approval</th>
+                        <th className="pb-3.5 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#F1F5F9]">
+                      {[
+                        { name: "Emma Collins", email: "emma.collins@orbitask.com", project: "Marketing project", role: "Software Engineer", status: "Approved", statusColor: "bg-emerald-50 text-emerald-700 border-emerald-200", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" },
+                        { name: "Liam Parker", email: "liam.parker@orbitask.com", project: "Marketing project", role: "Software Engineer", status: "Pending", statusColor: "bg-amber-50 text-amber-700 border-amber-200", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80" },
+                        { name: "Peter Howard", email: "peter.howard@orbitask.com", project: "Marketing project", role: "Network Architect", status: "Pending", statusColor: "bg-amber-50 text-amber-700 border-amber-200", initials: "P", bg: "bg-blue-100 text-blue-800" },
+                        { name: "Henry Mason", email: "henry.mason@orbitask.com", project: "Support", role: "Data Scientist", status: "Denied", statusColor: "bg-rose-50 text-rose-700 border-rose-200", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" },
+                        { name: "Zoey Mitchell", email: "zoey.mitchell@orbitask.com", project: "Support", role: "Web Developer", status: "Pending", statusColor: "bg-amber-50 text-amber-700 border-amber-200", initials: "Z", bg: "bg-amber-100 text-amber-800" },
+                      ].map((mem, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50">
+                          <td className="py-3.5">
+                            <div className="flex items-center gap-2.5">
+                              {mem.img ? (
+                                <img src={mem.img} alt={mem.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                              ) : (
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${mem.bg}`}>
+                                  {mem.initials}
+                                </div>
+                              )}
+                              <div>
+                                <span className="font-semibold text-[#0F172A] block leading-snug">{mem.name}</span>
+                                <span className="text-[11px] text-[#64748B]">{mem.email}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3.5 text-[#334155] font-medium">{mem.project}</td>
+                          <td className="py-3.5 text-[#64748B]">{mem.role}</td>
+                          <td className="py-3.5">
+                            <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold border ${mem.statusColor}`}>
+                              {mem.status}
+                            </span>
+                          </td>
+                          <td className="py-3.5 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button type="button" className="p-1 text-[#64748B] hover:text-[#2563EB] transition-colors cursor-pointer" title="Edit">
+                                <Edit2 className="w-3.5 h-3.5 stroke-[1.75]" />
+                              </button>
+                              <button type="button" className="p-1 text-[#64748B] hover:text-red-600 transition-colors cursor-pointer" title="Delete">
+                                <Trash2 className="w-3.5 h-3.5 stroke-[1.75]" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination Footer */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#F1F5F9] text-xs font-inter">
+                  <span className="text-[#64748B]">Showing 1-5 from 100</span>
+                  <div className="flex items-center gap-1.5">
+                    <button type="button" className="w-7 h-7 rounded-[4px] bg-[#2563EB] text-white font-bold text-xs flex items-center justify-center">1</button>
+                    <button type="button" className="w-7 h-7 rounded-[4px] border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] font-medium text-xs flex items-center justify-center">2</button>
+                    <button type="button" className="w-7 h-7 rounded-[4px] border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] font-medium text-xs flex items-center justify-center">3</button>
+                    <button type="button" className="w-7 h-7 rounded-[4px] border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] font-medium text-xs flex items-center justify-center">4</button>
+                    <span className="text-[#94A3B8] px-1">&bull;&bull;&bull;</span>
+                    <button type="button" className="w-7 h-7 rounded-[4px] border border-[#E2E8F0] hover:bg-slate-50 text-[#334155] font-medium text-xs flex items-center justify-center">
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </main>
           </div>
         </div>
       )}
 
-      {/* ================= CREATE WORKSPACE MODAL (IMAGE 2) ================= */}
+      {/* ================= CREATE WORKSPACE MODAL ================= */}
       {isCreateWorkspaceOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-white rounded-[5px] shadow-2xl p-8 relative animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-6">
-              <h3 className="text-lg font-bold text-[#0F172A] font-poppins">
-                Create a new workspace
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsCreateWorkspaceOpen(false)}
-                className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
-              >
+              <h3 className="text-lg font-bold text-[#0F172A] font-poppins">Create a new workspace</h3>
+              <button type="button" onClick={() => setIsCreateWorkspaceOpen(false)} className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateWorkspaceSubmit} className="space-y-6">
               <div className="text-center">
-                <input
-                  ref={logoInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoFileChange}
-                  className="hidden"
-                />
+                <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoFileChange} className="hidden" />
                 <div
                   onClick={() => logoInputRef.current?.click()}
                   className="w-16 h-16 mx-auto rounded-full bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center cursor-pointer hover:bg-blue-100 transition-colors shadow-2xs border border-blue-100/60 group overflow-hidden"
                 >
                   {wsUploadedLogo ? (
-                    <img
-                      src={wsUploadedLogo}
-                      alt="Workspace Logo"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={wsUploadedLogo} alt="Workspace Logo" className="w-full h-full object-cover" />
                   ) : (
                     <ImageIcon className="w-7 h-7 text-[#2563EB] group-hover:scale-105 transition-transform stroke-[1.75]" />
                   )}
                 </div>
-                <p className="text-xs font-medium font-inter text-[#64748B] mt-2.5">
-                  Upload your workspace logo or image
-                </p>
+                <p className="text-xs font-medium font-inter text-[#64748B] mt-2.5">Upload your workspace logo or image</p>
               </div>
 
               <div className="relative border border-[#CBD5E1] rounded-[5px] px-3.5 pt-3 pb-3 focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB] transition-all bg-white">
@@ -2367,10 +2392,7 @@ export default function OrbitaskWorkspacePage() {
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs font-inter rounded-[5px] shadow-xs transition-colors cursor-pointer mt-4"
-              >
+              <button type="submit" className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs font-inter rounded-[5px] shadow-xs transition-colors cursor-pointer mt-4">
                 Create Workspace
               </button>
             </form>
@@ -2378,19 +2400,13 @@ export default function OrbitaskWorkspacePage() {
         </div>
       )}
 
-      {/* ================= CREATE PROJECT MODAL (IMAGES 3 & 4) ================= */}
+      {/* ================= CREATE PROJECT MODAL ================= */}
       {isCreateProjectOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-white rounded-[5px] shadow-2xl p-8 relative animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-6">
-              <h3 className="text-lg font-bold text-[#0F172A] font-poppins">
-                Create Project
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsCreateProjectOpen(false)}
-                className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
-              >
+              <h3 className="text-lg font-bold text-[#0F172A] font-poppins">Create Project</h3>
+              <button type="button" onClick={() => setIsCreateProjectOpen(false)} className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -2438,17 +2454,12 @@ export default function OrbitaskWorkspacePage() {
                 </div>
                 <p className="text-[11px] font-medium font-inter text-[#64748B] flex items-center gap-1.5 mt-1.5">
                   <Info className="w-3.5 h-3.5 text-[#94A3B8] shrink-0 stroke-[1.75]" />
-                  <span>
-                    A default board named “Deafult Board” will be created automatically
-                  </span>
+                  <span>A default board named “Deafult Board” will be created automatically</span>
                 </p>
               </div>
 
               <div className="space-y-2">
-                <span className="block text-xs font-semibold text-[#334155] font-inter">
-                  Invite Member
-                </span>
-
+                <span className="block text-xs font-semibold text-[#334155] font-inter">Invite Member</span>
                 {!isInviteMemberOpen ? (
                   <button
                     type="button"
@@ -2478,11 +2489,7 @@ export default function OrbitaskWorkspacePage() {
                         }}
                         className="w-full bg-transparent text-xs font-medium font-inter text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none"
                       />
-                      <button
-                        type="button"
-                        onClick={handleAddInvitedEmail}
-                        className="text-xs font-semibold font-inter text-[#2563EB] hover:underline shrink-0 cursor-pointer ml-1"
-                      >
+                      <button type="button" onClick={handleAddInvitedEmail} className="text-xs font-semibold font-inter text-[#2563EB] hover:underline shrink-0 cursor-pointer ml-1">
                         Invite
                       </button>
                     </div>
@@ -2490,16 +2497,9 @@ export default function OrbitaskWorkspacePage() {
                     {invitedEmails.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {invitedEmails.map((email) => (
-                          <span
-                            key={email}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[5px] bg-blue-50 text-[#2563EB] text-[11px] font-medium font-inter border border-blue-100"
-                          >
+                          <span key={email} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[5px] bg-blue-50 text-[#2563EB] text-[11px] font-medium font-inter border border-blue-100">
                             {email}
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveInvitedEmail(email)}
-                              className="hover:text-blue-900 cursor-pointer ml-0.5"
-                            >
+                            <button type="button" onClick={() => handleRemoveInvitedEmail(email)} className="hover:text-blue-900 cursor-pointer ml-0.5">
                               <X className="w-3 h-3" />
                             </button>
                           </span>
@@ -2510,10 +2510,7 @@ export default function OrbitaskWorkspacePage() {
                 )}
               </div>
 
-              <button
-                type="submit"
-                className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs font-inter rounded-[5px] shadow-xs transition-colors cursor-pointer mt-4"
-              >
+              <button type="submit" className="w-full h-11 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-xs font-inter rounded-[5px] shadow-xs transition-colors cursor-pointer mt-4">
                 Create Project
               </button>
             </form>
@@ -2526,14 +2523,8 @@ export default function OrbitaskWorkspacePage() {
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-[5px] shadow-2xl p-6 relative animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-4 border-b border-[#F1F5F9]">
-              <h3 className="text-sm font-bold text-[#0F172A] font-poppins">
-                Edit Project
-              </h3>
-              <button
-                type="button"
-                onClick={() => setEditingProject(null)}
-                className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer"
-              >
+              <h3 className="text-sm font-bold text-[#0F172A] font-poppins">Edit Project</h3>
+              <button type="button" onClick={() => setEditingProject(null)} className="p-1 rounded-[5px] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -2547,12 +2538,7 @@ export default function OrbitaskWorkspacePage() {
                   type="text"
                   required
                   value={editingProject.name}
-                  onChange={(e) =>
-                    setEditingProject({
-                      ...editingProject,
-                      name: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
                   className="w-full bg-transparent text-xs font-medium font-inter text-[#0F172A] focus:outline-none"
                 />
               </div>
@@ -2564,28 +2550,16 @@ export default function OrbitaskWorkspacePage() {
                 <textarea
                   rows={3}
                   value={editingProject.description}
-                  onChange={(e) =>
-                    setEditingProject({
-                      ...editingProject,
-                      description: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
                   className="w-full bg-transparent text-xs font-medium font-inter text-[#0F172A] focus:outline-none resize-none"
                 />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingProject(null)}
-                  className="h-9 px-4 text-xs font-medium font-inter text-[#64748B] hover:text-[#0F172A] rounded-[5px] transition-colors cursor-pointer"
-                >
+                <button type="button" onClick={() => setEditingProject(null)} className="h-9 px-4 text-xs font-medium font-inter text-[#64748B] hover:text-[#0F172A] rounded-[5px] transition-colors cursor-pointer">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] transition-colors shadow-xs cursor-pointer"
-                >
+                <button type="submit" className="h-9 px-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-medium font-inter rounded-[5px] transition-colors shadow-xs cursor-pointer">
                   Save Changes
                 </button>
               </div>
