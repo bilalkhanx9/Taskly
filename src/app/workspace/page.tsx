@@ -1163,7 +1163,8 @@ export default function OrbitaskWorkspacePage() {
               isSidebarCollapsed ? "w-18" : "w-[240px]"
             } bg-white border-r border-[#F1F5F9] flex flex-col h-full transition-all duration-300 shrink-0 select-none z-30`}
           >
-            <div className="p-4 flex flex-col gap-4 overflow-y-auto overflow-x-hidden h-full">
+            {/* FIXED TOP SECTION (Brand Header & Workspace Selector) */}
+            <div className="p-4 pb-2 shrink-0 flex flex-col gap-4">
               {/* 1. Brand Header */}
               <div className="flex items-center justify-between">
                 <div
@@ -1276,7 +1277,10 @@ export default function OrbitaskWorkspacePage() {
                   )}
                 </div>
               )}
+            </div>
 
+            {/* SCROLLABLE LOWER SECTION (Main menu, Projects, Project view, Help & Support) */}
+            <div className="px-4 pb-4 pt-1 flex-1 flex flex-col gap-4 overflow-y-auto overflow-x-hidden min-h-0">
               {/* 3. Main menu Section */}
               <div className="space-y-1">
                 {!isSidebarCollapsed && (
